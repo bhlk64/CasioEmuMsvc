@@ -10,51 +10,6 @@
 #include <SDL_system.h>
 
 #ifdef __ANDROID__
-std::string GetNativeLibDir()
-{
-    JNIEnv* env =
-        reinterpret_cast<JNIEnv*>(SDL_AndroidGetJNIEnv());
-
-    jobject context =
-        reinterpret_cast<jobject>(SDL_AndroidGetActivity());
-
-    jclass contextClass = env->GetObjectClass(context);
-
-    jmethodID getAppInfo =
-        env->GetMethodID(
-            contextClass,
-            "getApplicationInfo",
-            "()Landroid/content/pm/ApplicationInfo;"
-        );
-
-    jobject appInfo =
-        env->CallObjectMethod(context, getAppInfo);
-
-    jclass appInfoClass =
-        env->GetObjectClass(appInfo);
-
-    jfieldID nativeLibDirField =
-        env->GetFieldID(
-            appInfoClass,
-            "nativeLibraryDir",
-            "Ljava/lang/String;"
-        );
-
-    jstring path =
-        (jstring)env->GetObjectField(
-            appInfo,
-            nativeLibDirField
-        );
-
-    const char* chars =
-        env->GetStringUTFChars(path, nullptr);
-
-    std::string result(chars);
-
-    env->ReleaseStringUTFChars(path, chars);
-
-    return result;
-}
 
 static std::unordered_map<std::string, bool> plugin_loaded;
 static const std::filesystem::path plugin_config_path = "./config/plugins.cfg";
@@ -141,7 +96,7 @@ void LoadEnabledPlugins()
     plugin_errors.clear();
     LoadPluginConfig();
     std::filesystem::path src_dir = "./plugins";
-    std::filesystem::path cache_dir = GetNativeLibDir();
+    std::filesystem::path cache_dir = std::filesystem::path(SDL_AndroidGetInternalStoragePath()) / "plugins";
 
     std::filesystem::create_directories(cache_dir);
 
