@@ -1,7 +1,21 @@
 #pragma once
-#include "Ui.hpp"
-class PluginViewer : public UIWindow {
+
+#include <vector>
+#include <string>
+#include <filesystem>
+#include "UIWindow.h"
+
+class PluginViewer : public UIWindow
+{
 public:
-	PluginViewer() : UIWindow("Plugin Manager"){}
-	void RenderCore() override;
+    PluginViewer() : UIWindow("Plugin Manager")
+    {
+        RefreshPlugins();
+    }
+
+    void RenderCore() override;
+
+private:
+    std::vector<std::string> plugins;
+    void RefreshPlugins();
 };
