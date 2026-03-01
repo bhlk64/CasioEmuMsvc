@@ -242,7 +242,6 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 			 membp = new MemBreakPoint(),
 			 CreateAddressWindow(),
 			 // MakeAssemblerUI(),
-			 MakeThemeWindow(),
 			 CreateBitmapViewer()})
 		windows.push_back(item);
 	for (auto item : GetEditors())
