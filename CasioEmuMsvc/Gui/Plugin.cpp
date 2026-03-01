@@ -127,7 +127,7 @@ void LoadEnabledPlugins()
     plugin_errors.clear();
     LoadPluginConfig();
     std::filesystem::path src_dir = "./plugins";
-    std::filesystem::path cache_dir = GetNativeLibDir();;
+    std::filesystem::path cache_dir = GetNativeLibDir();
 
     std::filesystem::create_directories(cache_dir);
 
