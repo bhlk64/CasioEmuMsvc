@@ -28,7 +28,7 @@ void PluginViewer::SavePluginConfig()
     }
 }
 
-void PluginViewer::LoadPluginConfig()
+void LoadPluginConfig()
 {
     plugin_loaded.clear();
 
@@ -91,8 +91,7 @@ void LoadEnabledPlugins()
 
     plugin_handles.clear();
     plugin_errors.clear();
-    PluginViewer viewer;
-    viewer.LoadPluginConfig();
+    LoadPluginConfig();
     std::filesystem::path src_dir = "./plugins";
     std::filesystem::path cache_dir = "./cache";
 
@@ -270,4 +269,4 @@ void PluginViewer::RenderCore()
 {
     ImGui::Text("This features only available with Android");
 }
-#endif
+#endif-

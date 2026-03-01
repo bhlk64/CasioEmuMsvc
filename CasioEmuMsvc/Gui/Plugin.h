@@ -6,6 +6,7 @@
 
 #ifdef __ANDROID__
 void LoadEnabledPlugins();
+void LoadPluginConfig();
 #endif
 
 class PluginViewer : public UIWindow
@@ -20,12 +21,8 @@ public:
     }
 
     void RenderCore() override;
-
-private:
-#ifdef __ANDROID__
+    
     std::vector<std::string> plugins;
-    void LoadPluginConfig();
     void SavePluginConfig();
     void RefreshPlugins();
-#endif
 };
