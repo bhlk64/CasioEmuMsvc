@@ -241,6 +241,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	}
 
 	for (auto item : std::initializer_list<UIWindow*>{
+			 MakeThemeWindow(),
 			 new VariableWindow(),
 			 new HwController(),
 			 new LabelViewer(),
@@ -252,7 +253,6 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 			 membp = new MemBreakPoint(),
 			 CreateAddressWindow(),
 			 // MakeAssemblerUI(),
-			 MakeThemeWindow(),
 			 CreateBitmapViewer()})
 		windows.push_back(item);
 	for (auto item : GetEditors())
@@ -260,7 +260,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 
 #ifdef __ANDROID__
 	for (auto item : windows) {
-		item->open = false;
+		item->open = true;
 	}
 #endif
 
