@@ -2,6 +2,8 @@
 #include "imgui/imgui.h"
 #include "SysDialog.h"
 #include <algorithm>
+#include <unordered_map>
+#include <SDL.h>
 
 void PluginViewer::RefreshPlugins()
 {
@@ -23,6 +25,9 @@ void PluginViewer::RefreshPlugins()
 
 void PluginViewer::RenderCore()
 {
+    static bool need_restart = false;
+    static std::unordered_map<std::string, bool> plugin_loaded;
+
     if (ImGui::Button("Import Plugin"))
     {
         SystemDialogs::OpenFileDialog(
@@ -55,20 +60,41 @@ void PluginViewer::RenderCore()
                         std::filesystem::copy_options::overwrite_existing
                     );
 
+                    need_restart = true;  // 👈 báo cần restart
                     RefreshPlugins();
                 }
                 catch (...) {}
             });
     }
 
+    if (need_restart)
+    {
+        ImGui::TextColored(ImVec4(1,1,0,1),
+            "Restart App to reload Plugin");
+
+        if (ImGui::Button("Exit"))
+        {
+            SDL_Quit();
+            exit(0); // 👈 simple hard exit
+        }
+    }
+
     ImGui::Separator();
 
-    // 👇 List plugin
     for (size_t i = 0; i < plugins.size(); ++i)
     {
         ImGui::PushID((int)i);
 
         ImGui::Text("%s", plugins[i].c_str());
+        ImGui::SameLine();
+
+        // 👇 Checkbox Load/Unload
+        bool& loaded = plugin_loaded[plugins[i]];
+        if (ImGui::Checkbox("Load", &loaded))
+        {
+            need_restart = true;  // đổi trạng thái cũng cần restart
+        }
+
         ImGui::SameLine();
 
         if (ImGui::Button("Delete"))
@@ -78,9 +104,10 @@ void PluginViewer::RenderCore()
 
             std::filesystem::remove(full);
 
+            need_restart = true;
             RefreshPlugins();
             ImGui::PopID();
-            break; // tránh invalid iterator
+            break;
         }
 
         ImGui::PopID();
