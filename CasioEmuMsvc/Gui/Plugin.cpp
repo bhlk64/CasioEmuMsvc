@@ -36,6 +36,7 @@ void PluginViewer::LoadPluginConfig()
     if (!ifs) return;
 
     std::string line;
+    std::filesystem::path src_dir = "./plugins";
     while (std::getline(ifs, line))
     {
         auto pos = line.find('=');
@@ -90,7 +91,8 @@ void LoadEnabledPlugins()
 
     plugin_handles.clear();
     plugin_errors.clear();
-    LoadPluginConfig();
+    PluginViewer viewer;
+    viewer.LoadPluginConfig();
     std::filesystem::path src_dir = "./plugins";
     std::filesystem::path cache_dir = "./cache";
 
@@ -266,6 +268,6 @@ void PluginViewer::RenderCore()
 #else
 void PluginViewer::RenderCore()
 {
-    ImGui::Text("This features only available with Android")
+    ImGui::Text("This features only available with Android");
 }
 #endif

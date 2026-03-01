@@ -23,6 +23,7 @@ public:
 
 private:
 #ifdef __ANDROID__
+    std::vector<std::string> plugins;
     void LoadPluginConfig();
     void SavePluginConfig();
     void RefreshPlugins();
