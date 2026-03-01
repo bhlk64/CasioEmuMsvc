@@ -148,14 +148,14 @@ jobs:
           -shared -fPIC -O2 \
           -static-libstdc++ \
           -IExamplePlugin \
-          -I../CasioEmuMsvc/Gui/imgui \
+          -ICasioEmuMsvc/Gui/imgui \
           ExamplePlugin/PluginCIInput.cpp \
-          ../CasioEmuMsvc/Gui/imgui/imgui.cpp \
-          ../CasioEmuMsvc/Gui/imgui/imgui_draw.cpp \
-          ../CasioEmuMsvc/Gui/imgui/imgui_widgets.cpp \
-          ../CasioEmuMsvc/Gui/imgui/imgui_tables.cpp \
-          ../CasioEmuMsvc/Gui/imgui/imgui_impl_sdl2.cpp \
-          ../CasioEmuMsvc/Gui/imgui/imgui_impl_sdlrenderer2.cpp \
+          CasioEmuMsvc/Gui/imgui/imgui.cpp \
+          CasioEmuMsvc/Gui/imgui/imgui_draw.cpp \
+          CasioEmuMsvc/Gui/imgui/imgui_widgets.cpp \
+          CasioEmuMsvc/Gui/imgui/imgui_tables.cpp \
+          CasioEmuMsvc/Gui/imgui/imgui_impl_sdl2.cpp \
+          CasioEmuMsvc/Gui/imgui/imgui_impl_sdlrenderer2.cpp \
           -o ExamplePlugin/PluginCIOutput.so
       
       - name: Release Plugin Output
