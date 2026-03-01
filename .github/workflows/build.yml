@@ -142,13 +142,19 @@ jobs:
     
       - name: Compile Plugin
         run: |
-          $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++ \
+          aarch64-linux-android21-clang++ \
           -std=gnu++20 \
-          -static-libstdc++ \
           -shared -fPIC -O2 \
+          -static-libstdc++ \
           -IExamplePlugin \
-          -IExamplePlugin/imgui \
+          -I../CasioEmuMsvc/Gui/imgui \
           ExamplePlugin/PluginCIInput.cpp \
+          ../CasioEmuMsvc/Gui/imgui/imgui.cpp \
+          ../CasioEmuMsvc/Gui/imgui/imgui_draw.cpp \
+          ../CasioEmuMsvc/Gui/imgui/imgui_widgets.cpp \
+          ../CasioEmuMsvc/Gui/imgui/imgui_tables.cpp \
+          ../CasioEmuMsvc/Gui/imgui/imgui_impl_sdl2.cpp \
+          ../CasioEmuMsvc/Gui/imgui/imgui_impl_sdlrenderer2.cpp \
           -o ExamplePlugin/PluginCIOutput.so
       
       - name: Release Plugin Output

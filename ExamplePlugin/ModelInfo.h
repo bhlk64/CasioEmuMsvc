@@ -128,4 +128,4 @@ namespace casioemu {
 			Binary::Read(is, ml620_mirroring);
 		}
 	};
-} // namespace casioemu
+} // namespace casioem
