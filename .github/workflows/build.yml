@@ -136,33 +136,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
     
-      - name: Setup Android NDK
+      - name: Setup NDK
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r26d
-    
-      - name: Compile Plugin
+      
+      - name: Configure
         run: |
-          $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++ \
-          -std=gnu++20 \
-          -shared -fPIC -O2 \
-          -static-libstdc++ \
-          -IExamplePlugin \
-          -ICasioEmuMsvc/Gui/imgui \
-          ExamplePlugin/PluginCIInput.cpp \
-          CasioEmuMsvc/Gui/imgui/imgui.cpp \
-          CasioEmuMsvc/Gui/imgui/imgui_draw.cpp \
-          CasioEmuMsvc/Gui/imgui/imgui_widgets.cpp \
-          CasioEmuMsvc/Gui/imgui/imgui_tables.cpp \
-          CasioEmuMsvc/Gui/imgui/imgui_impl_sdl2.cpp \
-          CasioEmuMsvc/Gui/imgui/imgui_impl_sdlrenderer2.cpp \
-          -o ExamplePlugin/PluginCIOutput.so
+          cmake -S ExamplePlugin -B build \
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-21 \
+            -DANDROID_STL=c++_static
+      
+      - name: Build
+        run: cmake --build build
       
       - name: Release Plugin Output
         uses: actions/upload-artifact@v4
         with:
           name: PluginOutput
-          path: ExamplePlugin/PluginCIOutput.so
+          path: build/libPluginCIOutput.so
           if-no-files-found: error
 
   # =========================================================
