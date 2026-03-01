@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.22)
+
+project(PluginCIOutput)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_library(PluginCIOutput SHARED
+    PluginCIInput.cpp
+)
+
+target_include_directories(PluginCIOutput PRIVATE
+    .
+    ../CasioEmuMsvc/Gui/imgui
+)
+
+set_target_properties(PluginCIOutput PROPERTIES
+    ANDROID_STL c++_static
+)
