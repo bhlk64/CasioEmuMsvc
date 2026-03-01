@@ -134,10 +134,12 @@ jobs:
   
     steps:
       - uses: actions/checkout@v4
-  
-      - name: Install clang
-        run: sudo apt-get update && sudo apt-get install -y clang
-  
+    
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
+    
       - name: Compile Plugin
         run: |
           $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++ \
@@ -162,12 +164,9 @@ jobs:
   # =========================================================
   release:
     name: Create Release
-    needs: [detect, build]
+    needs: [detect, build, plugin-build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' &&
-    github.ref == 'refs/heads/stable' &&
-    (needs.detect.outputs.apk_changed == 'true' ||
-     needs.detect.outputs.plugins_changed == 'true')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/stable' && (needs.detect.outputs.apk_changed == 'true' || needs.detect.outputs.plugins_changed == 'true')
 
     steps:
     - name: Checkout
