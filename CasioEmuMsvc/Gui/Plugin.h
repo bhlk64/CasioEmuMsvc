@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <filesystem>
-#include "UIWindow.h"
 
 class PluginViewer : public UIWindow
 {
