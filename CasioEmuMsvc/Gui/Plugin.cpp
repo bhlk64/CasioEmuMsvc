@@ -5,10 +5,14 @@
 #include <SDL.h>
 #include <fstream>
 #include <unordered_map>
+#include <dlfcn.h>
 
+#ifdef __ANDROID__
 static std::unordered_map<std::string, bool> plugin_loaded;
 static const std::filesystem::path plugin_config_path = "./config/plugins.cfg";
 static bool need_restart = false;
+static std::unordered_map<std::string, void*> plugin_handles;
+static std::unordered_map<std::string, std::string> plugin_errors;
 
 void PluginViewer::SavePluginConfig()
 {
@@ -42,6 +46,13 @@ void PluginViewer::LoadPluginConfig()
 
         plugin_loaded[name] = enabled;
     }
+    for (auto it = plugin_loaded.begin(); it != plugin_loaded.end(); )
+    {
+        if (!std::filesystem::exists(src_dir / it->first))
+            it = plugin_loaded.erase(it);
+        else
+            ++it;
+    }
 }
 
 void PluginViewer::RefreshPlugins()
@@ -55,7 +66,7 @@ void PluginViewer::RefreshPlugins()
 
     for (auto& entry : std::filesystem::directory_iterator(plugin_dir))
     {
-        if (entry.is_regular_file())
+        if (entry.is_regular_file() && entry.path().extension() == ".so")
         {
             std::string filename = entry.path().filename().string();
             plugins.push_back(filename);
@@ -65,6 +76,72 @@ void PluginViewer::RefreshPlugins()
             {
                 plugin_loaded[filename] = false;
             }
+        }
+    }
+}
+
+void LoadEnabledPlugins()
+{
+    for (auto& [name, handle] : plugin_handles)
+        {
+            if (handle)
+                dlclose(handle);
+        }
+
+    plugin_handles.clear();
+    plugin_errors.clear();
+    LoadPluginConfig();
+    std::filesystem::path src_dir = "./plugins";
+    std::filesystem::path cache_dir = "./cache";
+
+    std::filesystem::create_directories(cache_dir);
+
+    for (const auto& [name, enabled] : plugin_loaded)
+    {
+        if (!enabled)
+            continue;
+
+        std::filesystem::path src = src_dir / name;
+        std::filesystem::path dst = cache_dir / name;
+
+        try
+        {
+            // copy vào internal
+            if (!std::filesystem::exists(src))
+            {
+                plugin_errors[name] = "File not found";
+                continue;
+            }
+            std::filesystem::copy_file(
+                src,
+                dst,
+                std::filesystem::copy_options::overwrite_existing
+            );
+            plugin_errors.erase(name);
+
+            // load từ cache
+            void* handle = dlopen(dst.c_str(), RTLD_NOW);
+
+            if (handle)
+            {
+                plugin_handles[name] = handle;
+                
+                dlerror(); // clear old error
+            
+                using InitFunc = void(*)();
+                InitFunc init = (InitFunc)dlsym(handle, "PluginInit");
+            
+                if (init)
+                    init();
+            }
+            else
+            {
+                plugin_handles[name] = nullptr;
+                plugin_errors[name] = dlerror();
+            }
+        }
+        catch (...)
+        {
         }
     }
 }
@@ -124,34 +201,71 @@ void PluginViewer::RenderCore()
     for (size_t i = 0; i < plugins.size(); ++i)
     {
         ImGui::PushID((int)i);
-
-        ImGui::Text("%s", plugins[i].c_str());
-        ImGui::SameLine();
-
-        // 👇 Checkbox Load/Unload
-        bool& loaded = plugin_loaded[plugins[i]];
-        if (ImGui::Checkbox("Load", &loaded))
+    
+        const std::string& name = plugins[i];
+    
+        // lấy handle an toàn
+        void* handle = nullptr;
+        auto it = plugin_handles.find(name);
+        if (it != plugin_handles.end())
+            handle = it->second;
+    
+        bool enabled = plugin_loaded[name];
+    
+        // ===== STATUS =====
+        if (handle)
         {
-            SavePluginConfig();   // 👈 thêm dòng này
-            need_restart = true;
+            ImGui::TextColored(ImVec4(0,1,0,1), "[Loaded]");
         }
-
+        else if (enabled)
+        {
+            ImGui::TextColored(ImVec4(1,0,0,1), "[Error]");
+        }
+        else
+        {
+            ImGui::TextColored(ImVec4(0.5f,0.5f,0.5f,1), "[Disabled]");
+        }
+    
         ImGui::SameLine();
-
+        ImGui::Text("%s", name.c_str());
+    
+        // ===== ERROR MESSAGE INLINE =====
+        if (!handle && enabled)
+        {
+            auto err_it = plugin_errors.find(name);
+            if (err_it != plugin_errors.end())
+            {
+                ImGui::SameLine();
+                ImGui::TextColored(
+                    ImVec4(1,0.5f,0.5f,1),
+                    "(%s)",
+                    err_it->second.c_str()
+                );
+            }
+        }
+    
+        ImGui::SameLine();
+    
         if (ImGui::Button("Delete"))
         {
             std::filesystem::path full =
-                std::filesystem::path("./plugins") / plugins[i];
-
+                std::filesystem::path("./plugins") / name;
+    
             std::filesystem::remove(full);
-
+    
             need_restart = true;
             RefreshPlugins();
             SavePluginConfig();
             ImGui::PopID();
             break;
         }
-
+    
         ImGui::PopID();
     }
 }
+#else
+void PluginViewer::RenderCore()
+{
+    ImGui::Text("This features only available with Android")
+}
+#endif

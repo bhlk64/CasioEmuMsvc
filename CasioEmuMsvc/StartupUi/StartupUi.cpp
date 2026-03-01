@@ -1,4 +1,5 @@
 ﻿#include "StartupUi.h"
+#include "Plugin.h"
 #include "3rd_licenses.h"
 #include "Binary.h"
 #include "Config.hpp"
@@ -1023,6 +1024,13 @@ namespace casioemu {
 				}
 				else {
 					if (ImGui::MenuItem("StartupUI.Launch"_lc)) {
+#ifdef __ANDROID__
+            if (!plugins_initialized)
+            {
+                LoadEnabledPlugins();
+                plugins_initialized = true;
+            }
+#endif
 						selected_path = model.path;
 						auto iter = std::find_if(recently_used.begin(), recently_used.end(),
 							[&](auto& x) {
