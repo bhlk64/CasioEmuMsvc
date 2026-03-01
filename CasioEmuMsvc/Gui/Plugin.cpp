@@ -2,8 +2,47 @@
 #include "imgui/imgui.h"
 #include "SysDialog.h"
 #include <algorithm>
-#include <unordered_map>
 #include <SDL.h>
+#include <fstream>
+#include <unordered_map>
+
+static std::unordered_map<std::string, bool> plugin_loaded;
+static const std::filesystem::path plugin_config_path = "./config/plugins.cfg";
+static bool need_restart = false;
+
+void SavePluginConfig()
+{
+    std::filesystem::create_directories("./config");
+
+    std::ofstream ofs(plugin_config_path);
+    if (!ofs)
+        return;
+
+    for (const auto& [name, enabled] : plugin_loaded)
+    {
+        ofs << name << "=" << (enabled ? 1 : 0) << "\n";
+    }
+}
+
+void LoadPluginConfig()
+{
+    plugin_loaded.clear();
+
+    std::ifstream ifs(plugin_config_path);
+    if (!ifs) return;
+
+    std::string line;
+    while (std::getline(ifs, line))
+    {
+        auto pos = line.find('=');
+        if (pos == std::string::npos) continue;
+
+        std::string name = line.substr(0, pos);
+        bool enabled = (line.substr(pos + 1) == "1");
+
+        plugin_loaded[name] = enabled;
+    }
+}
 
 void PluginViewer::RefreshPlugins()
 {
@@ -18,16 +57,20 @@ void PluginViewer::RefreshPlugins()
     {
         if (entry.is_regular_file())
         {
-            plugins.push_back(entry.path().filename().string());
+            std::string filename = entry.path().filename().string();
+            plugins.push_back(filename);
+
+            // nếu plugin mới chưa có trong config
+            if (plugin_loaded.find(filename) == plugin_loaded.end())
+            {
+                plugin_loaded[filename] = false;
+            }
         }
     }
 }
 
 void PluginViewer::RenderCore()
 {
-    static bool need_restart = false;
-    static std::unordered_map<std::string, bool> plugin_loaded;
-
     if (ImGui::Button("Import Plugin"))
     {
         SystemDialogs::OpenFileDialog(
@@ -39,11 +82,7 @@ void PluginViewer::RenderCore()
                     std::transform(ext.begin(), ext.end(),
                                    ext.begin(), ::tolower);
 
-#ifdef _WIN32
-                    bool valid = (ext == ".dll");
-#else
                     bool valid = (ext == ".so");
-#endif
 
                     if (!valid)
                         return;
@@ -62,6 +101,7 @@ void PluginViewer::RenderCore()
 
                     need_restart = true;  // 👈 báo cần restart
                     RefreshPlugins();
+                    SavePluginConfig();
                 }
                 catch (...) {}
             });
@@ -92,7 +132,8 @@ void PluginViewer::RenderCore()
         bool& loaded = plugin_loaded[plugins[i]];
         if (ImGui::Checkbox("Load", &loaded))
         {
-            need_restart = true;  // đổi trạng thái cũng cần restart
+            SavePluginConfig();   // 👈 thêm dòng này
+            need_restart = true;
         }
 
         ImGui::SameLine();
@@ -106,6 +147,7 @@ void PluginViewer::RenderCore()
 
             need_restart = true;
             RefreshPlugins();
+            SavePluginConfig();
             ImGui::PopID();
             break;
         }

@@ -9,6 +9,7 @@ class PluginViewer : public UIWindow
 public:
     PluginViewer() : UIWindow("Plugin Manager")
     {
+        LoadPluginConfig();
         RefreshPlugins();
     }
 
@@ -16,5 +17,7 @@ public:
 
 private:
     std::vector<std::string> plugins;
+    void LoadPluginConfig();
+    void SavePluginConfig();
     void RefreshPlugins();
 };
