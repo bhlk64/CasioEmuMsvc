@@ -29,7 +29,11 @@ struct ThemeSettings {
     }
 };
 
-UIWindow* MakeThemeWindow();
+class ThemeWindow : public UIWindow {
+public:
+    ThemeWindow() : UIWindow("Theme Settings") {}
+    void RenderCore() override;
+};
 
 void SaveThemeSettings();
 void LoadThemeSettings();
