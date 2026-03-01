@@ -1,7 +1,7 @@
-#include "test.h"
+#include "Plugin.h"
 #include "imgui/imgui.h"
 
-void TestViewer::RenderCore()
+void PluginViewer::RenderCore()
 {
     ImGui::Text("Hello plugin 😎");
 

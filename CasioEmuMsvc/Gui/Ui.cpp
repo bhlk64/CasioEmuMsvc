@@ -15,7 +15,7 @@
 #include "LabelViewer.h"
 #include "MemBreakPoint.hpp"
 #include "Random.hpp"
-#include "test.h"
+#include "Plugin.h"
 #include "Theme.h"
 #include "VariableWindow.h"
 #include "WatchWindow.hpp"
@@ -233,8 +233,9 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 			 new VariableWindow(),
 			 new HwController(),
 			 new LabelViewer(),
-			 new TestViewer(),
+			 new PluginViewer(),
 			 new WatchWindow(),
+			 new ThemeWindow(),
 			 CreateCallAnalysisWindow(),
 			 code_viewer = new CodeViewer(),
 			 injector = new Injector(),
