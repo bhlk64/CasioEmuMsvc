@@ -63,10 +63,6 @@ void gui_loop() {
 		win->Render();
 	}
 
-	ImGui::Begin("Testing");
-	if (ImGui::Button("Crash"_lc)) {
-		throw 0;
-	}
 	// --- 新增：手动反馈选项 ---
 #ifdef ENABLE_SENTRY
 	ImGui::SameLine(); // 放在 Crash 按钮旁边
