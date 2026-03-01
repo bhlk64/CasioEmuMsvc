@@ -166,8 +166,7 @@ jobs:
     name: Create Release
     needs: detect
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/stable' && (needs.detect.outputs.apk_changed == 'true' || needs.detect.outputs.plugins_changed == 'true')
-  
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/stable' && (needs.detect.outputs.apk_changed == 'true' || needs.detect.outputs.plugins_changed == 'true')
 
 
     steps:
