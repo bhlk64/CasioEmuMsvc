@@ -234,8 +234,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 			 new HwController(),
 			 new LabelViewer(),
 			 new PluginViewer(),
-			 new WatchWindow(),
-			 new ThemeWindow(),
+			 MakeWatchWindow(),
 			 CreateCallAnalysisWindow(),
 			 code_viewer = new CodeViewer(),
 			 injector = new Injector(),
@@ -246,6 +245,9 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 		windows.push_back(item);
 	for (auto item : GetEditors())
 		windows.push_back(item);
+	for (auto w : windows) {
+    printf("Window name: '%s'\n", w->name);
+  }
 
 #ifdef __ANDROID__
 	for (auto item : windows) {
