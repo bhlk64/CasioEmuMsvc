@@ -15,6 +15,17 @@ message(STATUS "Attempting to add subdirectory: asmjit")
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/asmjit/CMakeLists.txt")
     message(STATUS "Found asmjit/CMakeLists.txt")
     add_subdirectory(asmjit)
+    # ================= IMGUI SHARED LIB =================
+    add_library(imgui SHARED
+        ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui.cpp
+        ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_draw.cpp
+        ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_widgets.cpp
+        ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_tables.cpp
+)
+
+target_include_directories(imgui PUBLIC
+    ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui
+)
     message(STATUS "Finished add_subdirectory(asmjit)")
 else()
     message(FATAL_ERROR "Could not find asmjit/CMakeLists.txt at ${CMAKE_CURRENT_SOURCE_DIR}/asmjit")
@@ -54,7 +65,6 @@ file(GLOB MAIN_SOURCES_CRASH "${CMAKE_SOURCE_DIR}/CasioEmuMsvc/CrashHandler/*.cp
 file(GLOB MAIN_SOURCES_EXT "${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Ext/*.cpp")
 file(GLOB MAIN_SOURCES_GDB "${CMAKE_SOURCE_DIR}/CasioEmuMsvc/GDB/*.cpp")
 file(GLOB MAIN_SOURCES_GUI "${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/*.cpp")
-file(GLOB MAIN_SOURCES_IMGUI "${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/*.cpp")
 file(GLOB MAIN_SOURCES_JIT "${CMAKE_SOURCE_DIR}/CasioEmuMsvc/JitU8/*.cpp")
 file(GLOB MAIN_SOURCES_PERIPHERAL "${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Peripheral/*.cpp")
 file(GLOB MAIN_SOURCES_PLUGIN "${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Plugin/*.cpp")
@@ -67,7 +77,6 @@ set(MAIN_SOURCES
     ${MAIN_SOURCES_EXT}
     ${MAIN_SOURCES_GDB}
     ${MAIN_SOURCES_GUI}
-    ${MAIN_SOURCES_IMGUI}
     ${MAIN_SOURCES_JIT}
     ${MAIN_SOURCES_PERIPHERAL}
     ${MAIN_SOURCES_PLUGIN}
@@ -101,6 +110,7 @@ if(BUILD_EXECUTABLE)
     target_link_libraries(${TARGET_NAME} PRIVATE
         SDL2::SDL2
         SDL2::image
+        imgui
         CpuFeatures::cpu_features
         asmjit::asmjit
         -lpthread
@@ -112,6 +122,7 @@ else()
     target_link_libraries(${TARGET_NAME} PRIVATE
         SDL2::SDL2
         SDL2::image
+        imgui
         CpuFeatures::cpu_features
         asmjit::asmjit
     )
