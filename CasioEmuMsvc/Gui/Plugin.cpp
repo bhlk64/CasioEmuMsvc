@@ -12,28 +12,42 @@
 #ifdef __ANDROID__
 std::string GetNativeLibDir()
 {
-    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-    jobject context = SDL_AndroidGetActivity();
+    JNIEnv* env =
+        reinterpret_cast<JNIEnv*>(SDL_AndroidGetJNIEnv());
+
+    jobject context =
+        reinterpret_cast<jobject>(SDL_AndroidGetActivity());
 
     jclass contextClass = env->GetObjectClass(context);
+
     jmethodID getAppInfo =
-        env->GetMethodID(contextClass,
-                         "getApplicationInfo",
-                         "()Landroid/content/pm/ApplicationInfo;");
+        env->GetMethodID(
+            contextClass,
+            "getApplicationInfo",
+            "()Landroid/content/pm/ApplicationInfo;"
+        );
 
-    jobject appInfo = env->CallObjectMethod(context, getAppInfo);
+    jobject appInfo =
+        env->CallObjectMethod(context, getAppInfo);
 
-    jclass appInfoClass = env->GetObjectClass(appInfo);
+    jclass appInfoClass =
+        env->GetObjectClass(appInfo);
+
     jfieldID nativeLibDirField =
-        env->GetFieldID(appInfoClass,
-                        "nativeLibraryDir",
-                        "Ljava/lang/String;");
+        env->GetFieldID(
+            appInfoClass,
+            "nativeLibraryDir",
+            "Ljava/lang/String;"
+        );
 
     jstring path =
-        (jstring)env->GetObjectField(appInfo,
-                                     nativeLibDirField);
+        (jstring)env->GetObjectField(
+            appInfo,
+            nativeLibDirField
+        );
 
-    const char* chars = env->GetStringUTFChars(path, nullptr);
+    const char* chars =
+        env->GetStringUTFChars(path, nullptr);
 
     std::string result(chars);
 
@@ -175,8 +189,9 @@ void LoadEnabledPlugins()
                 plugin_errors[name] = dlerror();
             }
         }
-        catch (...)
+        catch (const std::exception& e)
         {
+            plugin_errors[name] = e.what();
         }
     }
 }
