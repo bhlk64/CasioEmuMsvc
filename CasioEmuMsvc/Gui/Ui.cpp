@@ -247,8 +247,8 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	for (auto item : GetEditors())
 		windows.push_back(item);
 	for (auto w : windows) {
-    printf("Window name: '%s'\n", w->name);
-  }
+    SDL_Log("Window name: %s", w->name);
+}
 
 #ifdef __ANDROID__
 	for (auto item : windows) {
