@@ -59,7 +59,18 @@ void gui_loop() {
 	ImGui_ImplSDLRenderer2_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
-
+	
+	ImGui::Begin("DebugList");
+	
+	for (auto w : windows) {
+		if (w && w->name)
+			ImGui::Text("Window: %s", w->name);
+		else
+			ImGui::Text("Window: <null>");
+	}
+	
+	ImGui::End();
+	
 	for (auto win : windows) {
 		win->Render();
 	}
@@ -246,9 +257,6 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 		windows.push_back(item);
 	for (auto item : GetEditors())
 		windows.push_back(item);
-	for (auto w : windows) {
-    SDL_Log("Window name: %s", w->name);
-}
 
 #ifdef __ANDROID__
 	for (auto item : windows) {
