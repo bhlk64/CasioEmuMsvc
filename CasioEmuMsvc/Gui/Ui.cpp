@@ -234,13 +234,14 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 			 new HwController(),
 			 new LabelViewer(),
 			 new PluginViewer(),
-			 MakeWatchWindow(),
+			 new WatchWindow(),
 			 CreateCallAnalysisWindow(),
 			 code_viewer = new CodeViewer(),
 			 injector = new Injector(),
 			 membp = new MemBreakPoint(),
 			 CreateAddressWindow(),
 			 // MakeAssemblerUI(),
+			 MakeThemeWindow(),
 			 CreateBitmapViewer()})
 		windows.push_back(item);
 	for (auto item : GetEditors())
