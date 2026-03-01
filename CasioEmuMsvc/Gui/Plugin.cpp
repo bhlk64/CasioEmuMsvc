@@ -10,7 +10,7 @@ static std::unordered_map<std::string, bool> plugin_loaded;
 static const std::filesystem::path plugin_config_path = "./config/plugins.cfg";
 static bool need_restart = false;
 
-void SavePluginConfig()
+void PluginViewer::SavePluginConfig()
 {
     std::filesystem::create_directories("./config");
 
@@ -24,7 +24,7 @@ void SavePluginConfig()
     }
 }
 
-void LoadPluginConfig()
+void PluginViewer::LoadPluginConfig()
 {
     plugin_loaded.clear();
 
@@ -44,7 +44,7 @@ void LoadPluginConfig()
     }
 }
 
-void RefreshPlugins()
+void PluginViewer::RefreshPlugins()
 {
     plugins.clear();
 
