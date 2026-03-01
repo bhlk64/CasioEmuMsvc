@@ -44,7 +44,7 @@ void LoadPluginConfig()
     }
 }
 
-void PluginViewer::RefreshPlugins()
+void RefreshPlugins()
 {
     plugins.clear();
 
