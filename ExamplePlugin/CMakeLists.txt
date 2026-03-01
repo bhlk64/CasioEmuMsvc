@@ -17,7 +17,7 @@ set_target_properties(PluginCIOutput PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-# 🔥 Cho phép unresolved symbol (ImGui sẽ do host cung cấp)
 target_link_options(PluginCIOutput PRIVATE
     -Wl,--allow-shlib-undefined
+    -Wl,--unresolved-symbols=ignore-in-shared-libs
 )
