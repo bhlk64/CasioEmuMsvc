@@ -1,7 +1,7 @@
 #pragma once
 #include "required/Ui.hpp"
 
-#include "required/Ui.hpp"      // có UIWindow
+#include "required/Ui.hpp"      // có UIWindo
 #include "PluginApi.h"          // API của
 #include "imgui.h"
 

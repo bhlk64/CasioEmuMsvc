@@ -49,6 +49,7 @@ jobs:
   # 🏗 Build job
   # =========================================================
   build:
+    if: needs.detect.outputs.apk_changed == 'true'
     needs: detect
     strategy:
       matrix:
@@ -142,7 +143,7 @@ jobs:
     
       - name: Compile Plugin
         run: |
-          aarch64-linux-android21-clang++ \
+          $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++ \
           -std=gnu++20 \
           -shared -fPIC -O2 \
           -static-libstdc++ \
