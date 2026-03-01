@@ -1,5 +1,6 @@
 #include "Plugin.h"
 #include "imgui/imgui.h"
+#include "SysDialog.h"
 #include <algorithm>
 
 void PluginViewer::RefreshPlugins()
