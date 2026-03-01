@@ -143,10 +143,9 @@ jobs:
       - name: Compile Plugin
         run: |
           $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++ \
-          -std=c++17 \
-          -shared \
-          -fPIC \
-          -O2 \
+          -std=gnu++20 \
+          -static-libstdc++ \
+          -shared -fPIC -O2 \
           -IExamplePlugin \
           -IExamplePlugin/imgui \
           ExamplePlugin/PluginCIInput.cpp \

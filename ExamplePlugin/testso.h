@@ -2,7 +2,7 @@
 #include "required/Ui.hpp"
 
 #include "required/Ui.hpp"      // có UIWindow
-#include "PluginApi.h"          // API của app
+#include "PluginApi.h"          // API của
 #include "imgui.h"
 
 static PluginApi* api = nullptr;
