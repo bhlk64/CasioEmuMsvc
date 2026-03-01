@@ -11,7 +11,7 @@ set(IMGUI_SOURCES
     ../CasioEmuMsvc/Gui/imgui/imgui_tables.cpp
 )
 
-# Nếu KHÔNG phải Android thì mới thêm SDL backend okk
+# Nếu KHÔNG phải Android thì mới thêm SDL backend o
 if(NOT ANDROID)
     list(APPEND IMGUI_SOURCES
         ../CasioEmuMsvc/Gui/imgui/imgui_impl_sdl2.cpp
