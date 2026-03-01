@@ -205,55 +205,52 @@ void PluginViewer::RenderCore()
     
         const std::string& name = plugins[i];
     
-        // lấy handle an toàn
         void* handle = nullptr;
-        auto it = plugin_handles.find(name);
-        if (it != plugin_handles.end())
-            handle = it->second;
+        auto hit = plugin_handles.find(name);
+        if (hit != plugin_handles.end())
+            handle = hit->second;
     
         bool enabled = plugin_loaded[name];
     
-        // ===== STATUS =====
-        if (handle)
+        // ===== CHECKBOX LOAD =====
+        if (ImGui::Checkbox("##enabled", &enabled))
         {
-            ImGui::TextColored(ImVec4(0,1,0,1), "[Loaded]");
-        }
-        else if (enabled)
-        {
-            ImGui::TextColored(ImVec4(1,0,0,1), "[Error]");
-        }
-        else
-        {
-            ImGui::TextColored(ImVec4(0.5f,0.5f,0.5f,1), "[Disabled]");
+            plugin_loaded[name] = enabled;
+            SavePluginConfig();
+            need_restart = true; // vẫn cần restart do dlopen lifecycle
         }
     
         ImGui::SameLine();
         ImGui::Text("%s", name.c_str());
     
-        // ===== ERROR MESSAGE INLINE =====
+        ImGui::SameLine(300);
+    
+        // ===== STATUS TEXT =====
+        if (handle)
+            ImGui::TextColored(ImVec4(0,1,0,1), "Loaded");
+        else if (enabled)
+            ImGui::TextColored(ImVec4(1,0,0,1), "Error");
+        else
+            ImGui::TextColored(ImVec4(0.5f,0.5f,0.5f,1), "Disabled");
+    
+        // ===== ERROR BUTTON (thay vì spam text) =====
         if (!handle && enabled)
         {
-            auto err_it = plugin_errors.find(name);
-            if (err_it != plugin_errors.end())
+            auto err = plugin_errors.find(name);
+            if (err != plugin_errors.end())
             {
                 ImGui::SameLine();
-                ImGui::TextColored(
-                    ImVec4(1,0.5f,0.5f,1),
-                    "(%s)",
-                    err_it->second.c_str()
-                );
+                if (ImGui::Button("Details"))
+                    ImGui::OpenPopup("err_popup");
             }
         }
     
+        // ===== DELETE =====
         ImGui::SameLine();
-    
         if (ImGui::Button("Delete"))
         {
-            std::filesystem::path full =
-                std::filesystem::path("./plugins") / name;
-    
-            std::filesystem::remove(full);
-    
+            std::filesystem::remove("./plugins/" + name);
+            plugin_loaded.erase(name);
             need_restart = true;
             RefreshPlugins();
             SavePluginConfig();
@@ -261,6 +258,36 @@ void PluginViewer::RenderCore()
             break;
         }
     
+        // ===== ERROR POPUP =====
+        if (ImGui::BeginPopupModal("err_popup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            auto err = plugin_errors.find(name);
+            if (err != plugin_errors.end())
+            {
+                static std::vector<char> buffer;
+    
+                buffer.assign(err->second.begin(), err->second.end());
+                buffer.push_back('\0');
+    
+                ImGui::InputTextMultiline(
+                    "##errtext",
+                    buffer.data(),
+                    buffer.size(),
+                    ImVec2(500, 300),
+                    ImGuiInputTextFlags_ReadOnly
+                );
+    
+                if (ImGui::Button("Copy"))
+                    ImGui::SetClipboardText(buffer.data());
+            }
+    
+            if (ImGui::Button("Close"))
+                ImGui::CloseCurrentPopup();
+    
+            ImGui::EndPopup();
+        }
+    
+        ImGui::Separator();
         ImGui::PopID();
     }
 }
@@ -269,4 +296,4 @@ void PluginViewer::RenderCore()
 {
     ImGui::Text("This features only available with Android");
 }
-#endif-
+#endif

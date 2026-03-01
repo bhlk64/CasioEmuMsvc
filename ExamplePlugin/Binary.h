@@ -17,6 +17,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+#ifdef __ANDROID__
+#define __debugbreak() __builtin_trap()
+#endif
 #pragma once
 // #include "Config.hpp"
 #include <fstream>
