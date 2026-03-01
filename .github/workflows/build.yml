@@ -144,10 +144,10 @@ jobs:
       - name: Configure
         run: |
           cmake -S ExamplePlugin -B build \
-            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a \
             -DANDROID_PLATFORM=android-21 \
-            -DANDROID_STL=c++_static
+            -DCMAKE_BUILD_TYPE=Release
       
       - name: Build
         run: cmake --build build
@@ -166,8 +166,13 @@ jobs:
     name: Create Release
     needs: [detect, build, plugin-build]
     runs-on: ubuntu-latest
-    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/stable' && (needs.detect.outputs.apk_changed == 'true' || needs.detect.outputs.plugins_changed == 'true')
-
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/stable' &&
+      (
+        needs.build.result == 'success' ||
+        needs.plugin-build.result == 'success'
+      )
 
     steps:
     - name: Checkout
@@ -203,8 +208,8 @@ jobs:
         fi
         
         # Copy Plugin if exists
-        if [ -f "./artifacts/PluginOutput/PluginCIOutput.so" ]; then
-          cp "./artifacts/PluginOutput/PluginCIOutput.so" \
+        if [ -f "./artifacts/PluginOutput/libPluginCIOutput.so" ]; then
+          cp "./artifacts/PluginOutput/libPluginCIOutput.so" \
              "release_assets/plugin-${{ env.COMMIT_HASH }}.so"
         fi
         
