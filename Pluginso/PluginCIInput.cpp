@@ -4,7 +4,7 @@
 // Bắt buộc phải có extern "C" để dlsym tìm thấy tên hàm chính xác
 extern "C" {
 
-    // 1. Hàm khởi tạo: Nhận context từ App chính
+    // 1. Hàm khở tạo: Nhận context từ App chính
     void PluginInit(ImGuiContext* ctx) {
         if (ctx) {
             ImGui::SetCurrentContext(ctx);
