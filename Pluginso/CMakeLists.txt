@@ -21,8 +21,10 @@ target_link_libraries(PluginCIOutput PRIVATE
     ${log-lib}
 )
 
+# 👇 Quan trọng nhất
 target_link_options(PluginCIOutput PRIVATE
     "-Wl,--allow-shlib-undefined"
+    "-Wl,--unresolved-symbols=ignore-in-shared-libs"
 )
 
 set_target_properties(PluginCIOutput PROPERTIES
