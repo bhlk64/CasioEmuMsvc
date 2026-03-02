@@ -73,8 +73,19 @@ inline SDL_Renderer* renderer2;
 inline std::vector<UIWindow*>* windows2;
 
 void RenderClippedSprite(SDL_Renderer* renderer, SDL_Texture* texture, const casioemu::SpriteInfo& sprite) {
-	SDL_Rect srcRect = sprite.src;
-	SDL_Rect destRect = sprite.dest;
+	SDL_Rect srcRect{
+    sprite.src.x,
+    sprite.src.y,
+    sprite.src.w,
+    sprite.src.h
+  };
+
+  SDL_Rect destRect{
+    sprite.dest.x,
+    sprite.dest.y,
+    sprite.dest.w,
+    sprite.dest.h
+  };
 
 	// Calculate the aspect ratio of src and dest
 	float aspectRatioSrc = (float)srcRect.w / (float)srcRect.h;
@@ -1022,7 +1033,7 @@ namespace casioemu {
 					if (ImGui::MenuItem("StartupUI.Launch"_lc)) {
 						selected_path = model.path;
 						
-						LoadEnabledPlugin();
+						LoadEnabledPlugins();
 						
 						auto iter = std::find_if(recently_used.begin(), recently_used.end(),
 							[&](auto& x) {
