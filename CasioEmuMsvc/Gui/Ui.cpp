@@ -12,6 +12,7 @@
 #include "LabelFile.h"
 #include "LabelViewer.h"
 #include "MemBreakPoint.hpp"
+#include "Plugin.h"
 #include "Random.hpp"
 #include "Theme.h"
 #include "VariableWindow.h"
@@ -65,6 +66,12 @@ void gui_loop() {
 		ImGui::SetNextWindowDockID(ImGui::GetCurrentContext()->DockContext.Nodes.Data[0].key, ImGuiCond_FirstUseEver);
 #endif
 		win->Render();
+	}
+
+  for (auto draw_call : active_plugin_renders) {
+		if (draw_call) {
+			draw_call();
+		}
 	}
 
 	//	ImGui::Begin("Testing");
@@ -243,6 +250,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 			 new HwController(),
 			 new LabelViewer(),
 			 new WatchWindow(),
+			 new PluginViewer(),
 			 CreateCallAnalysisWindow(),
 			 code_viewer = new CodeViewer(),
 			 injector = new Injector(),
