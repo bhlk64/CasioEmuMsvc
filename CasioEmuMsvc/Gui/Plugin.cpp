@@ -18,8 +18,7 @@ static const std::filesystem::path plugin_config_path = "./config/plugins.cfg";
 static bool need_restart = false;
 static std::unordered_map<std::string, void*> plugin_handles;
 static std::unordered_map<std::string, std::string> plugin_errors;
-extern std::vector<void (*)()> active_plugin_renders;
-
+static std::vector<RenderFunc> active_plugin_renders;
 
 void PluginViewer::SavePluginConfig()
 {

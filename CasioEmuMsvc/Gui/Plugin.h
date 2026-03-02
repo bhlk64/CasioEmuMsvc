@@ -5,6 +5,9 @@
 #include <filesystem>
 
 #ifdef __ANDROID__
+using RenderFunc = void(*)();
+
+extern std::vector<RenderFunc> active_plugin_renders;
 void LoadEnabledPlugins();
 void LoadPluginConfig();
 #endif
