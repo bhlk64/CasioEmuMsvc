@@ -1,4 +1,4 @@
-﻿// dllmain.cpp : 定义 DLL 应用序的入口点。
+﻿// dllmain.pp : 定义 DLL 应用序的入口点。
 #include "pch.h"
 
 PluginApi* g_api;
