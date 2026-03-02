@@ -42,7 +42,7 @@ jobs:
 
             # C++ / plugin related changes
             plugins:
-              - 'ExamplePlugin/**'
+              - 'Pluginso/**'
 
 
   # =========================================================

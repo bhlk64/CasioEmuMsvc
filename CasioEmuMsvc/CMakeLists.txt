@@ -22,6 +22,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/asmjit/CMakeLists.txt")
         ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_draw.cpp
         ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_widgets.cpp
         ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_tables.cpp
+    )
     message(STATUS "Finished add_subdirectory(asmjit)")
 else()
     message(FATAL_ERROR "Could not find asmjit/CMakeLists.txt at ${CMAKE_CURRENT_SOURCE_DIR}/asmjit")
