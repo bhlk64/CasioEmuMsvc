@@ -100,9 +100,6 @@ set_target_properties(${TARGET_NAME} PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-target_link_options(${TARGET_NAME} PRIVATE
-    -Wl,--export-dynamic
-)
 
 target_compile_definitions(${TARGET_NAME} PRIVATE ASMJIT_STATIC)
 
