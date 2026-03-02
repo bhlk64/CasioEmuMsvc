@@ -11,7 +11,7 @@ add_library(PluginCIOutput SHARED
     PluginCIInput.cpp
 )
 
-target_include_directories(PluginCIOutput PRIVATE
+target_include_directories(PluginCIOutput SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${IMGUI_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/../CasioEmuMsvc/Gui"
@@ -21,10 +21,8 @@ target_link_libraries(PluginCIOutput PRIVATE
     ${log-lib}
 )
 
-# 👇 Quan trọng nhất
-target_link_options(PluginCIOutput PRIVATE
+target_link_options(PluginCIOutput SHARED
     "-Wl,--allow-shlib-undefined"
-    "-Wl,--unresolved-symbols=ignore-in-shared-libs"
 )
 
 set_target_properties(PluginCIOutput PROPERTIES
