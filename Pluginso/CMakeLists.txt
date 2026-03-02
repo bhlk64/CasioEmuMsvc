@@ -21,10 +21,6 @@ target_link_libraries(PluginCIOutput PRIVATE
     ${log-lib}
 )
 
-target_link_options(PluginCIOutput PRIVATE
-    "-Wl,--allow-shlib-undefined"
-)
-
 set_target_properties(PluginCIOutput PROPERTIES
     CXX_VISIBILITY_PRESET default
     VISIBILITY_INLINES_HIDDEN OFF
