@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_library(log-lib log)
 
-# Nên dùng biến đường dn tuyệt đối dựa trên CMAKE_CURRENT_SOURCE_DIR 
+# Nên dùng biến đườngdn tuyệt đối dựa trên CMAKE_CURRENT_SOURCE_DIR 
 # để tránh lỗi khi build từ các thư mục khác nhau
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../CasioEmuMsvc/Gui/imgui")
 
