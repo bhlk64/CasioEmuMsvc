@@ -9,12 +9,19 @@ add_library(PluginCIOutput SHARED
 
 target_include_directories(PluginCIOutput PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    "${CMAKE_CURRENT_SOURCE_DIR}/../CasioEmuMsvc/Gui"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../CasioEmuMsvc/Gui/imgui"
+    ../CasioEmuMsvc/Gui
+    ../CasioEmuMsvc/Gui/imgui
 )
 
+find_library(log-lib log)
+
+target_link_libraries(PluginCIOutput PRIVATE
+    ${log-lib}
+)
+
+# Cho phép unresolved ImGui symbol
 target_link_options(PluginCIOutput PRIVATE
-    "-Wl,--allow-shlib-undefined"
+    "-Wl,--unresolved-symbols=ignore-in-shared-libs"
 )
 
 set_target_properties(PluginCIOutput PROPERTIES
