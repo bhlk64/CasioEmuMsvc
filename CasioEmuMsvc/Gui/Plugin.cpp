@@ -124,7 +124,7 @@ void LoadEnabledPlugins()
             plugin_errors.erase(name);
 
             // load từ cache
-            void* handle = dlopen(dst.c_str(), RTLD_NOW);
+            void* handle = dlopen(dst.c_str(), RTLD_NOW | RTLD_GLOBAL);
 
             if (handle)
             {
