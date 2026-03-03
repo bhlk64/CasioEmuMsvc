@@ -16,12 +16,8 @@ target_include_directories(PluginCIOutput PRIVATE
 find_library(log-lib log)
 
 target_link_libraries(PluginCIOutput PRIVATE
+    imgui
     ${log-lib}
-)
-
-# Quan trọng với Android lld
-target_link_options(PluginCIOutput PRIVATE
-    "-Wl,--unresolved-symbols=ignore-in-shared-libs"
 )
 
 set_target_properties(PluginCIOutput PROPERTIES
