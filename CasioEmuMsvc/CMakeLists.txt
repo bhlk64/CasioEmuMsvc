@@ -22,6 +22,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/asmjit/CMakeLists.txt")
         ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_draw.cpp
         ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_widgets.cpp
         ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_tables.cpp
+        ${CMAKE_SOURCE_DIR}/CasioEmuMsvc/Gui/imgui/imgui_demo.cpp
     )
     
     target_include_directories(imgui PUBLIC

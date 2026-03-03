@@ -19,7 +19,7 @@ target_link_libraries(PluginCIOutput PRIVATE
     ${log-lib}
 )
 
-# Cho phép unresolved ImGui symbol
+# Quan trọng với Android lld
 target_link_options(PluginCIOutput PRIVATE
     "-Wl,--unresolved-symbols=ignore-in-shared-libs"
 )
