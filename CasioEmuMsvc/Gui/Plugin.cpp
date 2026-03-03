@@ -125,7 +125,10 @@ void LoadEnabledPlugins()
             std::filesystem::copy_file(src, dst, std::filesystem::copy_options::overwrite_existing);
 
             // Load .so
-            void* handle = dlopen(dst.c_str(), RTLD_NOW | RTLD_GLOBAL);
+            void* handle = dlopen(path, RTLD_NOW);
+
+            auto init   = (void(*)()) dlsym(handle, "PluginInit");
+            auto render = (void(*)()) dlsym(handle, "PluginRender");
             if (handle) {
                 plugin_handles[name] = handle;
                 __android_log_print(ANDROID_LOG_INFO, "PluginLoader", "Successfully loaded: %s", name.c_str());
