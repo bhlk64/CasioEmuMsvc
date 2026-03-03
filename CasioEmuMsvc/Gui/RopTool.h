@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Ui.hpp"
+#include "Ext/LabelFile.h"
 #include <vector>
 #include <string>
 #include <map>
@@ -16,7 +17,6 @@ struct DagNode;
 struct DagAnalysis;
 struct ChainEntry;
 struct CompileResult;
-struct Label;
 
 // =========================================================
 // Instruction Effect
@@ -30,6 +30,7 @@ struct InsnEffect {
     uint16_t regs_written = 0;
 
     bool reads_sp = false;
+    bool reads_lr = false;
     bool writes_sp = false;
     bool writes_lr = false;
     bool writes_ea = false;
@@ -101,6 +102,8 @@ struct DagNode {
         CONTROLLED,
         CLOBBERED
     };
+    
+    static const char* RegStateStr(RegState s);
 
     int gadget_idx = -1;
     const GadgetInfo* gadget = nullptr;
@@ -178,15 +181,7 @@ struct CompileResult {
 };
 
 // =========================================================
-// Label
-// =========================================================
-struct Label {
-    std::string name;
-    uint32_t address;
-};
-
-// =========================================================
 // ROP Tool Window
 // =========================================================
-class UiWindow;
+class UIWindow;
 UIWindow* CreateRopToolWindow();

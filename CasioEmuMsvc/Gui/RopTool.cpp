@@ -10,6 +10,17 @@
 #include <set>
 #include <sstream>
 
+const char* DagNode::RegStateStr(RegState s)
+{
+    switch (s)
+    {
+        case UNKNOWN:     return "UNK";
+        case CONTROLLED:  return "CTRL";
+        case CLOBBERED:   return "CLB";
+        default:          return "?";
+    }
+}
+
 extern CodeViewer* code_viewer;
 // =========================================================
 // GadgetInfo helpers
