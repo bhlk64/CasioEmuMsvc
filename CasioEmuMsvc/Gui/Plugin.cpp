@@ -22,7 +22,7 @@ std::vector<RenderFunc> active_plugin_renders;
 
 void PluginViewer::SavePluginConfig()
 {
-    std::filesystem::create_directories("./config");
+    std::filesystem::create_directories("./plugins");
 
     std::ofstream ofs(plugin_config_path);
     if (!ofs)
@@ -125,7 +125,7 @@ void LoadEnabledPlugins()
             std::filesystem::copy_file(src, dst, std::filesystem::copy_options::overwrite_existing);
 
             // Load .so
-            void* handle = dlopen(path, RTLD_NOW);
+            void* handle = dlopen(dst, RTLD_NOW);
 
             auto init   = (void(*)()) dlsym(handle, "PluginInit");
             auto render = (void(*)()) dlsym(handle, "PluginRender");
