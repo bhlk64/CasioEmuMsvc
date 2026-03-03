@@ -14,7 +14,7 @@
 #include "MemBreakPoint.hpp"
 #include "Plugin.h"
 #include "Random.hpp"
-#include "RopTool.cpp"
+#include "RopTool.h"
 #include "Theme.h"
 #include "VariableWindow.h"
 #include "WatchWindow.hpp"
