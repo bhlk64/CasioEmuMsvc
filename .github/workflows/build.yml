@@ -164,7 +164,7 @@ jobs:
   # =========================================================
   release:
     name: Create Release
-    needs: [detect, build, plugin-build]
+    needs: [detect, plugin-build]
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'push' &&

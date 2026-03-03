@@ -9,18 +9,8 @@ find_library(log-lib log)
 # để tránh lỗi khi build từ các thư mục khác nhau
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../CasioEmuMsvc/Gui/imgui")
 
-set(IMGUI_SOURCES
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    # Thêm imgui_demo.cpp nếu bạn muốn dùng ImGui::ShowDemoWindow() để debug
-    ${IMGUI_DIR}/imgui_demo.cpp 
-)
-
 add_library(PluginCIOutput SHARED 
     PluginCIInput.cpp 
-    ${IMGUI_SOURCES}
 )
 
 target_include_directories(PluginCIOutput PRIVATE 
