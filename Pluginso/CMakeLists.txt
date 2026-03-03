@@ -3,24 +3,36 @@ project(CasioPluginSample)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(PluginCIOutput SHARED
-    PluginCIInput.cpp
-)
-
-target_include_directories(PluginCIOutput PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ../CasioEmuMsvc/Gui
-    ../CasioEmuMsvc/Gui/imgui
-)
-
 find_library(log-lib log)
 
-target_link_libraries(PluginCIOutput PRIVATE
-    imgui
-    ${log-lib}
+# Nên dùng biến đườngdn tuyệt đối dựa trên CMAKE_CURRENT_SOURCE_DIR 
+# để tránh lỗi khi build từ các thư mục khác nhau
+set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../CasioEmuMsvc/Gui/imgui")
+
+set(IMGUI_SOURCES
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    # Thêm imgui_demo.cpp nếu bạn muốn dùng ImGui::ShowDemoWindow() để debug
+    ${IMGUI_DIR}/imgui_demo.cpp 
 )
 
-set_target_properties(PluginCIOutput PROPERTIES
-    CXX_VISIBILITY_PRESET default
-    VISIBILITY_INLINES_HIDDEN OFF
+add_library(PluginCIOutput SHARED 
+    PluginCIInput.cpp 
+    ${IMGUI_SOURCES}
 )
+
+target_include_directories(PluginCIOutput PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${IMGUI_DIR}
+    # Thêm đường dẫn chứa Ui.hpp nếu cần dùng các helper của emulator
+    "${CMAKE_CURRENT_SOURCE_DIR}/../CasioEmuMsvc/Gui"
+)
+
+target_link_libraries(PluginCIOutput PRIVATE ${log-lib})
+
+target_compile_definitions(PluginCIOutput PRIVATE __ANDROID__)
+
+# Thêm cái này để chắc chắn load được hàm
+set_target_properties(PluginCIOutput PROPERTIES CXX_VISIBILITY_PRESET default)
