@@ -93,9 +93,14 @@ void LoadEnabledPlugins()
     for (auto& [name, handle] : plugin_handles) {
         if (handle) dlclose(handle);
     }
+    
     plugin_handles.clear();
     plugin_errors.clear();
     active_plugin_renders.clear(); // Quan trọng: Reset danh sách vẽ
+    
+    std::filesystem::remove_all(
+        std::filesystem::path(SDL_AndroidGetInternalStoragePath()) / "plugins"
+    );
 
     LoadPluginConfig();
     
