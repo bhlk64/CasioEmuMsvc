@@ -308,7 +308,7 @@ void CodeViewer::DrawContent() {
 			auto bb = it == break_points.end();
 			if (!e.is_label) {
 				if (e.offset == pc_cache) {
-					ImGui::TextColored(~ImVec4(0.0, 1.0, 0.0, 1.0), " > ");
+					ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), " > ");
 				}
 				else {
 					if (bb) {
@@ -319,7 +319,7 @@ void CodeViewer::DrawContent() {
 					}
 					else {
 						if (it->second == 1) {
-							ImGui::TextColored(~ImVec4(1.0, 0.0, 0.0, 1.0), " x ");
+							ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), " x ");
 							if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
 								break_points.erase(line_i);
 							}
@@ -331,7 +331,7 @@ void CodeViewer::DrawContent() {
 					}
 				}
 				ImGui::SameLine();
-				ImGui::TextColored(~ImVec4(1.0, 1.0, 0.0, 1.0), "%05x", e.offset);
+				ImGui::TextColored(ImVec4(1.0, 1.0, 0.0, 1.0), "%05x", e.offset);
 				ImGui::SameLine();
 			}
 			ImGui::PushID(line_i);
