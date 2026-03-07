@@ -69,13 +69,13 @@ void gui_loop() {
 #endif
 		win->Render();
 	}
-
+#ifdef __ANDROID__
   for (auto draw_call : active_plugin_renders) {
 		if (draw_call) {
 			draw_call();
 		}
 	}
-
+#ifend
 	//	ImGui::Begin("Testing");
 	//	if (ImGui::Button("Crash"_lc)) {
 	//		throw 0;
