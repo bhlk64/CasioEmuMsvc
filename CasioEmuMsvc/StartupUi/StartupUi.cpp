@@ -1045,8 +1045,9 @@ namespace casioemu {
 				else {
 					if (ImGui::MenuItem("StartupUI.Launch"_lc)) {
 						selected_path = model.path;
-						
+#ifdef __ANDROID__
 						LoadEnabledPlugins();
+#endif
 						
 						auto iter = std::find_if(recently_used.begin(), recently_used.end(),
 							[&](auto& x) {
