@@ -100,7 +100,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake .. -DBUILD_EXECUTABLE=ON
         cmake --build . --config Release
     
     - name: Upload macOS Build Artifact
@@ -108,7 +108,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Release-macOS
-        path: build/**
+        path: build/**/*.app
         if-no-files-found: error
 
     # ================= ANDROID =================

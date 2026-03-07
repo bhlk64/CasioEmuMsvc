@@ -96,13 +96,22 @@ set(MAIN_SOURCES
 # target_sources(main PRIVATE ${MAIN_SOURCES})
 
 if(BUILD_EXECUTABLE)
+
     message(STATUS "Building executable")
     set(TARGET_NAME "CasioEmuMsvc")
-    add_executable(${TARGET_NAME} ${MAIN_SOURCES})
+
+    if(APPLE)
+        add_executable(${TARGET_NAME} MACOSX_BUNDLE ${MAIN_SOURCES})
+    else()
+        add_executable(${TARGET_NAME} ${MAIN_SOURCES})
+    endif()
+
 else()
+
     message(STATUS "Building shared library")
     set(TARGET_NAME "main")
     add_library(${TARGET_NAME} SHARED ${MAIN_SOURCES})
+
 endif()
 
 target_compile_definitions(${TARGET_NAME} PRIVATE ASMJIT_STATIC)
