@@ -109,6 +109,11 @@ target_compile_definitions(${TARGET_NAME} PRIVATE ASMJIT_STATIC)
 
 set(PLATFORM_LIBS "")
 
+if(ANDROID)
+    find_library(ANDROID_LOG_LIB log)
+    list(APPEND PLATFORM_LIBS ${ANDROID_LOG_LIB})
+endif()
+
 if(UNIX AND NOT APPLE AND NOT ANDROID)
     list(APPEND PLATFORM_LIBS pthread dl rt m)
 endif()
