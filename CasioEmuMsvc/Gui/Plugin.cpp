@@ -5,13 +5,12 @@
 #include <SDL.h>
 #include <fstream>
 #include <unordered_map>
+#ifdef __ANDROID__
 #include <dlfcn.h>
 #include <jni.h>
 #include <SDL_system.h>
 #include <android/log.h>
 #include <vector>
-
-#ifdef __ANDROID__
 
 static std::unordered_map<std::string, bool> plugin_loaded;
 static const std::filesystem::path plugin_config_path = "./config/plugins.cfg";
