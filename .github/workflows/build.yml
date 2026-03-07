@@ -93,8 +93,7 @@ jobs:
     - name: Install dependencies (macOS)
       if: matrix.platform == 'mac'
       run: |
-        brew update
-        brew install cmake
+        brew install cmake sdl2 sdl2_image
     
     - name: Build for macOS
       if: matrix.platform == 'mac'

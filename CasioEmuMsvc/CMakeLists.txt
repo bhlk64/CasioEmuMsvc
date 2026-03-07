@@ -11,7 +11,9 @@ set(ASMJIT_STATIC ON CACHE BOOL "Build AsmJit as a static library")
 set(ASMJIT_BUILD_TEST OFF CACHE BOOL "Disable AsmJit tests")
 set(ASMJIT_BUILD_EXAMPLES OFF CACHE BOOL "Disable AsmJit examples")
 
-find_library(log-lib log)
+if(ANDROID)
+    find_library(log-lib log)
+endif()
 
 message(STATUS "Attempting to add subdirectory: asmjit")
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/asmjit/CMakeLists.txt")
@@ -109,9 +111,16 @@ endif()
 
 target_compile_definitions(${TARGET_NAME} PRIVATE ASMJIT_STATIC)
 
-target_link_options(${TARGET_NAME} PRIVATE
-    "-Wl,--export-dynamic"
-)
+set(PLATFORM_LIBS "")
+
+if(ANDROID)
+    find_library(log-lib log)
+    list(APPEND PLATFORM_LIBS ${log-lib})
+endif()
+
+if(UNIX AND NOT APPLE)
+    list(APPEND PLATFORM_LIBS pthread dl rt m)
+endif()
 
 if(BUILD_EXECUTABLE)
     target_link_libraries(${TARGET_NAME} PRIVATE
@@ -119,21 +128,17 @@ if(BUILD_EXECUTABLE)
         SDL2::image
         CpuFeatures::cpu_features
         asmjit::asmjit
-        ${log-lib}
         imgui
-        -lpthread
-        -ldl
-        -lrt
-        -lm
-)
+        ${PLATFORM_LIBS}
+    )
 else()
     target_link_libraries(${TARGET_NAME} PRIVATE
         SDL2::SDL2
         SDL2::image
         CpuFeatures::cpu_features
         asmjit::asmjit
-        ${log-lib}
-        imgui
+        #imgui
+        ${PLATFORM_LIBS}
     )
 endif()
 
