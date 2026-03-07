@@ -57,6 +57,10 @@ jobs:
           - platform: android
             os: ubuntu-latest
             name: "Android"
+          
+          - platform: mac
+          os: macos-latest
+          name: "macOS"
           # Windows & Linux vẫn giữ nguyên (không xoá)
           # nếu sau này thêm lại thì vẫn chạy bình thường
     
@@ -84,6 +88,29 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
         msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{ matrix.platform_arch }} ${{env.SOLUTION_FILE_PATH}}
+
+    # ================= MACOS =================
+    - name: Install dependencies (macOS)
+      if: matrix.platform == 'mac'
+      run: |
+        brew update
+        brew install cmake
+    
+    - name: Build for macOS
+      if: matrix.platform == 'mac'
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build . --config Release
+    
+    - name: Upload macOS Build Artifact
+      if: matrix.platform == 'mac'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Release-macOS
+        path: build/CasioEmuMsvc/CasioEmuMsvc
+        if-no-files-found: error
 
     # ================= ANDROID =================
     - name: Set up JDK 21
@@ -206,6 +233,12 @@ jobs:
         # Copy Android APK if exists
         if [ -f "./artifacts/app-release/app-release.apk" ]; then
           cp "./artifacts/app-release/app-release.apk" "release_assets/app-android-${{ env.COMMIT_HASH }}.apk"
+        fi
+        
+        # Copy macOS build if exists
+        if [ -f "./artifacts/Release-macOS/CasioEmuMsvc" ]; then
+          cp "./artifacts/Release-macOS/CasioEmuMsvc" \
+             "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}"
         fi
         
         # Copy Plugin if exists
