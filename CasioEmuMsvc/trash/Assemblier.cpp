@@ -52,7 +52,7 @@ private:
 				}
 			}
 
-			// Move program data from emitter
+			// Move program data from emitter ok
 			program = std::move(emitter.Bytes);
 			program.reserve(program.size() + 0x100);
 
