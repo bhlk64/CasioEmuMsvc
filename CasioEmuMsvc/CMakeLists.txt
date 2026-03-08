@@ -161,7 +161,7 @@ endif()
 if(BUILD_EXECUTABLE)
     target_link_libraries(${TARGET_NAME} PRIVATE
         SDL2::SDL2
-        SDL2::image
+        SDL2_image::SDL2_image
         CpuFeatures::cpu_features
         asmjit::asmjit
         imgui
@@ -170,7 +170,7 @@ if(BUILD_EXECUTABLE)
 else()
     target_link_libraries(${TARGET_NAME} PRIVATE
         SDL2::SDL2
-        SDL2::image
+        SDL2_image::SDL2_image
         CpuFeatures::cpu_features
         asmjit::asmjit
         imgui
@@ -178,11 +178,11 @@ else()
     )
 endif()
 
-if(APPLE)
+if(APPLE AND BUILD_EXECUTABLE)
 
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND}
-        -DAPP=$<TARGET_BUNDLE_DIR:${TARGET_NAME}>
+        -DAPP=$<TARGET_FILE_DIR:${TARGET_NAME}>/../..
         -P ${CMAKE_SOURCE_DIR}/cmake/BundleFix.cmake
 )
 
