@@ -161,7 +161,7 @@ endif()
 if(BUILD_EXECUTABLE)
     target_link_libraries(${TARGET_NAME} PRIVATE
         SDL2::SDL2
-        SDL2_image::SDL2_image
+        SDL2::image
         CpuFeatures::cpu_features
         asmjit::asmjit
         imgui
@@ -170,7 +170,7 @@ if(BUILD_EXECUTABLE)
 else()
     target_link_libraries(${TARGET_NAME} PRIVATE
         SDL2::SDL2
-        SDL2_image::SDL2_image
+        SDL2::image
         CpuFeatures::cpu_features
         asmjit::asmjit
         imgui
