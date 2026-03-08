@@ -31,7 +31,7 @@ import java.io.OutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
-import io.sentry.Sentry;
+//import io.sentry.Sentry;
 
 
 public class Game extends SDLActivity {
