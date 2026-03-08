@@ -20,16 +20,23 @@ class LocalizationException : public std::runtime_error {
 
 class Localization {
 public:
-	void Load() {
-		std::fstream fs("locale.txt", std::ios::in);
-		std::string locale;
-		if (fs >> locale) {
-			ChangeLanguage(locale);
+		void Load() {
+				try {
+						std::fstream fs("locale.txt", std::ios::in);
+						std::string locale;
+		
+						if (fs >> locale) {
+								ChangeLanguage(locale);
+						}
+						else {
+								ChangeLanguage("en_US", false);
+						}
+				}
+				catch (const std::exception& e) {
+						fprintf(stderr, "Localization load failed: %s\n", e.what());
+						ChangeLanguage("en_US", false);
+				}
 		}
-		else {
-			ChangeLanguage("en_US",false);
-		}
-	}
 
 	bool ChangeLanguage(const std::string& localeName, bool savesetting = true) {
 		try {
@@ -138,7 +145,11 @@ private:
 		std::string form;
 	};
 
-	std::string m_basePath = "./locales/";
+	#ifdef __APPLE__
+  std::string m_basePath = "../Resources/locales/";
+  #else
+  std::string m_basePath = "./locales/";
+  #endif
 	std::string m_currentLocale = "en_US";
 	std::unordered_map<std::string, std::string, std::hash<std::string_view>, std::equal_to<>> m_translations;
 	std::unordered_map<std::string, std::vector<PluralRule>, std::hash<std::string_view>, std::equal_to<>> m_pluralRules;
