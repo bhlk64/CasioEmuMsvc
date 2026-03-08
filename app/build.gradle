@@ -103,6 +103,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 }
 
+/*
 sentry {
     org = "t5-j7"
     projectName = "android"
@@ -111,3 +112,4 @@ sentry {
     // disable if you don't want to expose your sources
     includeSourceContext = false
 }
+*/
