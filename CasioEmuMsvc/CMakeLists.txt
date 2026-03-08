@@ -102,8 +102,8 @@ if(BUILD_EXECUTABLE)
 
     if(APPLE)
 
-        set(APP_ICON ${CMAKE_SOURCE_DIR}/cmake/icon.icns)
-
+        set(APP_ICON ${CMAKE_SOURCE_DIR}/cmake/AppIcon.icns)
+        
         set_source_files_properties(${APP_ICON} PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources"
         )
