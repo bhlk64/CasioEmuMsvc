@@ -82,7 +82,7 @@ public:                       \
 
 // Currently only Sentry for windows and android(java side)
 #ifdef _MSC_VER
-#define ENABLE_SENTRY
+//#define ENABLE_SENTRY
 #else
 
 #endif
