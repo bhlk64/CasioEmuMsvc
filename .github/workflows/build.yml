@@ -109,12 +109,22 @@ jobs:
           -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build . --config Release
     
+    - name: Show build tree
+      if: matrix.platform == 'mac'
+      run: |
+        echo "---- BUILD TREE ----"
+        ls -R build
+    
     - name: Create DMG
       if: matrix.platform == 'mac'
       run: |
         cd build
+        APP=$(find . -name "*.app" -maxdepth 3 | head -n 1)
+        echo "Found app: $APP"
+    
         mkdir dmg
-        cp -R CasioEmuMsvc.app dmg/
+        cp -R "$APP" dmg/
+    
         hdiutil create CasioEmuMsvc.dmg \
           -volname "CasioEmuMsvc" \
           -srcfolder dmg \
