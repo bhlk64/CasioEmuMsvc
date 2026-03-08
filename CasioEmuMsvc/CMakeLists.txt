@@ -180,9 +180,9 @@ endif()
 
 if(APPLE AND BUILD_EXECUTABLE)
 
-add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+add_custom_command(TARGET CasioEmuMsvc POST_BUILD
     COMMAND ${CMAKE_COMMAND}
-        -DAPP=$<TARGET_FILE_DIR:${TARGET_NAME}>/../..
+        -DAPP="$<TARGET_BUNDLE_DIR:CasioEmuMsvc>"
         -P ${CMAKE_SOURCE_DIR}/cmake/BundleFix.cmake
 )
 
