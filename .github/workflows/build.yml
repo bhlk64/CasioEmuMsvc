@@ -139,6 +139,7 @@ jobs:
         path: |
           build/CasioEmuMsvc.app
           build/CasioEmuMsvc.dmg
+          build/**
         if-no-files-found: error
         
     # ================= ANDROID =================
