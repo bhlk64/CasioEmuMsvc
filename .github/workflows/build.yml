@@ -97,20 +97,39 @@ jobs:
     
     - name: Build for macOS
       if: matrix.platform == 'mac'
+      env:
+        MACOSX_DEPLOYMENT_TARGET: 12.0
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build . --config Release
+    
+    - name: Create DMG
+      if: matrix.platform == 'mac'
+      run: |
+        cd build
+        mkdir dmg
+        cp -R CasioEmuMsvc.app dmg/
+        hdiutil create CasioEmuMsvc.dmg \
+          -volname "CasioEmuMsvc" \
+          -srcfolder dmg \
+          -ov \
+          -format UDZO
     
     - name: Upload macOS Build Artifact
       if: matrix.platform == 'mac'
       uses: actions/upload-artifact@v4
       with:
-        name: Release-macOS
-        path: build/**
+        name: CasioEmuMsvc-macOS
+        path: |
+          build/CasioEmuMsvc.app
+          build/CasioEmuMsvc.dmg
         if-no-files-found: error
-
+        
     # ================= ANDROID =================
     - name: Set up JDK 21
       if: matrix.platform == 'android' && needs.detect.outputs.apk_changed == 'true'
@@ -234,10 +253,16 @@ jobs:
           cp "./artifacts/app-release/app-release.apk" "release_assets/app-android-${{ env.COMMIT_HASH }}.apk"
         fi
         
-        # Copy macOS build if exists
-        if [ -f "./artifacts/Release-macOS/CasioEmuMsvc" ]; then
-          cp "./artifacts/Release-macOS/CasioEmuMsvc" \
-             "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}"
+        # Copy macOS DMG if exists
+        if [ -f "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.dmg" ]; then
+          cp "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.dmg" \
+             "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.dmg"
+        fi
+        
+        # Copy macOS APP if exists
+        if [ -d "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.app" ]; then
+          cp -R "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.app" \
+                "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.app"
         fi
         
         # Copy Plugin if exists
