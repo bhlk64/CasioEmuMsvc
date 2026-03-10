@@ -130,7 +130,7 @@ endif()
 
 if(APPLE)
 
-set(RESOURCE_DIR ${CMAKE_SOURCE_DIR}/locales)
+set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/locales)
 
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
