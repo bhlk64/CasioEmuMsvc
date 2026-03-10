@@ -520,7 +520,8 @@ namespace casioemu {
 		}
 		void Reload() {
 			loading = true;
-			std::filesystem::create_directory("models");
+			std::error_code ec;
+      std::filesystem::create_directories("models", ec);
 			std::thread thd([&]() {
 				models.clear();
 				for (auto& dir : std::filesystem::directory_iterator("models")) {

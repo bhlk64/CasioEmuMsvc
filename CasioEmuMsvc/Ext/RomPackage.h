@@ -127,7 +127,7 @@ public:
 	void ExtractTo(std::filesystem::path pth) {
 		if (IsEncrypted)
 			throw std::runtime_error("Please decrypt first.");
-		std::filesystem::create_directory(pth);
+		std::filesystem::create_directories(pth);
 		WriteFile(pth / ModelInfo.rom_path, RomData);
 		if (!ModelInfo.flash_path.empty())
 			WriteFile(pth / ModelInfo.flash_path, FlashData);
