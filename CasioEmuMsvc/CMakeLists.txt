@@ -129,6 +129,18 @@ else()
 endif()
 
 if(APPLE)
+
+set(RESOURCE_DIR ${CMAKE_SOURCE_DIR}/locales)
+
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${RESOURCE_DIR}
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
+)
+
+endif()
+
+if(APPLE)
     set_target_properties(${TARGET_NAME} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST
         ${CMAKE_SOURCE_DIR}/cmake/Info.plist

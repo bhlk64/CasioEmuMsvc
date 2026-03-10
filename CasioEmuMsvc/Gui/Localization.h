@@ -13,30 +13,58 @@
 #include <vector>
 #include <mutex>
 #include <unordered_set>
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
 
 class LocalizationException : public std::runtime_error {
 	using std::runtime_error::runtime_error;
 };
 
+#ifdef __APPLE__
+static std::filesystem::path GetBundleResources() {
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+
+    std::vector<char> buffer(size);
+    _NSGetExecutablePath(buffer.data(), &size);
+
+    std::filesystem::path exe = std::filesystem::canonical(buffer.data());
+
+    return exe.parent_path().parent_path() / "Resources";
+}
+#endif
+
 class Localization {
 public:
+    Localization() {
+    #ifdef __APPLE__
+        m_basePath = (GetBundleResources() / "locales").string();
+    #else
+        m_basePath = "./locales/";
+    #endif
+    }
 		void Load() {
-				try {
-						std::fstream fs("locale.txt", std::ios::in);
-						std::string locale;
-		
-						if (fs >> locale) {
-								ChangeLanguage(locale);
-						}
-						else {
-								ChangeLanguage("en_US", false);
-						}
-				}
-				catch (const std::exception& e) {
-						fprintf(stderr, "Localization load failed: %s\n", e.what());
-						ChangeLanguage("en_US", false);
-				}
-		}
+        try {
+            std::fstream fs("locale.txt", std::ios::in);
+    
+            if (!fs.is_open()) {
+                ChangeLanguage("en_US", false);
+                return;
+            }
+    
+            std::string locale;
+    
+            if (fs >> locale)
+                ChangeLanguage(locale);
+            else
+                ChangeLanguage("en_US", false);
+        }
+        catch (const std::exception& e) {
+            fprintf(stderr, "Localization load failed: %s\n", e.what());
+            ChangeLanguage("en_US", false);
+        }
+    }
 
 	bool ChangeLanguage(const std::string& localeName, bool savesetting = true) {
 		try {
@@ -51,7 +79,7 @@ public:
 			}
 			else {
 				if (!std::filesystem::exists(m_basePath)) {
-					std::filesystem::create_directory(m_basePath);
+					std::filesystem::create_directories(m_basePath);
 				}
 
 				auto it = DefaultLocales::defaultLocales.find(localeName);
@@ -145,14 +173,14 @@ private:
 		std::string form;
 	};
 
-	#ifdef __APPLE__
-  std::string m_basePath = "../Resources/locales/";
+  #ifdef __APPLE__
+  std::string m_basePath = (GetBundleResources() / "locales").string();
   #else
   std::string m_basePath = "./locales/";
   #endif
 	std::string m_currentLocale = "en_US";
-	std::unordered_map<std::string, std::string, std::hash<std::string_view>, std::equal_to<>> m_translations;
-	std::unordered_map<std::string, std::vector<PluralRule>, std::hash<std::string_view>, std::equal_to<>> m_pluralRules;
+  std::unordered_map<std::string, std::string> m_translations;
+  std::unordered_map<std::string, std::vector<PluralRule>> m_pluralRules;
 	mutable std::unordered_set<std::string> m_missingKeys;
 	mutable std::mutex m_missingMutex;
 	void ReportMissingKey(std::string_view key) const {
