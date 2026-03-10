@@ -519,142 +519,125 @@ namespace casioemu {
 			Reload();
 		}
 		void Reload() {
-			loading = true;
-			std::error_code ec;
-      std::filesystem::create_directories("models", ec);
-			std::thread thd([&]() {
-				models.clear();
-				for (auto& dir : std::filesystem::directory_iterator("models")) {
-					if (dir.is_directory()) {
-						try {
-							printf("[StartupUI][Info] Checking %s\n", dir.path().string().c_str());
-							auto config = dir.path() / "config.bin";
-							std::error_code ec;
-							if (!std::filesystem::exists(config) || !std::filesystem::is_regular_file(config, ec)) {
-								printf("[StartupUI][Info] Unable to open %s\n", config.string().c_str());
-								continue;
-							}
-
-							std::ifstream ifs(config, std::ios::in | std::ios::binary);
-							if (!ifs) {
-								printf("[StartupUI][Info] Unable to open %s\n", config.string().c_str());
-								continue;
-							}
-							ModelInfo mi{};
-							Binary::Read(ifs, mi);
-							ifs.close();
-							Model mod{};
-							mod.path = dir;
-							mod.name = mi.model_name;
-							mod.realhw = mi.real_hardware;
-							switch (mi.hardware_id) {
-							case HW_ES_PLUS:
-								mod.type = "ESP";
-								break;
-							case HW_CLASSWIZ:
-								mod.type = "CWX";
-								break;
-							case HW_CLASSWIZ_II:
-								mod.type = "CWII";
-								break;
-							case HW_FX_5800P:
-								mod.type = "Fx5800p";
-								break;
-							case HW_TI:
-								mod.type = "TI";
-								break;
-							case HW_SOLARII:
-								mod.type = "SolarII";
-								break;
-							default:
-								mod.type = "Unknown";
-								break;
-							}
-							{
-								std::filesystem::path romPath = dir.path() / mi.rom_path;
-								if (mi.rom_path.empty() || !std::filesystem::exists(romPath) || !std::filesystem::is_regular_file(romPath, ec))
-									continue;
-								std::ifstream ifs2(romPath, std::ios::in | std::ios::binary);
-								if (!ifs2)
-									continue;
-								std::vector<byte> rom{std::istreambuf_iterator<char>{ifs2.rdbuf()}, std::istreambuf_iterator<char>{}};
-								ifs2.close();
-								std::vector<byte> flash{};
-
-								if (!mi.flash_path.empty()) {
-									std::filesystem::path flashPath = dir.path() / mi.flash_path;
-									if (std::filesystem::exists(flashPath) && std::filesystem::is_regular_file(flashPath, ec)) {
-										std::ifstream ifs3(flashPath, std::ios::in | std::ios::binary);
-										if (ifs3)
-											flash = {std::istreambuf_iterator<char>{ifs3.rdbuf()}, std::istreambuf_iterator<char>{}};
-									}
-								}
-								auto ri = rom_info(rom, flash, mi.real_hardware);
-								if (ri.type != 0) {
-									switch (ri.type) {
-									case RomInfo::ES:
-										mod.type = "ES";
-										break;
-									case RomInfo::ESP:
-										mod.type = "ESP";
-										break;
-									case RomInfo::ESP2nd:
-										mod.type = "ESP2nd";
-										break;
-									case RomInfo::CWX:
-										mod.type = "CWX";
-										break;
-									case RomInfo::CWII:
-										mod.type = "CWII";
-										break;
-									case RomInfo::Fx5800p:
-										mod.type = "Fx5800p";
-										break;
-									default:
-										mod.type = "???";
-										break;
-									}
-								}
-								if (ri.ok) {
-									mod.version = ri.ver;
-									std::array<char, 8> key{};
-									memcpy(key.data(), mod.version.data(), 6);
-									auto iter = RomNames.find(key);
-									if (iter != RomNames.end())
-										mod.name = iter->second;
-									mod.checksum = tohex(ri.real_sum, 4);
-									mod.checksum2 = tohex(ri.desired_sum, 4);
-									mod.sum_good = ri.real_sum == ri.desired_sum ? "OK" : "NG";
-									// Safely form version key and id
-									std::array<char, 8> key2{};
-									std::memset(key2.data(), 0, key2.size());
-									std::memcpy(key2.data(), mod.version.data(), std::min<std::size_t>(6, mod.version.size()));
-									mod.id = tohex(*(unsigned long long*)ri.cid, 8);
-									if (ri.type == RomInfo::ES) {
-										auto a = get_pd(mi.pd_value);
-										mod.version += std::string(" (P") + a + ")";
-									}
-								}
-								else {
-									mod.show_sum = false;
-								}
-								printf("[StartupUI][Debug] Model Summary\n"
-									   "[StartupUI][Debug] Name: %s\n"
-									   "[StartupUI][Debug] Type: %s\n",
-									mod.name.c_str(), mod.type.c_str());
-							}
-							models.push_back(mod);
-						}
-						catch (const std::exception& e) {
-							std::cerr << "[StartupUI][Error] Failed to load model from " << dir.path().string() << ": " << e.what() << std::endl;
-							continue;
-						}
-					}
-				}
-				loading = false;
-			});
-			thd.detach();
-		}
+        loading = true;
+    
+        std::filesystem::create_directories("models");
+    
+        std::thread([this]() {
+            try {
+                models.clear();
+    
+                std::error_code ec;
+                std::filesystem::directory_iterator it("models", ec);
+    
+                if (ec) {
+                    printf("[StartupUI][Error] Cannot open models dir: %s\n", ec.message().c_str());
+                    loading = false;
+                    return;
+                }
+    
+                for (auto& dir : it) {
+                    if (!dir.is_directory())
+                        continue;
+    
+                    try {
+                        printf("[StartupUI][Info] Checking %s\n", dir.path().string().c_str());
+    
+                        auto config = dir.path() / "config.bin";
+    
+                        if (!std::filesystem::exists(config) || !std::filesystem::is_regular_file(config))
+                            continue;
+    
+                        std::ifstream ifs(config, std::ios::binary);
+                        if (!ifs)
+                            continue;
+    
+                        ModelInfo mi{};
+                        Binary::Read(ifs, mi);
+                        ifs.close();
+    
+                        Model mod{};
+                        mod.path = dir.path();
+                        mod.name = mi.model_name;
+                        mod.realhw = mi.real_hardware;
+    
+                        switch (mi.hardware_id) {
+                        case HW_ES_PLUS: mod.type = "ESP"; break;
+                        case HW_CLASSWIZ: mod.type = "CWX"; break;
+                        case HW_CLASSWIZ_II: mod.type = "CWII"; break;
+                        case HW_FX_5800P: mod.type = "Fx5800p"; break;
+                        case HW_TI: mod.type = "TI"; break;
+                        case HW_SOLARII: mod.type = "SolarII"; break;
+                        default: mod.type = "Unknown"; break;
+                        }
+    
+                        std::filesystem::path romPath = dir.path() / mi.rom_path;
+    
+                        if (mi.rom_path.empty() || !std::filesystem::exists(romPath))
+                            continue;
+    
+                        std::ifstream ifs2(romPath, std::ios::binary);
+                        if (!ifs2)
+                            continue;
+    
+                        std::vector<byte> rom{
+                            std::istreambuf_iterator<char>(ifs2),
+                            std::istreambuf_iterator<char>()
+                        };
+    
+                        std::vector<byte> flash{};
+    
+                        if (!mi.flash_path.empty()) {
+                            std::filesystem::path flashPath = dir.path() / mi.flash_path;
+    
+                            if (std::filesystem::exists(flashPath)) {
+                                std::ifstream ifs3(flashPath, std::ios::binary);
+                                if (ifs3) {
+                                    flash = {
+                                        std::istreambuf_iterator<char>(ifs3),
+                                        std::istreambuf_iterator<char>()
+                                    };
+                                }
+                            }
+                        }
+    
+                        auto ri = rom_info(rom, flash, mi.real_hardware);
+    
+                        if (ri.ok) {
+                            mod.version = ri.ver;
+    
+                            unsigned long long id;
+                            memcpy(&id, ri.cid, sizeof(id));   // tránh UB
+                            mod.id = tohex(id, 8);
+    
+                            mod.checksum = tohex(ri.real_sum, 4);
+                            mod.checksum2 = tohex(ri.desired_sum, 4);
+                            mod.sum_good = ri.real_sum == ri.desired_sum ? "OK" : "NG";
+                        }
+                        else {
+                            mod.show_sum = false;
+                        }
+    
+                        printf("[StartupUI][Debug] Model Summary\n"
+                               "[StartupUI][Debug] Name: %s\n"
+                               "[StartupUI][Debug] Type: %s\n",
+                               mod.name.c_str(), mod.type.c_str());
+    
+                        models.push_back(mod);
+                    }
+                    catch (const std::exception& e) {
+                        printf("[StartupUI][Error] Model load failed: %s\n", e.what());
+                    }
+                }
+            }
+            catch (const std::exception& e) {
+                printf("[StartupUI][Error] Reload crash prevented: %s\n", e.what());
+            }
+    
+            loading = false;
+    
+        }).detach();
+    }
 		std::vector<std::string> recently_used{};
 		char search_txt[200]{};
 		const char* current_filter = "##";
