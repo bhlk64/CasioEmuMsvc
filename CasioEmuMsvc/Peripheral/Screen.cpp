@@ -56,6 +56,9 @@ extern bool low_perf_ext;
 #include <android/log.h>
 #include <jni.h>
 
+auto& tm = ThemeManager::Instance();
+auto& settings = tm.Settings();
+
 bool saveImageToMediaStore(const void* pixels, int width, int height, int pitch, const char* filename) {
 	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 	jobject activity = (jobject)SDL_AndroidGetActivity();
@@ -198,7 +201,7 @@ namespace casioemu {
 #ifdef __ANDROID__
 					SDL_Delay(10);
 #else
-					if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+					if (settings.lowPerformanceMode || low_perf_ext) {
 						SDL_Delay(10);
 					}
 #endif
@@ -225,7 +228,7 @@ namespace casioemu {
 #ifdef __ANDROID__
 			ratio = 0.80;
 #else
-			if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+			if (settings.lowPerformanceMode || low_perf_ext) {
 				ratio = 0.80;
 			}
 #endif
@@ -234,7 +237,7 @@ namespace casioemu {
 #ifdef __ANDROID__
 				ratio = 0.80;
 #else
-				if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+				if (settings.lowPerformanceMode || low_perf_ext) {
 					ratio = 0.80;
 				}
 #endif
@@ -283,7 +286,7 @@ namespace casioemu {
 #ifdef __ANDROID__
 				ratio = 0.80;
 #else
-				if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+				if (settings.lowPerformanceMode || low_perf_ext) {
 					ratio = 0.80;
 				}
 #endif
@@ -1403,7 +1406,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 
 		static constexpr auto SPR_PIXEL = 0;
-		float px_gap = g_theme.m_settings.pixelGap;
+		float px_gap = settings.pixelGap;
 		SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
 		for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
 			int x = 0;
