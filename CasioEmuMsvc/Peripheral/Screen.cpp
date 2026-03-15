@@ -1,4 +1,596 @@
-﻿g
+﻿/*
+
+		Screen peripheral implement.
+		Copyright (C) 2024 telecomadm1145/Xyzst/user202729/LBPHacker/hieuxyz
+
+		This program is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
+
+		This program is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		GNU General Public License for more details.
+
+		You should have received a copy of the GNU General Public License
+		along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+#include "Screen.hpp"
+#include "Chipset/Chipset.hpp"
+#include "Chipset/MMU.hpp"
+#include "Chipset/MMURegion.hpp"
+#include "Chipset/ePSCpu.h"
+#include "Emulator.hpp"
+#include "Ext/Random.hpp"
+#include "Gui/HwController.h"
+#include "Logger.hpp"
+#include "ML620Ports.h"
+#include "ModelInfo.h"
+#include "Models.h"
+#include "PopUpDisplay.h"
+#include "Ui.hpp"
+#include <algorithm> // for std::min, std::max
+#include <array>
+#include <ctime> // for std::time
+#include <iomanip>
+#include <vector>
+
+
+#ifndef __ANDROID__
+#include "Theme.h"
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#include <wingdi.h>
+// Undefine Windows min/max macros to avoid conflicts with std::min/std::max
+#undef min
+#undef max
+#endif
+extern bool low_perf_ext;
+
+#ifdef __ANDROID__
+#include <android/api-level.h>
+#include <android/log.h>
+#include <jni.h>
+
+bool saveImageToMediaStore(const void* pixels, int width, int height, int pitch, const char* filename) {
+	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+	jobject activity = (jobject)SDL_AndroidGetActivity();
+
+	// Create a Java direct ByteBuffer from the pixel data
+	jobject byteBuffer = env->NewDirectByteBuffer((void*)pixels, height * pitch);
+
+	// Call the Java method to handle saving to MediaStore
+	jclass activityClass = env->GetObjectClass(activity);
+	jmethodID saveImageMethod = env->GetMethodID(activityClass, "saveImageToMediaStore",
+		"(Ljava/nio/ByteBuffer;IIILjava/lang/String;)Z");
+
+	// If the method doesn't exist, we need to add it to the Java side
+	if (saveImageMethod == NULL) {
+		SDL_Log("Error: saveImageToMediaStore method not found. Please add it to your Java activity.");
+		env->DeleteLocalRef(byteBuffer);
+		env->DeleteLocalRef(activityClass);
+		env->DeleteLocalRef(activity);
+		return false;
+	}
+
+	jstring jfilename = env->NewStringUTF(filename);
+	jboolean result = env->CallBooleanMethod(activity, saveImageMethod, byteBuffer, width, height, pitch, jfilename);
+
+	env->DeleteLocalRef(jfilename);
+	env->DeleteLocalRef(byteBuffer);
+	env->DeleteLocalRef(activityClass);
+	env->DeleteLocalRef(activity);
+
+	return result;
+}
+#endif
+
+inline constexpr uint8_t reverse_bits(uint8_t n) {
+	uint8_t reversed = 0;
+	for (int i = 0; i < 8; ++i) {
+		reversed |= ((n >> i) & 1) << (7 - i);
+	}
+	return reversed;
+}
+
+// constexpr 生成查找表
+inline constexpr std::array<uint8_t, 256> generate_lookup_table() {
+	std::array<uint8_t, 256> table = {};
+	for (int i = 0; i < 256; ++i) {
+		table[i] = reverse_bits(static_cast<uint8_t>(i));
+	}
+	return table;
+}
+
+// 定义查找表
+constexpr auto bit_lookup_table = generate_lookup_table();
+
+inline void fillRandomData(unsigned char* buf, size_t size) {
+	util::Random::fillRandomBytes(reinterpret_cast<std::uint8_t*>(buf), size);
+}
+
+#pragma warning(disable : 4244)
+
+namespace casioemu {
+	struct SpriteBitmap {
+		const char* name;
+		uint8_t mask, offset;
+	};
+	inline int update_screen_scan_alpha(float* screen_scan_alpha, Uint64 t, int screen_refresh_rate) {
+		int n = (static_cast<Uint64>((t * screen_refresh_rate) / 250)) % 64;
+
+		if (screen_refresh_rate < screen_flashing_threshold) {
+			for (size_t i = 0; i < 64; i++) {
+				screen_scan_alpha[i] = 1.0f;
+			}
+			return n;
+		}
+
+		// 计算归一化所需的归一化因子
+		float normalization_factor = 0.0f;
+		std::vector<float> exp_values(64);
+
+		for (size_t i = 0; i < 64; i++) {
+			exp_values[i] = std::exp(-screen_flashing_brightness_coeff * i / 64.0f);
+			normalization_factor += exp_values[i];
+		}
+
+		// 归一化
+		for (size_t i = 0; i < 64; i++) {
+			screen_scan_alpha[(i + n) % 64] = std::pow(exp_values[i] / normalization_factor * 80., 0.2);
+		}
+
+		return n;
+	}
+	template <HardwareId hardware_id>
+	class Screen : public Peripheral {
+		static int const N_ROW,
+			ROW_SIZE,
+			OFFSET,
+			ROW_SIZE_DISP,
+			SPR_MAX;
+
+		MMURegion region_buffer{}, region_buffer1{}, region_contrast{}, region_brightness{}, region_scan_report_op1{}, region_mode{}, region_range{}, region_select{}, region_offset{}, region_refresh_rate{}, region_scan_report{};
+		uint8_t *screen_buffer{}, *screen_buffer1{}, screen_contrast{}, screen_brightness{}, screen_scan_report_op1{}, screen_mode{}, screen_range{}, screen_select{}, screen_offset{}, screen_refresh_rate{}, screen_scan_report{};
+
+		MMURegion region_power{}, region_scan_report_en{};
+		uint8_t screen_power{}, screen_scan_report_en{};
+
+		MMURegion region_unk1{}, region_unk2{};
+
+		uint8_t unk_f034{};
+
+		// TI things
+
+		MMURegion ti_port7_data{}, ti_port5_data{};
+		int ti_contrast{}, ti_port_status{};
+		bool ti_enabled = 0;
+		bool ti_a0 = 0;
+		bool ti_rw = 0;
+		int ti_col = 0;
+		int ti_page = 0;
+
+		int ti_port7{};
+		int ti_port5{};
+
+		float screen_scan_alpha[64]{};
+		float position = 0;
+		SDL_Renderer* renderer{};
+		SDL_Texture* interface_texture{};
+		float screen_ink_alpha[66 * 192]{};
+		static const SpriteBitmap sprite_bitmap[];
+		std::vector<SpriteInfo> sprite_info;
+		ColourInfo ink_colour{};
+
+		bool inited = 0;
+		bool enabled_2 = 0;
+
+	public:
+		Screen(Emulator& emu)
+			: Peripheral(emu) {
+			std::thread thd([&]() {
+				while (1) {
+					tick();
+#ifdef __ANDROID__
+					SDL_Delay(10);
+#else
+					if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+						SDL_Delay(10);
+					}
+#endif
+				}
+			});
+			thd.detach();
+		}
+		~Screen() {
+			if (screen_buffer)
+				delete[] screen_buffer;
+			if (screen_buffer1)
+				delete[] screen_buffer1;
+		}
+		void Initialise() override;
+		void Uninitialise() override;
+		void Frame() override;
+		void Reset() override;
+		void tick() {
+			float ratio = 0;
+			if constexpr (hardware_id == HW_ES_PLUS)
+				ratio = 1 - 1e-4;
+			else
+				ratio = 1 - 5e-4;
+#ifdef __ANDROID__
+			ratio = 0.80;
+#else
+			if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+				ratio = 0.80;
+			}
+#endif
+			if constexpr (hardware_id == HW_TI) {
+				ratio = 1 - 1e-4;
+#ifdef __ANDROID__
+				ratio = 0.80;
+#else
+				if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+					ratio = 0.80;
+				}
+#endif
+				if (!ti_enabled) {
+					for (size_t i = 0; i < 65 * 192; i++) {
+						screen_ink_alpha[i] *= ratio;
+					}
+					return;
+				}
+				if (!n_ram_buffer) //  || !emulator.chipset.ti_status_buf) //  || !emulator.chipset.ti_screen_buf
+					return;
+				float ink_alpha_on = (ti_contrast - 100) * 20.0;
+				float ink_alpha_off = std::clamp(ink_alpha_on * 0.1, 0.0, 255.0);
+				ink_alpha_on = std::clamp(ink_alpha_on, 0.0f, 255.0f);
+				uint8_t* screen_buffer = (uint8_t*)n_ram_buffer - casioemu::GetRamBaseAddr(hardware_id) + 0xE708;
+				if (emulator.ModelDefinition.real_hardware) {
+					screen_buffer = this->screen_buffer;
+				}
+				for (int ix = 0; ix < 192; ++ix) {
+					for (int iy = 0; iy < 64; ++iy) {
+						uint32_t i = (ix << 6) | iy;
+						int bIndx = (i >> 3);
+						int subIndx = (i & 7);
+						int mask = (1 << subIndx);
+						bool on = (screen_buffer[bIndx] & mask) != 0;
+						auto& data = screen_ink_alpha[(iy * 192 + 192) + ix];
+						data = data * ratio + (on ? ink_alpha_on : ink_alpha_off) * (1 - ratio);
+					}
+				}
+				screen_buffer = (uint8_t*)n_ram_buffer - casioemu::GetRamBaseAddr(hardware_id) + 0xe5d4;
+				if (emulator.ModelDefinition.real_hardware) {
+					screen_buffer = this->screen_buffer + 8 * 192;
+				}
+				int x = 0;
+				for (int ix = 1; ix != SPR_MAX; ++ix) {
+					auto off = sprite_bitmap[ix].offset;
+					auto& data = screen_ink_alpha[x];
+					data = data * ratio + ((screen_buffer[off] & sprite_bitmap[ix].mask) ? ink_alpha_on : ink_alpha_off) * (1 - ratio);
+					x++;
+				}
+
+				return;
+			}
+			else if (hardware_id == HW_EPS6800) {
+				ratio = 1 - 1e-4;
+#ifdef __ANDROID__
+				ratio = 0.80;
+#else
+				if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+					ratio = 0.80;
+				}
+#endif
+				float ink_alpha_on = 255;
+				float ink_alpha_off = std::clamp(ink_alpha_on * 0.1, 0.0, 255.0);
+				ink_alpha_on = std::clamp(ink_alpha_on, 0.0f, 255.0f);
+				uint8_t* screen_buffer = (uint8_t*)emulator.chipset.epscpu->vram;
+				// if (emulator.ModelDefinition.real_hardware) {
+				//	screen_buffer = this->screen_buffer;
+				// }
+				for (int ix = 0; ix < 98; ++ix) {
+					for (int iy = 0; iy < 64; ++iy) {
+						uint32_t i = (ix * 64) | iy;
+						int bIndx = (i >> 3);
+						int subIndx = (i & 7);
+						int mask = (1 << subIndx);
+						bool on = (screen_buffer[bIndx] & mask) != 0;
+						auto& data = screen_ink_alpha[(iy * 192 + 192) + ix];
+						data = data * ratio + (on ? ink_alpha_on : ink_alpha_off) * (1 - ratio);
+					}
+				}
+				screen_buffer = (uint8_t*)n_ram_buffer - casioemu::GetRamBaseAddr(hardware_id) + 0xe5d4;
+				// if (emulator.ModelDefinition.real_hardware) {
+				//	screen_buffer = this->screen_buffer + 8 * 192;
+				// }
+				// int x = 0;
+				// for (int ix = 1; ix != SPR_MAX; ++ix) {
+				//	auto off = sprite_bitmap[ix].offset;
+				//	auto& data = screen_ink_alpha[x];
+				//	data = data * ratio + ((screen_buffer[off] & sprite_bitmap[ix].mask) ? ink_alpha_on : ink_alpha_off) * (1 - ratio);
+				//	x++;
+				// }
+				return;
+			}
+
+			if (screen_refresh_rate < screen_flashing_threshold && !enable_screen_fading)
+				;
+			else {
+				int n = update_screen_scan_alpha(screen_scan_alpha, SDL_GetTicks64(), screen_refresh_rate);
+				screen_scan_report = ((n / (screen_scan_report_en ? screen_scan_report_op1 : 64)) % 2 ? 3 : 0) ^ (n % 64 == 0 ? 1 : (n % 64 == 32 ? 2 : 0));
+			}
+			if (screen_refresh_rate < 6) {
+				screen_refresh_rate = 6;
+			}
+			auto sb = screen_brightness;
+			if (sb < 3) {
+				sb = 3;
+			}
+			auto contrast = (int)screen_contrast;
+			// if (screen_contrast2_en) {
+			//        contrast += screen_contrast2 * 0.5;
+			// }
+			if (contrast < 0) {
+				contrast = 0;
+			}
+			auto coeff = 16;
+			auto off = 0;
+			if constexpr (hardware_id != HW_CLASSWIZ_II) {
+				coeff = 28;
+				off = -240;
+			}
+			int ink_alpha_on = off + contrast * coeff - sb * 8;
+			int ink_alpha_off = off + 20 + (contrast) * (coeff - 11) - sb * 13;
+			if (ink_alpha_on < 0)
+				ink_alpha_on = 0;
+			if (ink_alpha_off < 0)
+				ink_alpha_off = 0;
+			bool enable_status, enable_dotmatrix, clear_dots;
+
+			bool mode_6 = false;
+
+			auto screen_buffer = this->screen_buffer;
+			uint8_t* screen_buffer1;
+			size_t row_size = ROW_SIZE;
+			if constexpr (hardware_id == HW_CLASSWIZ_II) {
+				screen_buffer1 = this->screen_buffer1;
+			}
+			if (screen_buffer_select != 0) {
+				screen_buffer = (uint8_t*)n_ram_buffer - casioemu::GetRamBaseAddr(hardware_id) + casioemu::GetScreenBufferOffset(emulator.hardware_id, screen_buffer_select);
+				if (hardware_id == HW_CLASSWIZ_II) {
+					screen_buffer1 = screen_buffer + 0x600;
+				}
+				row_size = ROW_SIZE_DISP;
+			}
+
+			if (!enabled_2)
+				goto clean_scr;
+
+			switch (screen_mode & 7) {
+			case 4: // 100
+				enable_dotmatrix = true;
+				clear_dots = true;
+				enable_status = false;
+				break;
+
+			case 5: // 101
+				enable_dotmatrix = true;
+				clear_dots = false;
+				enable_status = true;
+				break;
+
+			case 6: // 110
+				enable_dotmatrix = true;
+				clear_dots = true;
+				enable_status = true;
+				mode_6 = true;
+				break;
+
+			default:
+				goto clean_scr;
+			}
+			if (screen_range & 0b100000)
+				goto clean_scr;
+			{
+				bool flip_screen_h = screen_mode & 0b1000;
+				bool flip_screen_v = !(screen_mode & 0b10000);
+				if constexpr (hardware_id == HW_CLASSWIZ || hardware_id == HW_CLASSWIZ_II) {
+				}
+				else {
+					flip_screen_v = flip_screen_v = 0;
+				}
+				int rng1 = (4 - (screen_range & 0x3));
+				ink_alpha_off *= (4 / rng1);
+				ink_alpha_on *= (4 / rng1);
+				int rng = rng1 * 8;
+
+				if (enable_status) {
+					int ink_alpha = ink_alpha_off;
+					if constexpr (hardware_id == HW_CLASSWIZ_II) {
+						int x = 0;
+						for (int ix = 1; ix != SPR_MAX; ++ix) {
+							ink_alpha = ink_alpha_off;
+							auto off = (sprite_bitmap[ix].offset + screen_offset * row_size) % ((N_ROW + 1) * row_size);
+							if (screen_buffer[off] & sprite_bitmap[ix].mask)
+								ink_alpha += (ink_alpha_on - ink_alpha_off) * 0.2;
+							if (screen_buffer1[off] & sprite_bitmap[ix].mask)
+								ink_alpha += (ink_alpha_on - ink_alpha_off) * 0.8;
+							if (screen_refresh_rate >= screen_flashing_threshold)
+								ink_alpha *= screen_scan_alpha[0];
+							screen_ink_alpha[x] = screen_ink_alpha[x] * ratio + ink_alpha * (1 - ratio);
+							x++;
+						}
+					}
+					else {
+						int x = 0;
+						for (int ix = 1; ix != SPR_MAX; ++ix) {
+							auto off = (sprite_bitmap[ix].offset + screen_offset * row_size) % ((N_ROW + 1) * row_size);
+							if (screen_buffer[off] & sprite_bitmap[ix].mask)
+								ink_alpha = ink_alpha_on;
+							else
+								ink_alpha = ink_alpha_off;
+							if (screen_refresh_rate >= screen_flashing_threshold)
+								ink_alpha *= screen_scan_alpha[0];
+							screen_ink_alpha[x] = screen_ink_alpha[x] * ratio + ink_alpha * (1 - ratio);
+							x++;
+						}
+					}
+				}
+				else {
+					if constexpr (hardware_id == HW_CLASSWIZ_II) {
+						for (size_t i = 0; i < 192; i++) {
+							screen_ink_alpha[i] *= ratio;
+						}
+					}
+					else {
+						for (size_t i = 0; i < 192; i++) {
+							screen_ink_alpha[i] *= ratio;
+						}
+					}
+				}
+
+				if (enable_dotmatrix) {
+					static constexpr auto SPR_PIXEL = 0;
+					SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
+					int ink_alpha = ink_alpha_off;
+					if (mode_6) {
+						ink_alpha_on = ink_alpha_off /= 2.55;
+					}
+					if constexpr (hardware_id == HW_CLASSWIZ_II) {
+						for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
+							int iy = (iy2 + screen_offset) % (N_ROW + 1);
+							bool clear = 0;
+							if (iy2 >= rng && iy2 < 32)
+								clear = 1;
+							if (iy2 >= 32) {
+								if (iy2 <= 32 + rng) {
+									iy = (iy2 - 32 + rng + screen_offset) % (N_ROW + 1);
+								}
+								else {
+									clear = 1;
+								}
+							}
+							dest.x = sprite_info[SPR_PIXEL].dest.x;
+							dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * sprite_info[SPR_PIXEL].src.h;
+							int x = 0;
+							for (int ix = 0; ix != ROW_SIZE_DISP; ++ix) {
+								auto index = (flip_screen_v ? N_ROW - iy : iy) * row_size + ix;
+								for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w) {
+									ink_alpha = ink_alpha_off;
+									if (!clear_dots && screen_buffer[index] & mask)
+										ink_alpha += (ink_alpha_on - ink_alpha_off) * 0.2;
+									if (!clear_dots && screen_buffer1[index] & mask)
+										ink_alpha += (ink_alpha_on - ink_alpha_off) * 0.8;
+									if (screen_refresh_rate >= screen_flashing_threshold)
+										ink_alpha *= screen_scan_alpha[iy];
+									if (clear)
+										ink_alpha = 0;
+									float& dat = screen_ink_alpha[(flip_screen_h ? (191 - x) : x) + iy2 * 192];
+									dat = dat * ratio + ink_alpha * (1 - ratio);
+									x++;
+								}
+							}
+						}
+					}
+					else {
+						for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
+							int iy = (iy2 + screen_offset) % (N_ROW + 1);
+							bool clear = 0;
+							if (iy2 >= rng && iy2 < 32)
+								clear = 1;
+							if (iy2 >= 32) {
+								if (iy2 <= 32 + rng) {
+									iy = (iy2 - 32 + rng + screen_offset) % (N_ROW + 1);
+								}
+								else {
+									clear = 1;
+								}
+							}
+							dest.x = sprite_info[SPR_PIXEL].dest.x;
+							dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * sprite_info[SPR_PIXEL].src.h;
+							int x = 0;
+							for (int ix = 0; ix != ROW_SIZE_DISP; ++ix) {
+								auto index = (flip_screen_v ? N_ROW + 1 - iy : iy) * row_size + ix;
+								for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w) {
+									if (screen_buffer[index] & mask)
+										ink_alpha = ink_alpha_on;
+									else
+										ink_alpha = ink_alpha_off;
+									if (screen_refresh_rate >= screen_flashing_threshold)
+										ink_alpha *= screen_scan_alpha[iy];
+									if (clear)
+										ink_alpha = 0;
+									float& dat = screen_ink_alpha[(flip_screen_h ? (191 - x) : x) + iy2 * 192];
+									dat = dat * ratio + ink_alpha * (1 - ratio);
+									x++;
+								}
+							}
+						}
+					}
+				}
+				else {
+					if constexpr (hardware_id == HW_CLASSWIZ_II) {
+						for (size_t i = 192; i < 64 * 192; i++) {
+							screen_ink_alpha[i] *= ratio;
+						}
+					}
+					else {
+						for (size_t i = 192; i < 64 * 192; i++) {
+							screen_ink_alpha[i] *= ratio;
+						}
+					}
+				}
+			}
+			return;
+		clean_scr:
+			if constexpr (hardware_id == HW_CLASSWIZ_II) {
+				for (size_t i = 0; i < 64 * 192; i++) {
+					screen_ink_alpha[i] *= ratio;
+				}
+			}
+			else {
+				for (size_t i = 0; i < 64 * 192; i++) {
+					screen_ink_alpha[i] *= ratio;
+				}
+			}
+			return;
+		}
+	};
+
+	template <>
+	const int Screen<HW_TI>::N_ROW = 64;
+	template <>
+	const int Screen<HW_TI>::ROW_SIZE = 32;
+	template <>
+	const int Screen<HW_TI>::OFFSET = 32;
+	template <>
+	const int Screen<HW_TI>::ROW_SIZE_DISP = 24;
+	template <>
+	const int Screen<HW_TI>::SPR_MAX = 14;
+	template <>
+	const SpriteBitmap Screen<HW_TI>::sprite_bitmap[] = {
+		{"rsd_pixel", 0, 0},
+		{"rsd_2nd", 1, 17},
+		{"rsd_fix", 0, 0x00},
+		{"rsd_hbo", 0, 0x00},
+		{"rsd_sci", 0, 0x01},
+		{"rsd_eng", 0, 0x01},
+		{"rsd_deg", 0, 0x01},
+		{"rsd_rad", 0, 0x01},
+		{"rsd_bat", 0, 0x02},
+		{"rsd_wait", 1, 164},
+		{"rsd_left", 0, 0x02},
+		{"rsd_up", 0, 0x02},
+		{"rsd_down", 0, 0x02},
+		{"rsd_right", 0, 0x02},
+	};
+
 	template <>
 	const int Screen<HW_CLASSWIZ_II>::N_ROW = 63;
 	template <>
@@ -812,38 +1404,21 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 
 		static constexpr auto SPR_PIXEL = 0;
 		int gap = 1;
-		
 		SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
-		
 		for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
-		
 			int x = 0;
-		
 			dest.x = sprite_info[SPR_PIXEL].dest.x;
 			dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * (sprite_info[SPR_PIXEL].src.h + gap);
-		
 			for (int ix = 0; ix != ROW_SIZE_DISP; ++ix) {
-		
 				for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w + gap) {
-		
+					// Calculate pixel-specific colors and modify texture
 					if (screen_ink_alpha[x + iy2 * 192] > 255) {
-						SDL_SetTextureColorMod(
-							interface_texture,
+						SDL_SetTextureColorMod(interface_texture,
 							std::max(0, ink_colour.r - (int)(screen_ink_alpha[x + iy2 * 192] - 255)),
 							std::max(0, ink_colour.g - (int)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.8)),
-							std::max(0, ink_colour.b - (int)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.1))
-						);
+							std::max(0, ink_colour.b - (int)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.1)));
 						SDL_SetTextureAlphaMod(interface_texture, 255);
 					}
-		
-					SDL_RenderCopy(renderer, interface_texture,
-								   &sprite_info[SPR_PIXEL].src, &dest);
-		
-					x++;
-				}
-		
-			}
-		}
 					else {
 						SDL_SetTextureColorMod(interface_texture, ink_colour.r, ink_colour.g, ink_colour.b);
 						SDL_SetTextureAlphaMod(interface_texture, Uint8(std::clamp((int)screen_ink_alpha[x + iy2 * 192], 0, 255)));
