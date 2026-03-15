@@ -1403,7 +1403,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 
 		static constexpr auto SPR_PIXEL = 0;
-		int gap = 1;
+		float gap = 0.05;
 		SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
 		for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
 			int x = 0;
