@@ -15,6 +15,7 @@ struct ThemeSettings {
 	float scale = 1.0f;
 	char injectionFilePath[256] = "./hc-inj.txt";
 	bool lowPerformanceMode = false;
+	float pixelGap = 0.00;
 
 	// Auto-tint (MD3 Monet)
 	bool enableAutoTint = false;

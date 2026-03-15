@@ -127,6 +127,10 @@ public:
 
 		ImGui::Separator();
 
+		ImGui::SliderFloat("Gap Between Pixel", &settings.pixelGap, 0.00, 2.00);
+
+		ImGui::Separator();
+
 		// Edit the unscaled base style
 		auto& base = settings.isDarkMode ? settings.igs_dark : settings.igs_light;
 		ImGuiStyle ims_backup;

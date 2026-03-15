@@ -1403,14 +1403,14 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 
 		static constexpr auto SPR_PIXEL = 0;
-		float gap = 0.05;
+		float px_gap = g_theme.m_settings.pixelGap;
 		SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
 		for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
 			int x = 0;
 			dest.x = sprite_info[SPR_PIXEL].dest.x;
-			dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * (sprite_info[SPR_PIXEL].src.h + gap);
+			dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * (sprite_info[SPR_PIXEL].src.h + px_gap);
 			for (int ix = 0; ix != ROW_SIZE_DISP; ++ix) {
-				for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w + gap) {
+				for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w + px_gap) {
 					// Calculate pixel-specific colors and modify texture
 					if (screen_ink_alpha[x + iy2 * 192] > 255) {
 						SDL_SetTextureColorMod(interface_texture,
