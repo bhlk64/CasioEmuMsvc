@@ -217,7 +217,7 @@ void Breakpoints::SetupHooks() {
 
 	reg_first_run = false;
 	membp_cv = this;
-}
+});
 
 void Breakpoints::TryTrigBp(uint32_t addr, bool write) {
 	if (target_addr == -1) {
