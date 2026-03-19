@@ -13,31 +13,47 @@
 Breakpoints* membp_cv = 0;
 
 struct RegBP {
-    int reg;            // register type
-    int mode;           // compare mode
-    uint32_t value;     // target value
-    bool enabled;       // bật/tắt
+	int reg;			// register type
+	int mode;		   // compare mode
+	uint32_t value;	 // target value
+	bool enabled;	   // bật/tắt
 };
 
 enum RegType {
-    REG_SP,
-    REG_ER0,
-    REG_ER2,
-    REG_ER4,
-    REG_ER6,
-    REG_ER8,
-    REG_ER10
-    REG_ER12,
-    REG_ER14
+	REG_SP,
+	REG_ER0,
+	REG_ER2,
+	REG_ER4,
+	REG_ER6,
+	REG_ER8,
+	REG_ER10,
+	REG_ER12,
+	REG_ER14
 };
 
 std::vector<RegBP> reg_bps;
 
 inline uint16_t GET_ER(casioemu::CPU& cpu, int n) {
-    return (cpu.reg_r[n + 1] << 8) | cpu.reg_r[n];
+	return (cpu.reg_r[n + 1] << 8) | cpu.reg_r[n];
 }
 
+uint32_t GetRegisterValue(casioemu::CPU& cpu, int reg) {
+	switch (reg) {
+	case REG_SP: return cpu.reg_sp;
+	case REG_ER0: return GET_ER(cpu, 0);
+	case REG_ER2: return GET_ER(cpu, 2);
+	case REG_ER4: return GET_ER(cpu, 4);
+	case REG_ER6: return GET_ER(cpu, 6);
+	case REG_ER8: return GET_ER(cpu, 8);
+	case REG_ER10: return GET_ER(cpu, 10);
+	case REG_ER12: return GET_ER(cpu, 12);
+	case REG_ER14: return GET_ER(cpu, 14);
+	default: return 0;
+	}
+}
 
+static uint32_t last_reg_value[16] = {0};
+static bool reg_first_run = true;
 
 void Breakpoints::DrawContent() {
 	ImGuiListClipper c;
@@ -163,33 +179,43 @@ void Breakpoints::SetupHooks() {
 		}
 	});
 	SetupHook(on_instruction, [&](casioemu::CPU& sender, InstructionEventArgs& iea) {
-		if (break_on_sp) {
-			bool trig = false;
-			switch (reg_compare_mode) {
-			case 1:
-				trig = sender.reg_sp == target_sp;
-				break;
-			case 2:
-				trig = sender.reg_sp != target_sp;
-				break;
-			case 3:
-				trig = sender.reg_sp > target_sp;
-				break;
-			case 4:
-				trig = sender.reg_sp < target_sp;
-				break;
-			case 5:
-				trig = sender.reg_sp >= target_sp;
-				break;
-			case 6:
-				trig = sender.reg_sp <= target_sp;
-				break;
-			}
-			if (trig) {
-				SetDebugbreak();
-			}
+
+	// ===== SP breakpoint =====
+	if (break_on_sp) {
+		bool trig = false;
+		switch (reg_compare_mode) {
+		case 1: trig = sender.reg_sp == target_sp; break;
+		case 2: trig = sender.reg_sp != target_sp; break;
+		case 3: trig = sender.reg_sp > target_sp; break;
+		case 4: trig = sender.reg_sp < target_sp; break;
+		case 5: trig = sender.reg_sp >= target_sp; break;
+		case 6: trig = sender.reg_sp <= target_sp; break;
 		}
-	});
+		if (trig) {
+			SetDebugbreak();
+		}
+	}
+
+	// ===== REGISTER CHANGE BP =====
+	for (auto& bp : reg_bps) {
+		if (!bp.enabled) continue;
+
+		uint32_t cur = GetRegisterValue(sender, bp.reg);
+
+		if (reg_first_run) {
+			last_reg_value[bp.reg] = cur;
+			continue;
+		}
+
+		if (cur != last_reg_value[bp.reg]) {
+			printf("Reg %d changed: %X -> %X\n", bp.reg, last_reg_value[bp.reg], cur);
+			SetDebugbreak();
+		}
+
+		last_reg_value[bp.reg] = cur;
+	}
+
+	reg_first_run = false;
 	membp_cv = this;
 }
 
