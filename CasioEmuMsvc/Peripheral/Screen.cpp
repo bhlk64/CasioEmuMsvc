@@ -467,7 +467,6 @@ namespace casioemu {
 					}
 					if constexpr (hardware_id == HW_CLASSWIZ_II) {
 						for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
-							int x = 0;
 							int iy = (iy2 + screen_offset) % (N_ROW + 1);
 							bool clear = 0;
 							if (iy2 >= rng && iy2 < 32)
@@ -1408,11 +1407,11 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 
 		static constexpr auto SPR_PIXEL = 0;
 		SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
-		for (float iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
-			float x = 0;
+		for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
+			int x = 0;
 			dest.x = sprite_info[SPR_PIXEL].dest.x;
 			dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * (sprite_info[SPR_PIXEL].src.h);
-			for (float ix = 0; ix != ROW_SIZE_DISP; ++ix) {
+			for (int ix = 0; ix != ROW_SIZE_DISP; ++ix) {
 				for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w) {
 					// Calculate pixel-specific colors and modify texture
 					if (screen_ink_alpha[x + iy2 * 192] > 255) {
