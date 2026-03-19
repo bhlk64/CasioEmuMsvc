@@ -181,43 +181,44 @@ void Breakpoints::SetupHooks() {
 	SetupHook(on_instruction, [&](casioemu::CPU& sender, InstructionEventArgs& iea) {
 
 	// ===== SP breakpoint =====
-	if (break_on_sp) {
-		bool trig = false;
-		switch (reg_compare_mode) {
-		case 1: trig = sender.reg_sp == target_sp; break;
-		case 2: trig = sender.reg_sp != target_sp; break;
-		case 3: trig = sender.reg_sp > target_sp; break;
-		case 4: trig = sender.reg_sp < target_sp; break;
-		case 5: trig = sender.reg_sp >= target_sp; break;
-		case 6: trig = sender.reg_sp <= target_sp; break;
+		if (break_on_sp) {
+			bool trig = false;
+			switch (reg_compare_mode) {
+			case 1: trig = sender.reg_sp == target_sp; break;
+			case 2: trig = sender.reg_sp != target_sp; break;
+			case 3: trig = sender.reg_sp > target_sp; break;
+			case 4: trig = sender.reg_sp < target_sp; break;
+			case 5: trig = sender.reg_sp >= target_sp; break;
+			case 6: trig = sender.reg_sp <= target_sp; break;
+			}
+			if (trig) {
+				SetDebugbreak();
+			}
 		}
-		if (trig) {
-			SetDebugbreak();
-		}
-	}
-
-	// ===== REGISTER CHANGE BP =====
-	for (auto& bp : reg_bps) {
-		if (!bp.enabled) continue;
-
-		uint32_t cur = GetRegisterValue(sender, bp.reg);
-
-		if (reg_first_run) {
+	
+		// ===== REGISTER CHANGE BP =====
+		for (auto& bp : reg_bps) {
+			if (!bp.enabled) continue;
+	
+			uint32_t cur = GetRegisterValue(sender, bp.reg);
+	
+			if (reg_first_run) {
+				last_reg_value[bp.reg] = cur;
+				continue;
+			}
+	
+			if (cur != last_reg_value[bp.reg]) {
+				printf("Reg %d changed: %X -> %X\n", bp.reg, last_reg_value[bp.reg], cur);
+				SetDebugbreak();
+			}
+	
 			last_reg_value[bp.reg] = cur;
-			continue;
 		}
-
-		if (cur != last_reg_value[bp.reg]) {
-			printf("Reg %d changed: %X -> %X\n", bp.reg, last_reg_value[bp.reg], cur);
-			SetDebugbreak();
-		}
-
-		last_reg_value[bp.reg] = cur;
-	}
-
-	reg_first_run = false;
-	membp_cv = this;
-});
+	
+		reg_first_run = false;
+		membp_cv = this;
+	});
+};
 
 void Breakpoints::TryTrigBp(uint32_t addr, bool write) {
 	if (target_addr == -1) {
