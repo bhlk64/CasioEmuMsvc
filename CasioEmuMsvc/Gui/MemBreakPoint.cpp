@@ -12,6 +12,33 @@
 
 Breakpoints* membp_cv = 0;
 
+struct RegBP {
+    int reg;            // register type
+    int mode;           // compare mode
+    uint32_t value;     // target value
+    bool enabled;       // bật/tắt
+};
+
+enum RegType {
+    REG_SP,
+    REG_ER0,
+    REG_ER2,
+    REG_ER4,
+    REG_ER6,
+    REG_ER8,
+    REG_ER10
+    REG_ER12,
+    REG_ER14
+};
+
+std::vector<RegBP> reg_bps;
+
+inline uint16_t GET_ER(casioemu::CPU& cpu, int n) {
+    return (cpu.reg_r[n + 1] << 8) | cpu.reg_r[n];
+}
+
+
+
 void Breakpoints::DrawContent() {
 	ImGuiListClipper c;
 	static int selected = -1;

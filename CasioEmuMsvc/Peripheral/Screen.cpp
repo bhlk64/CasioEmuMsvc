@@ -226,7 +226,7 @@ namespace casioemu {
 			else
 				ratio = 1 - 5e-4;
 #ifdef __ANDROID__
-			ratio = 0.80;
+			ratio = 0.90;
 #else
 			if (settings.lowPerformanceMode || low_perf_ext) {
 				ratio = 0.80;
@@ -235,7 +235,7 @@ namespace casioemu {
 			if constexpr (hardware_id == HW_TI) {
 				ratio = 1 - 1e-4;
 #ifdef __ANDROID__
-				ratio = 0.80;
+				ratio = 0.90;
 #else
 				if (settings.lowPerformanceMode || low_perf_ext) {
 					ratio = 0.80;
@@ -1406,25 +1406,24 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 
 		static constexpr auto SPR_PIXEL = 0;
-		float px_gap = settings.pixelGap;
 		SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
-		for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
-			int x = 0;
+		for (float iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
+			float x = 0;
 			dest.x = sprite_info[SPR_PIXEL].dest.x;
-			dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * (sprite_info[SPR_PIXEL].src.h + px_gap);
-			for (int ix = 0; ix != ROW_SIZE_DISP; ++ix) {
-				for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w + px_gap) {
+			dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * (sprite_info[SPR_PIXEL].src.h);
+			for (float ix = 0; ix != ROW_SIZE_DISP; ++ix) {
+				for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w) {
 					// Calculate pixel-specific colors and modify texture
 					if (screen_ink_alpha[x + iy2 * 192] > 255) {
 						SDL_SetTextureColorMod(interface_texture,
-							std::max(0, ink_colour.r - (int)(screen_ink_alpha[x + iy2 * 192] - 255)),
-							std::max(0, ink_colour.g - (int)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.8)),
-							std::max(0, ink_colour.b - (int)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.1)));
+							std::max(0, ink_colour.r - (float)(screen_ink_alpha[x + iy2 * 192] - 255)),
+							std::max(0, ink_colour.g - (float)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.8)),
+							std::max(0, ink_colour.b - (float)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.1)));
 						SDL_SetTextureAlphaMod(interface_texture, 255);
 					}
 					else {
 						SDL_SetTextureColorMod(interface_texture, ink_colour.r, ink_colour.g, ink_colour.b);
-						SDL_SetTextureAlphaMod(interface_texture, Uint8(std::clamp((int)screen_ink_alpha[x + iy2 * 192], 0, 255)));
+						SDL_SetTextureAlphaMod(interface_texture, Uint8(std::clamp((float)screen_ink_alpha[x + iy2 * 192], 0, 255)));
 					}
 					x++;
 					SDL_Rect tmp1 = sprite_info[SPR_PIXEL].src;

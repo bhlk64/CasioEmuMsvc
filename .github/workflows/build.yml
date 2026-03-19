@@ -58,9 +58,9 @@ jobs:
             os: ubuntu-latest
             name: "Android"
           
-          - platform: mac
-            os: macos-latest
-            name: "macOS"
+          #- platform: mac
+          #  os: macos-latest
+          #  name: "macOS"
           # Windows & Linux vẫn giữ nguyên (không xoá)
           # nếu sau này thêm lại thì vẫn chạy bình thường
     

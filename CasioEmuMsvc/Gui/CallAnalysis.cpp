@@ -136,11 +136,16 @@ struct CallAnalysis : public UIWindow {
 						ImGui::TableNextColumn();
 						ImGui::Text("%04x", (func.xr0 >> 16) & 0xffff);
 						ImGui::TableNextColumn();
-						ImGui::PushID(i++);
+						ImGui::PushID(i);
 						if (ImGui::Button("CallAnalysis.Stacktrace"_lc)) {
 							SDL_ShowSimpleMessageBox(0, "CasioEmuMsvc", func.stack.c_str(), 0);
 						}
+						ImGui::TableNextColumn()
+						if (ImGui::Button("CallAnalysis.ViewAllReg"_lc)) {
+							
+						}
 						ImGui::PopID();
+						i++;
 					}
 					ImGui::EndTable();
 				}
