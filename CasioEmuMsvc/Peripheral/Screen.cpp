@@ -337,7 +337,7 @@ namespace casioemu {
 			}
 			auto contrast = (int)screen_contrast;
 			// if (screen_contrast2_en) {
-			//        contrast += screen_contrast2 * 0.5;
+			//		contrast += screen_contrast2 * 0.5;
 			// }
 			if (contrast < 0) {
 				contrast = 0;
@@ -880,8 +880,8 @@ namespace casioemu {
 					if (offset % ROW_SIZE >= ROW_SIZE_DISP)
 						return;
 
-                                        auto this_obj = (Screen*)region->userdata;
-                                        this_obj->screen_buffer[offset] = data; },
+										auto this_obj = (Screen*)region->userdata;
+										this_obj->screen_buffer[offset] = data; },
 					emulator);
 			}
 			else {
@@ -930,10 +930,10 @@ namespace casioemu {
 					//		if (offset % ROW_SIZE >= ROW_SIZE_DISP)
 					//			return;
 
-					//                auto this_obj = (Screen*)region->userdata;
-					//                this_obj->screen_buffer[offset] = data;
-					//        },
-					//        emulator);
+					//				auto this_obj = (Screen*)region->userdata;
+					//				this_obj->screen_buffer[offset] = data;
+					//		},
+					//		emulator);
 					region_buffer1.Setup(
 						0x89000, (N_ROW + 1) * ROW_SIZE, "Screen/Buffer1", this,
 						[](MMURegion* region, size_t offset) {
@@ -1406,33 +1406,57 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 
 		static constexpr auto SPR_PIXEL = 0;
-		SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
-		for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
-			int x = 0;
-			dest.x = sprite_info[SPR_PIXEL].dest.x;
-			dest.y = sprite_info[SPR_PIXEL].dest.y + (iy2 - 1) * (sprite_info[SPR_PIXEL].src.h);
-			for (int ix = 0; ix != ROW_SIZE_DISP; ++ix) {
-				for (uint8_t mask = 0x80; mask; mask >>= 1, dest.x += sprite_info[SPR_PIXEL].src.w) {
-					// Calculate pixel-specific colors and modify texture
-					if (screen_ink_alpha[x + iy2 * 192] > 255) {
-						SDL_SetTextureColorMod(interface_texture,
-							std::max(0, ink_colour.r - (float)(screen_ink_alpha[x + iy2 * 192] - 255)),
-							std::max(0, ink_colour.g - (float)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.8)),
-							std::max(0, ink_colour.b - (float)((screen_ink_alpha[x + iy2 * 192] - 255) * 0.1)));
-						SDL_SetTextureAlphaMod(interface_texture, 255);
+			SDL_Rect dest = Screen<hardware_id>::sprite_info[SPR_PIXEL].dest;
+			
+			for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
+				int x = 0;
+			
+				dest.x = sprite_info[SPR_PIXEL].dest.x;
+				dest.y = sprite_info[SPR_PIXEL].dest.y +
+						 (iy2 - 1) * (sprite_info[SPR_PIXEL].src.h);
+			
+				for (int ix = 0; ix != ROW_SIZE_DISP; ++ix) {
+					for (uint8_t mask = 0x80; mask; mask >>= 1,
+								 dest.x += sprite_info[SPR_PIXEL].src.w) {
+			
+						int idx = iy2 * 192 + x;
+						float alpha = screen_ink_alpha[idx];
+			
+						if (alpha > 255.0f) {
+							float diff = alpha - 255.0f;
+			
+							SDL_SetTextureColorMod(
+								interface_texture,
+								Uint8(std::max(0.0f, ink_colour.r - diff)),
+								Uint8(std::max(0.0f, ink_colour.g - diff * 0.8f)),
+								Uint8(std::max(0.0f, ink_colour.b - diff * 0.1f))
+							);
+			
+							SDL_SetTextureAlphaMod(interface_texture, 255);
+						}
+						else {
+							SDL_SetTextureColorMod(
+								interface_texture,
+								ink_colour.r,
+								ink_colour.g,
+								ink_colour.b
+							);
+			
+							SDL_SetTextureAlphaMod(
+								interface_texture,
+								Uint8(std::clamp(alpha, 0.0f, 255.0f))
+							);
+						}
+			
+						x++;
+			
+						SDL_Rect tmp1 = sprite_info[SPR_PIXEL].src;
+						SDL_RenderCopy(renderer, interface_texture, &tmp1, &dest);
+			
+						pixelRects.push_back(dest);
 					}
-					else {
-						SDL_SetTextureColorMod(interface_texture, ink_colour.r, ink_colour.g, ink_colour.b);
-						SDL_SetTextureAlphaMod(interface_texture, Uint8(std::clamp((float)screen_ink_alpha[x + iy2 * 192], 0, 255)));
-					}
-					x++;
-					SDL_Rect tmp1 = sprite_info[SPR_PIXEL].src;
-					SDL_RenderCopy(renderer, interface_texture, &tmp1, &dest);
-					// Store the pixel rectangle for later
-					pixelRects.push_back(dest);
 				}
 			}
-		}
 
 		// If screenshot is requested, capture only the rendered screen region
 		if (emulator.screenshot_requested.load()) {
