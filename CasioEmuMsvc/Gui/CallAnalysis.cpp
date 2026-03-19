@@ -140,7 +140,7 @@ struct CallAnalysis : public UIWindow {
 						if (ImGui::Button("CallAnalysis.Stacktrace"_lc)) {
 							SDL_ShowSimpleMessageBox(0, "CasioEmuMsvc", func.stack.c_str(), 0);
 						}
-						ImGui::TableNextColumn()
+						ImGui::TableNextColumn();
 						if (ImGui::Button("CallAnalysis.ViewAllReg"_lc)) {
 							
 						}
