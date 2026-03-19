@@ -226,19 +226,19 @@ namespace casioemu {
 			else
 				ratio = 1 - 5e-4;
 #ifdef __ANDROID__
-			ratio = 0.90;
+			ratio = 0.95;
 #else
 			if (settings.lowPerformanceMode || low_perf_ext) {
-				ratio = 0.80;
+				ratio = 0.95;
 			}
 #endif
 			if constexpr (hardware_id == HW_TI) {
 				ratio = 1 - 1e-4;
 #ifdef __ANDROID__
-				ratio = 0.90;
+				ratio = 0.95;
 #else
 				if (settings.lowPerformanceMode || low_perf_ext) {
-					ratio = 0.80;
+					ratio = 0.95;
 				}
 #endif
 				if (!ti_enabled) {
@@ -467,6 +467,7 @@ namespace casioemu {
 					}
 					if constexpr (hardware_id == HW_CLASSWIZ_II) {
 						for (int iy2 = 1; iy2 != (N_ROW + 1); ++iy2) {
+							int x = 0;
 							int iy = (iy2 + screen_offset) % (N_ROW + 1);
 							bool clear = 0;
 							if (iy2 >= rng && iy2 < 32)
