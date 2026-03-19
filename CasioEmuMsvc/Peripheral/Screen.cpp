@@ -226,19 +226,19 @@ namespace casioemu {
 			else
 				ratio = 1 - 5e-4;
 #ifdef __ANDROID__
-			ratio = 0.95;
+			ratio = 0.90;
 #else
 			if (settings.lowPerformanceMode || low_perf_ext) {
-				ratio = 0.95;
+				ratio = 0.90;
 			}
 #endif
 			if constexpr (hardware_id == HW_TI) {
 				ratio = 1 - 1e-4;
 #ifdef __ANDROID__
-				ratio = 0.95;
+				ratio = 0.90;
 #else
 				if (settings.lowPerformanceMode || low_perf_ext) {
-					ratio = 0.95;
+					ratio = 0.90;
 				}
 #endif
 				if (!ti_enabled) {

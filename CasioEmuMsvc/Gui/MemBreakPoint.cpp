@@ -180,9 +180,10 @@ void Breakpoints::SetupHooks() {
 	});
 	SetupHook(on_instruction, [&](casioemu::CPU& sender, InstructionEventArgs& iea) {
 
-	// ===== SP breakpoint =====
+		// ===== SP breakpoint =====
 		if (break_on_sp) {
 			bool trig = false;
+	
 			switch (reg_compare_mode) {
 			case 1: trig = sender.reg_sp == target_sp; break;
 			case 2: trig = sender.reg_sp != target_sp; break;
@@ -191,12 +192,13 @@ void Breakpoints::SetupHooks() {
 			case 5: trig = sender.reg_sp >= target_sp; break;
 			case 6: trig = sender.reg_sp <= target_sp; break;
 			}
+	
 			if (trig) {
 				SetDebugbreak();
 			}
 		}
 	
-		// ===== REGISTER CHANGE BP =====
+		// ===== REGISTER BREAKPOINT =====
 		for (auto& bp : reg_bps) {
 			if (!bp.enabled) continue;
 	
@@ -207,8 +209,19 @@ void Breakpoints::SetupHooks() {
 				continue;
 			}
 	
-			if (cur != last_reg_value[bp.reg]) {
-				printf("Reg %d changed: %X -> %X\n", bp.reg, last_reg_value[bp.reg], cur);
+			bool trig = false;
+	
+			switch (bp.mode) {
+			case 1: trig = cur == bp.value; break;
+			case 2: trig = cur != bp.value; break;
+			case 3: trig = cur > bp.value; break;
+			case 4: trig = cur < bp.value; break;
+			case 5: trig = cur >= bp.value; break;
+			case 6: trig = cur <= bp.value; break;
+			}
+	
+			if (trig) {
+				printf("Reg %d hit BP: %X\n", bp.reg, cur);
 				SetDebugbreak();
 			}
 	
@@ -232,42 +245,115 @@ void Breakpoints::TryTrigBp(uint32_t addr, bool write) {
 
 void Breakpoints::RenderCore() {
 	if (ImGui::BeginTabBar("Breakpoints")) {
+
+		// ===== MEMORY TAB =====
 		if (ImGui::BeginTabItem("Memory")) {
 			static char buf[10] = {0};
-			ImGui::BeginChild("##srcollingmbp", ImVec2(0, break_on_cv ? ImGui::GetWindowHeight() - ImGui::GetTextLineHeightWithSpacing() * 6 : ImGui::GetWindowHeight() / 3));
+
+			ImGui::BeginChild("##srcollingmbp",
+				ImVec2(0, break_on_cv
+					? ImGui::GetWindowHeight() - ImGui::GetTextLineHeightWithSpacing() * 6
+					: ImGui::GetWindowHeight() / 3));
+
 			DrawContent();
 			ImGui::EndChild();
+
 			ImGui::SetNextItemWidth(ImGui::CalcTextSize("F").x * 8);
-			ImGui::InputText(
-				"##addressin",
-				buf, 10, ImGuiInputTextFlags_CharsHexadecimal);
+			ImGui::InputText("##addressin", buf, 10, ImGuiInputTextFlags_CharsHexadecimal);
+
 			ImGui::SameLine();
 			if (ImGui::Button("MemBP.AddAddr"_lc)) {
-				break_point_hash.push_back({.addr = (uint32_t)strtol(buf, nullptr, 16)});
+				break_point_hash.push_back({
+					.addr = (uint32_t)strtol(buf, nullptr, 16)
+				});
 			}
-			ImGui::Checkbox("MemBP.BreakWhenHit"_lc,
-				&break_on_cv);
+
+			ImGui::Checkbox("MemBP.BreakWhenHit"_lc, &break_on_cv);
+
 			if (!break_on_cv) {
 				ImGui::BeginChild("##findoutput");
 				DrawFindContent();
 				ImGui::EndChild();
 			}
+
 			ImGui::EndTabItem();
 		}
+
+		// ===== REGISTER TAB =====
 		if (ImGui::BeginTabItem("Register")) {
+
 			static char buf[10] = {0};
-			ImGui::Combo("BP.RegCmpMode"_lc, &reg_compare_mode, "Disabled\0Equal\0Not Equal\0Greater\0Less\0Greater or Equal\0Less or Equal\0");
+
+			ImGui::Combo("BP.RegCmpMode"_lc, &reg_compare_mode,
+				"Disabled\0Equal\0Not Equal\0Greater\0Less\0Greater or Equal\0Less or Equal\0");
+
 			ImGui::Separator();
+
 			ImGui::SetNextItemWidth(ImGui::CalcTextSize("F").x * 8);
-			if (ImGui::InputText(
-					"##addressin2",
-					buf, 10, ImGuiInputTextFlags_CharsHexadecimal)) {
+			if (ImGui::InputText("##addressin2", buf, 10, ImGuiInputTextFlags_CharsHexadecimal)) {
 				target_sp = (uint16_t)strtol(buf, nullptr, 16);
 			}
+
 			ImGui::SameLine();
 			ImGui::Checkbox("BP.SPHint"_lc, &break_on_sp);
+
+			// ===== REGISTER BREAKPOINT UI =====
+			ImGui::Separator();
+			ImGui::Text("Register Breakpoints");
+
+			static int selected_reg = 0;
+			static int selected_mode = 0;
+			static int value = 0;
+
+			const char* reg_names[] = {
+				"SP","ER0","ER2","ER4","ER6","ER8","ER10","ER12","ER14"
+			};
+
+			ImGui::Combo("Register", &selected_reg, reg_names, IM_ARRAYSIZE(reg_names));
+
+			ImGui::Combo("Mode", &selected_mode,
+				"Equal\0Not Equal\0Greater\0Less\0GreaterEq\0LessEq\0");
+
+			ImGui::InputInt("Value", &value);
+
+			if (ImGui::Button("Add Reg BP")) {
+				reg_bps.push_back({
+					selected_reg,
+					selected_mode + 1, // lệch index -> fix
+					(uint32_t)value,
+					true
+				});
+			}
+
+			ImGui::Separator();
+
+			for (int i = 0; i < (int)reg_bps.size(); i++) {
+				auto& bp = reg_bps[i];
+
+				ImGui::PushID(i);
+
+				ImGui::Checkbox("##en", &bp.enabled);
+				ImGui::SameLine();
+
+				ImGui::Text("Reg %s | Mode %d | Val %X",
+					reg_names[bp.reg],
+					bp.mode,
+					bp.value
+				);
+
+				ImGui::SameLine();
+				if (ImGui::Button("Delete")) {
+					reg_bps.erase(reg_bps.begin() + i);
+					ImGui::PopID();
+					break;
+				}
+
+				ImGui::PopID();
+			}
+
 			ImGui::EndTabItem();
 		}
+
 		ImGui::EndTabBar();
 	}
 }
