@@ -53,6 +53,7 @@ uint32_t GetRegisterValue(casioemu::CPU& cpu, int reg) {
 }
 
 static uint32_t last_reg_value[16] = {0};
+static bool last_reg_value[16] = {0};
 static bool reg_first_run = true;
 
 void Breakpoints::DrawContent() {
@@ -181,6 +182,7 @@ void Breakpoints::SetupHooks() {
 	SetupHook(on_instruction, [&](casioemu::CPU& sender, InstructionEventArgs& iea) {
 
 		// ===== SP breakpoint =====
+		
 		if (break_on_sp) {
 			bool trig = false;
 	
@@ -219,12 +221,15 @@ void Breakpoints::SetupHooks() {
 			case 5: trig = cur >= bp.value; break;
 			case 6: trig = cur <= bp.value; break;
 			}
+			
 	
-			if (trig) {
+			if (trig and !last_break_regs[bp.reg]) {
 				printf("Reg %d hit BP: %X\n", bp.reg, cur);
+				last_break_regs[bp.reg] = true;
 				SetDebugbreak();
+			} else if (!trig and last_break_regs[bp.reg]) {
+				last_break_regs[bp.reg] = false;
 			}
-	
 			last_reg_value[bp.reg] = cur;
 		}
 	
@@ -314,7 +319,8 @@ void Breakpoints::RenderCore() {
 			ImGui::Combo("Mode", &selected_mode,
 				"Equal\0Not Equal\0Greater\0Less\0GreaterEq\0LessEq\0");
 
-			ImGui::InputInt("Value", &value);
+			//ImGui::InputInt("Value", &value);
+			ImGui::InputScalar("ValueHex", ImGuiDataType_U32, &value, NULL, NULL, "%X");
 
 			if (ImGui::Button("Add Reg BP")) {
 				reg_bps.push_back({
