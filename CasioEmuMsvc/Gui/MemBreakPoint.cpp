@@ -53,7 +53,7 @@ uint32_t GetRegisterValue(casioemu::CPU& cpu, int reg) {
 }
 
 static uint32_t last_reg_value[16] = {0};
-static bool last_reg_value[16] = {0};
+static bool last_break_regs[16] = {0};
 static bool reg_first_run = true;
 
 void Breakpoints::DrawContent() {
