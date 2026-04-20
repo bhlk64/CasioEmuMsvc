@@ -220,6 +220,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 
 #ifdef __ANDROID__
 	ThemeManager::Instance().UpdateUIScale();
+	ThemeManager::Instance().LoadSettings();
 #endif
 
 	RebuildFont();
