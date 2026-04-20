@@ -131,7 +131,7 @@ set(PLATFORM_LIBS "")
 
 if(WIN32)
     #target_link_options(${TARGET_NAME} PRIVATE "-mconsole")
-    if(NOT MSVC)
+    if(NOT MSVC AND NOT APPLE)
         target_link_options(${TARGET_NAME} PRIVATE
             "-static-libgcc"
             "-static-libstdc++"
@@ -220,7 +220,7 @@ elseif(BUILD_EXECUTABLE)
 endif()
 
 
-if(NOT WIN32 AND NOT ANDROID AND NOT IOS)
+if(NOT WIN32 AND NOT ANDROID AND NOT IOS AND NOT APPLE)
     if(BUILD_EXECUTABLE)
         target_link_options(${TARGET_NAME} PRIVATE "-static-libgcc" "-static-libstdc++")
     endif()
