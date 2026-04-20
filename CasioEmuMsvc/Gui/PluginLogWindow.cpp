@@ -1,7 +1,7 @@
 #include "PluginLogWindow.hpp"
 #include "Plugin/PluginMan.h"
 #include "imgui/imgui.h"
-#include "../Ext/SysDialogs.h"
+#include "../Ext/SysDialog.h"
 #include <sstream>
 #include <filesystem>
 #include <cstdlib>
