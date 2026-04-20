@@ -89,39 +89,6 @@ set(MAIN_SOURCES
 
 # target_sources(main PRIVATE ${MAIN_SOURCES})
 
-/*if(BUILD_EXECUTABLE)
-
-    message(STATUS "Building executable")
-    set(TARGET_NAME "CasioEmuMsvc")
-
-    if(APPLE)
-
-        set(APP_ICON ${CMAKE_SOURCE_DIR}/MacResources/AppIcon.icns)
-        
-        set_source_files_properties(${APP_ICON} PROPERTIES
-            MACOSX_PACKAGE_LOCATION "Resources"
-        )
-
-        add_executable(${TARGET_NAME}
-            MACOSX_BUNDLE
-            ${MAIN_SOURCES}
-            ${APP_ICON}
-        )
-
-    else()
-
-        add_executable(${TARGET_NAME} ${MAIN_SOURCES})
-
-    endif()
-
-else()
-
-    message(STATUS "Building shared library")
-    set(TARGET_NAME "main")
-    add_library(${TARGET_NAME} SHARED ${MAIN_SOURCES})
-
-endif()*/
-
 if(BUILD_EXECUTABLE)
     message(STATUS "Building executable")
     set(TARGET_NAME "CasioEmuMsvc")
