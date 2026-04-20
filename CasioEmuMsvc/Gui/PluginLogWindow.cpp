@@ -30,7 +30,7 @@ void PluginLogWindow::RenderCore() {
                             return;
                         }
                 
-                        std::filesystem::path dstDir = std::filesystem::current_path() / "plugins";
+                        std::filesystem::path dstDir = "/data/user/0/com.tele.u8emulator/cache/plugins_so";
                         std::filesystem::create_directories(dstDir);
                 
                         std::filesystem::path dst = dstDir / name;
