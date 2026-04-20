@@ -161,6 +161,11 @@ if(BUILD_EXECUTABLE)
             imm32
         )
         set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "")
+    elseif(APPLE)
+        target_link_libraries(${TARGET_NAME} PRIVATE
+            "-framework Cocoa"
+            "-framework OpenGL"
+        )
     else()
         
         target_link_libraries(${TARGET_NAME} PRIVATE
