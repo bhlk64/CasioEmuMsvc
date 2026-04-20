@@ -1,6 +1,7 @@
 #include "PluginLogWindow.hpp"
 #include "Plugin/PluginMan.h"
 #include "imgui/imgui.h"
+#include "../Ext/SysDialogs.h"
 #include <sstream>
 #include <filesystem>
 #include <cstdlib>
@@ -49,7 +50,8 @@ void PluginLogWindow::RenderCore() {
                         g_PluginLoadLog += "\n";
                     }
                 });
-            ImGui::Separate();
+            ImGui::Separator();
+            }
 #endif
             if (ImGui::BeginTable("PluginsTable", 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
                 ImGui::TableSetupColumn("ID");
