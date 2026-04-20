@@ -15,7 +15,7 @@ PluginLogWindow::PluginLogWindow() : UIWindow("Plugin Manager") {
 void PluginLogWindow::RenderCore() {
     if (ImGui::BeginTabBar("PluginTabs")) {
         if (ImGui::BeginTabItem("Loaded Plugins")) {
-#if __ANDROID__
+#ifdef __ANDROID__
             if (ImGui::Button("Import Plugin")) {
                 SystemDialogs::OpenFileDialog([&](std::filesystem::path f) {
                     try {
@@ -31,7 +31,7 @@ void PluginLogWindow::RenderCore() {
                             return;
                         }
                 
-                        std::filesystem::path dstDir = "/data/user/0/com.tele.u8emulator/cache/plugins_so";
+                        std::filesystem::path dstDir = "./plugins/";
                         std::filesystem::create_directories(dstDir);
                 
                         std::filesystem::path dst = dstDir / name;
