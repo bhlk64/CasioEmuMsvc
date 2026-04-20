@@ -143,8 +143,39 @@ public class Game extends SDLActivity {
         List<ResolveInfo> resolveInfos = pm.queryIntentActivities(pluginIntent, 0);
         File pluginsDir = new File(activity.getCacheDir(), "plugins_so");
         if (!pluginsDir.exists()) pluginsDir.mkdirs();
+        File pluginsDir = new File(activity.getCacheDir(), "plugins_so");
+        if (!pluginsDir.exists()) pluginsDir.mkdirs();
+        
         File loadOrderFile = new File(pluginsDir, "load_order.txt");
-        if (loadOrderFile.exists()) loadOrderFile.delete();
+        
+        // file ngoài
+        File externalLoadOrder = new File(
+            activity.getExternalFilesDir(null),
+            "plugins/load_order.txt"
+        );
+        
+        if (externalLoadOrder.exists()) {
+            try {
+                FileInputStream in = new FileInputStream(externalLoadOrder);
+                FileOutputStream out = new FileOutputStream(loadOrderFile, false); // 🔥 overwrite
+        
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, read);
+                }
+        
+                in.close();
+                out.close();
+        
+                Log.e(TAG, "[PLUGIN] Overwrote load_order.txt from external");
+        
+            } catch (Exception e) {
+                Log.e(TAG, "[PLUGIN] Copy failed: " + e.getMessage());
+            }
+        }
+        //File loadOrderFile = new File(pluginsDir, "load_order.txt");
+        //if (loadOrderFile.exists()) loadOrderFile.delete();
         File infoFile = new File(pluginsDir, "plugins_info.txt");
         LinkedHashSet<String> loadOrder = new LinkedHashSet<>();
         StringBuilder infoBuilder = new StringBuilder();
