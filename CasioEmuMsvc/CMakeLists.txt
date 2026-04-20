@@ -164,6 +164,8 @@ if(BUILD_EXECUTABLE)
     elseif(APPLE)
         target_link_libraries(${TARGET_NAME} PRIVATE
             "-framework Cocoa"
+            "-framework IOKit"
+            "-framework CoreVideo"
             "-framework OpenGL"
         )
     else()
