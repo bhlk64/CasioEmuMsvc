@@ -53,6 +53,10 @@ void LoadPlugins() {
     }
 
     jclass gameClass = env->FindClass("com/tele/u8emulator/Game");
+    if (!gameClass) {
+        g_PluginLoadLog += "[ERROR] FindClass failed for Game\n";
+        return;
+    }
     if (gameClass) {
         g_PluginLoadLog += "[INFO] Calling Java checkAndExtractPluginAssets()\n";
         jmethodID checkPluginMethod = env->GetStaticMethodID(gameClass, "checkAndExtractPluginAssets", "()V");
