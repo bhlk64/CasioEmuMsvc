@@ -41,7 +41,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 import java.util.LinkedHashSet;
 import java.util.Enumeration;
-import io.sentry.Sentry;
+//import io.sentry.Sentry;
 
 public class Game extends SDLActivity {
     private static final String TAG = "Game";
