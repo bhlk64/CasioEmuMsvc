@@ -194,6 +194,11 @@ jobs:
           build/CasioEmuMsvc/locales/
           build/CasioEmuMsvc/roms.db
         if-no-files-found: error
+    - name: Dump CMake error
+      if: failure()
+      run: |
+        find . -name "CMakeError.log" -exec cat {} \;
+        find . -name "CMakeOutput.log" -exec cat {} \;
 
   release:
     name: Create Release
