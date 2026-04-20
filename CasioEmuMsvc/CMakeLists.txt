@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.10...3.22)
 
 project(CasioEmuMsvc)
 #set(CMAKE_MESSAGE_LOG_LEVEL NOTICE)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
+
+add_compile_options(-Wno-error=implicit-function-declaration)
+add_definitions(-D_GNU_SOURCE)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fms-extensions")
 # set(CMAKE_CXX_EXTENSIONS OFF)
