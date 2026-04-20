@@ -16,20 +16,23 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: windows
-            platform_arch: x64
-            os: windows-latest
-            name: "Windows-x64"
-          - platform: windows
-            platform_arch: x86
-            os: windows-latest
-            name: "Windows-x86"
+          #- platform: windows
+          #  platform_arch: x64
+          #  os: windows-latest
+          #  name: "Windows-x64"
+          #- platform: windows
+          #  platform_arch: x86
+          #  os: windows-latest
+          #  name: "Windows-x86"
           - platform: android
             os: ubuntu-latest
             name: "Android"
-          - platform: linux
-            os: ubuntu-latest
-            name: "Linux-x64"
+          - platform: mac
+            os: macos-latest
+            name: "macOS"
+          #- platform: linux
+          #  os: ubuntu-latest
+          #  name: "Linux-x64"
     
     runs-on: ${{ matrix.os }}
     name: Build ${{ matrix.name }}
@@ -70,6 +73,60 @@ jobs:
         name: Release-${{ matrix.platform_arch }}
         path: build/CasioEmuMsvc/${{ env.BUILD_CONFIGURATION }}
         if-no-files-found: error
+    
+    # ================= MACOS =================
+    - name: Install dependencies (macOS)
+      if: matrix.platform == 'mac'
+      run: |
+        brew install cmake sdl2 sdl2_image
+    
+    - name: Build for macOS
+      if: matrix.platform == 'mac'
+      env:
+        MACOSX_DEPLOYMENT_TARGET: 12.0
+      run: |
+        mkdir build
+        cd build
+        cmake .. \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+        cmake --build . --config Release
+    
+    - name: Show build tree
+      if: matrix.platform == 'mac'
+      run: |
+        echo "---- BUILD TREE ----"
+        ls -R build
+    
+    - name: Create DMG
+      if: matrix.platform == 'mac'
+      run: |
+        cd build
+        APP=$(find . -name "*.app" -maxdepth 3 | head -n 1)
+        echo "Found app: $APP"
+    
+        mkdir dmg
+        cp -R "$APP" dmg/
+    
+        hdiutil create CasioEmuMsvc.dmg \
+          -volname "CasioEmuMsvc" \
+          -srcfolder dmg \
+          -ov \
+          -format UDZO
+    
+    - name: Upload macOS Build Artifact
+      if: matrix.platform == 'mac'
+      uses: actions/upload-artifact@v7
+      with:
+        name: CasioEmuMsvc-macOS
+        path: |
+          build/CasioEmuMsvc.app
+          build/CasioEmuMsvc.dmg
+          build/**
+        if-no-files-found: error
+    
 
     - name: Set up JDK 21
       if: matrix.platform == 'android'
@@ -195,6 +252,18 @@ jobs:
           cd "./artifacts/Release-Linux-x64"
           zip -r "../../release_assets/linux-x64-${{ env.COMMIT_HASH }}.zip" .
           cd ../..
+        fi
+        
+        # Copy macOS DMG if exists
+        if [ -f "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.dmg" ]; then
+          cp "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.dmg" \
+             "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.dmg"
+        fi
+        
+        # Copy macOS APP if exists
+        if [ -d "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.app" ]; then
+          cp -R "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.app" \
+                "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.app"
         fi
         
         ls -la release_assets/

@@ -89,17 +89,74 @@ set(MAIN_SOURCES
 
 # target_sources(main PRIVATE ${MAIN_SOURCES})
 
+/*if(BUILD_EXECUTABLE)
+
+    message(STATUS "Building executable")
+    set(TARGET_NAME "CasioEmuMsvc")
+
+    if(APPLE)
+
+        set(APP_ICON ${CMAKE_SOURCE_DIR}/MacResources/AppIcon.icns)
+        
+        set_source_files_properties(${APP_ICON} PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources"
+        )
+
+        add_executable(${TARGET_NAME}
+            MACOSX_BUNDLE
+            ${MAIN_SOURCES}
+            ${APP_ICON}
+        )
+
+    else()
+
+        add_executable(${TARGET_NAME} ${MAIN_SOURCES})
+
+    endif()
+
+else()
+
+    message(STATUS "Building shared library")
+    set(TARGET_NAME "main")
+    add_library(${TARGET_NAME} SHARED ${MAIN_SOURCES})
+
+endif()*/
+
 if(BUILD_EXECUTABLE)
     message(STATUS "Building executable")
     set(TARGET_NAME "CasioEmuMsvc")
-    add_executable(${TARGET_NAME} ${MAIN_SOURCES})
+    if(APPLE)
+        set(APP_ICON ${CMAKE_SOURCE_DIR}/MacResources/AppIcon.icns)
+        set_source_files_properties(${APP_ICON} PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources"
+        )
+        add_executable(${TARGET_NAME}
+            MACOSX_BUNDLE
+            ${MAIN_SOURCES}
+            ${APP_ICON}
+        )
+    else()
+        add_executable(${TARGET_NAME} ${MAIN_SOURCES})
+    endif()
 else()
     message(STATUS "Building shared library")
     set(TARGET_NAME "main")
     add_library(${TARGET_NAME} SHARED ${MAIN_SOURCES})
 endif()
 
+if(APPLE)
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST
+        ${CMAKE_SOURCE_DIR}/MacResources/Info.plist
+
+        INSTALL_RPATH "@executable_path/../Frameworks"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
+endif()
+
 target_compile_definitions(${TARGET_NAME} PRIVATE ASMJIT_STATIC)
+
+set(PLATFORM_LIBS "")
 
 if(WIN32)
     #target_link_options(${TARGET_NAME} PRIVATE "-mconsole")
@@ -207,3 +264,16 @@ if(NOT ANDROID AND NOT IOS)
         )
     endif()
 endif()
+
+if(APPLE AND BUILD_EXECUTABLE)
+
+add_custom_command(TARGET CasioEmuMsvc POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+        -DAPP="$<TARGET_BUNDLE_DIR:CasioEmuMsvc>"
+        -P ${CMAKE_SOURCE_DIR}/MacResources/BundleFix.cmake
+)
+
+endif()
+
+set(CPACK_GENERATOR "DragNDrop")
+include(CPack)

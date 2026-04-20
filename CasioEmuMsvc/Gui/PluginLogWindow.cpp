@@ -4,6 +4,7 @@
 #include <sstream>
 #include <filesystem>
 #include <cstdlib>
+#include <fstream>
 
 PluginLogWindow::PluginLogWindow() : UIWindow("Plugin Manager") {
     inital_size = ImVec2(700, 450);
@@ -13,6 +14,43 @@ PluginLogWindow::PluginLogWindow() : UIWindow("Plugin Manager") {
 void PluginLogWindow::RenderCore() {
     if (ImGui::BeginTabBar("PluginTabs")) {
         if (ImGui::BeginTabItem("Loaded Plugins")) {
+#if __ANDROID__
+            if (ImGui::Button("Import Plugin")) {
+                SystemDialogs::OpenFileDialog([&](std::filesystem::path f) {
+                    try {
+                        std::ifstream ifs{f, std::ios::binary};
+                        if (!ifs) {
+                            throw std::runtime_error("Cannot open selected file.");
+                        }
+                
+                        auto name = f.filename().string();
+                
+                        if (!name.ends_with(".so")) {
+                            g_PluginLoadLog += "[ERROR] Not a .so file: " + name + "\n";
+                            return;
+                        }
+                
+                        std::filesystem::path dstDir = std::filesystem::current_path() / "plugins";
+                        std::filesystem::create_directories(dstDir);
+                
+                        std::filesystem::path dst = dstDir / name;
+                
+                        std::filesystem::copy_file(
+                            f,
+                            dst,
+                            std::filesystem::copy_options::overwrite_existing
+                        );
+                        g_PluginLoadLog += "[SUCCESS] Imported: " + name + "\n";
+                        g_PluginLoadLog += "         -> " + dst.string() + "\n";
+                    }
+                    catch (const std::exception& e) {
+                        g_PluginLoadLog += "[ERROR] Import failed: ";
+                        g_PluginLoadLog += e.what();
+                        g_PluginLoadLog += "\n";
+                    }
+                });
+            ImGui::Separate();
+#endif
             if (ImGui::BeginTable("PluginsTable", 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
                 ImGui::TableSetupColumn("ID");
                 ImGui::TableSetupColumn("Name");
