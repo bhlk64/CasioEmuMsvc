@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 	chdir(SDL_AndroidGetExternalStoragePath());
 #elif defined(__APPLE__)
 	std::string p = std::string(getenv("HOME") ? getenv("HOME") : "") + "/Library/Application Support/CasioEmuMsvc/";
-	chdir(p.c_str());
+	chdir(p.c_str()); 
 #endif
 	g_local.Load();
 	
