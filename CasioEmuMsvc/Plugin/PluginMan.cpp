@@ -101,6 +101,7 @@ void LoadPlugins() {
             //DebugListDir("/sdcard/Android/data/com.tele.u8emulator/files/plugins");
         
             g_PluginLoadLog += "[INFO] Loading plugins from: " + dir + "\n";
+        }
         
         if (orderFile.is_open()) {
             std::string libName;
