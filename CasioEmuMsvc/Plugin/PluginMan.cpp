@@ -43,6 +43,24 @@ void LoadPlugins() {
 #include <jni.h>
 #include <SDL.h>
 #include <string>
+#include <dirent.h>
+
+void DebugListDir(const std::string& path) {
+    DIR* dir = opendir(path.c_str());
+    if (!dir) {
+        g_PluginLoadLog += "[ERROR] Cannot open dir: " + path + "\n";
+        return;
+    }
+
+    g_PluginLoadLog += "[INFO] Listing dir: " + path + "\n";
+
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != nullptr) {
+        g_PluginLoadLog += "  - " + std::string(entry->d_name) + "\n";
+    }
+
+    closedir(dir);
+}
 
 void LoadPlugins() {
     g_PluginLoadLog += "[INFO] Starting Android Plugin Loader\n";
@@ -68,8 +86,21 @@ void LoadPlugins() {
     const char* pluginsDir = getenv("CASIOEMU_PLUGINS_DIR");
     if (pluginsDir) {
         g_PluginLoadLog += "[INFO] Loading plugins from: " + std::string(pluginsDir) + "\n";
+        
         std::string orderFilePath = std::string(pluginsDir) + "/load_order.txt";
         std::ifstream orderFile(orderFilePath);
+        
+        const char* pluginsDir = getenv("CASIOEMU_PLUGINS_DIR");
+
+        if (pluginsDir) {
+            std::string dir = pluginsDir;
+        
+            DebugListDir("/data/user/0/com.tele.u8emulator/"); // 👈 check plugins_so
+        
+            // nếu muốn check luôn external
+            //DebugListDir("/sdcard/Android/data/com.tele.u8emulator/files/plugins");
+        
+            g_PluginLoadLog += "[INFO] Loading plugins from: " + dir + "\n";
         
         if (orderFile.is_open()) {
             std::string libName;
