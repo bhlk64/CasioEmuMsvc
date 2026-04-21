@@ -147,8 +147,6 @@ public class Game extends SDLActivity {
         List<ResolveInfo> resolveInfos = pm.queryIntentActivities(pluginIntent, 0);
         File pluginsDir = new File(activity.getCacheDir(), "plugins_so");
         if (!pluginsDir.exists()) pluginsDir.mkdirs();
-        File pluginsDir = new File(activity.getCacheDir(), "plugins_so");
-        if (!pluginsDir.exists()) pluginsDir.mkdirs();
         
         File loadOrderFile = new File(pluginsDir, "load_order.txt");
         
