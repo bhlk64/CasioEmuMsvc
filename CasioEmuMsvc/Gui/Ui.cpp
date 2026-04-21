@@ -257,7 +257,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 			 injector = new Injector(),
 			 membp = new Breakpoints(),
 			 CreateAddressWindow(),
-			 MakeAssemblerUI(),
+			 // MakeAssemblerUI(),
 			 MakeThemeWindow(),
 			 CreateBitmapViewer(),
 			 new FileExplorerWindow("/data/user/0/com.tele.u8emulator/cache/plugins_so"),
