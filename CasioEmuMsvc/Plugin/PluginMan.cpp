@@ -89,8 +89,6 @@ void LoadPlugins() {
         
         std::string orderFilePath = std::string(pluginsDir) + "/load_order.txt";
         std::ifstream orderFile(orderFilePath);
-        
-        const char* pluginsDir = getenv("CASIOEMU_PLUGINS_DIR");
 
         if (pluginsDir) {
             std::string dir = pluginsDir;

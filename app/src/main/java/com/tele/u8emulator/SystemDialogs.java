@@ -3,6 +3,10 @@ package com.tele.u8emulator;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class SystemDialogs {
     public static void openFileDialog(Activity activity) {
