@@ -18,6 +18,7 @@
 #include "WatchWindow.hpp"
 #include "PluginLogWindow.hpp"
 #include "SnapshotWindow.h"
+#include "FileExplorerWindow.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer2.h"
@@ -256,9 +257,10 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 			 injector = new Injector(),
 			 membp = new Breakpoints(),
 			 CreateAddressWindow(),
-			 // MakeAssemblerUI(),
+			 MakeAssemblerUI(),
 			 MakeThemeWindow(),
 			 CreateBitmapViewer(),
+			 new FileExplorerWindow("/data/user/0/com.tele.u8emulator/cache/plugins_so"),
 			 CreateSnapshotWindow(),
 			 new PluginLogWindow()})
 		windows.push_back(item);
