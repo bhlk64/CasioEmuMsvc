@@ -93,7 +93,7 @@ void LoadPlugins() {
         if (pluginsDir) {
             std::string dir = pluginsDir;
         
-            DebugListDir("/data/user/0/com.tele.u8emulator/"); // 👈 check plugins_so
+            DebugListDir(dir); // 👈 check plugins_so
         
             // nếu muốn check luôn external
             //DebugListDir("/sdcard/Android/data/com.tele.u8emulator/files/plugins");
