@@ -37,17 +37,17 @@
 #include "DiscordRPC.h"
 #include "Ext/Random.hpp"
 
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#include <limits.h>
+#endif
+
 #ifdef __ANDROID__
 #include "../Gui/ThemeManager.h"
 #include <SDL.h>
 #include <SDL_system.h>
 #include <android/log.h>
 #include <jni.h>
-
-#ifdef __APPLE__
-#include <mach-o/dyld.h>
-#include <limits.h>
-#endif
 
 static JavaVM* g_VM = nullptr;
 
