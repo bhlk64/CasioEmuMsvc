@@ -5,7 +5,7 @@ project(CasioEmuMsvc)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU") AND NOT MSVC
     add_compile_options(-Wno-error=implicit-function-declaration)
 endif()add_definitions(-D_GNU_SOURCE)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
