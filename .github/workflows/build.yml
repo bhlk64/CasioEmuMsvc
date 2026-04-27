@@ -16,17 +16,17 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: windows
-            platform_arch: x64
-            os: windows-latest
-            name: "Windows-x64"
+          #- platform: windows
+          #  platform_arch: x64
+          #  os: windows-latest
+          #  name: "Windows-x64"
           #- platform: windows
           #  platform_arch: x86
           #  os: windows-latest
           #  name: "Windows-x86"
-          - platform: android
-            os: ubuntu-latest
-            name: "Android"
+          #- platform: android
+          #  os: ubuntu-latest
+          #  name: "Android"
           - platform: mac
             os: macos-latest
             name: "macOS"
@@ -147,15 +147,13 @@ jobs:
     - name: Create DMG
       if: matrix.platform == 'mac'
       run: |
-        APP=$(find build -name "*.app" | head -n 1)
+        cd build
+        APP=$(find . -name "*.app" | head -n 1)
         echo "Found app: $APP"
-    
-        mkdir dmg
-        cp -R "$APP" dmg/
     
         hdiutil create CasioEmuMsvc.dmg \
           -volname "CasioEmuMsvc" \
-          -srcfolder dmg \
+          -srcfolder build \
           -ov \
           -format UDZO
     
