@@ -151,9 +151,13 @@ jobs:
         APP=$(find . -name "*.app" | head -n 1)
         echo "Found app: $APP"
     
+        mkdir dmg
+        cp -r "$APP" dmg/
+        ln -s /Applications dmg/Applications
+        
         hdiutil create CasioEmuMsvc.dmg \
           -volname "CasioEmuMsvc" \
-          -srcfolder build \
+          -srcfolder dmg \
           -ov \
           -format UDZO
     
