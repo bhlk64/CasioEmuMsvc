@@ -645,6 +645,60 @@ static bool CreateDesktopShortcut(const std::filesystem::path& model_path, const
 
 	return true;
 }
+#elif defined(__APPLE__)
+static bool CreateDesktopShortcut(const std::filesystem::path& model_path, const std::string& shortcut_name, const std::string& icon_path_str) {
+
+	// Get Desktop path
+	const char* home = std::getenv("HOME");
+	if (!home) {
+		std::cerr << "[Shortcut] HOME not found\n";
+		return false;
+	}
+
+	std::filesystem::path desktop = std::filesystem::path(home) / "Desktop";
+
+	std::filesystem::path exe_path = std::filesystem::canonical("/proc/self/exe"); 
+	// ⚠️ NOTE: macOS không có /proc/self/exe chuẩn
+
+	// FIX macOS proper way:
+	// exe path real:
+	uint32_t size = 0;
+	_NSGetExecutablePath(nullptr, &size);
+	std::string buffer(size, '\0');
+	_NSGetExecutablePath(buffer.data(), &size);
+	std::filesystem::path real_exe = std::filesystem::canonical(buffer);
+
+	std::filesystem::path abs_model = std::filesystem::absolute(model_path);
+
+	std::string sanitized = shortcut_name;
+	for (auto& c : sanitized)
+		if (c == ' ' || c == '/')
+			c = '_';
+
+	// .command file (click là chạy terminal)
+	std::filesystem::path file = desktop / (sanitized + ".command");
+
+	std::ofstream ofs(file);
+	if (!ofs) {
+		std::cerr << "[Shortcut] Failed to create macOS shortcut\n";
+		return false;
+	}
+
+	ofs << "#!/bin/bash\n";
+	ofs << "cd \"" << real_exe.parent_path().string() << "\"\n";
+	ofs << "open \"" << real_exe.string() << "\" --args \"" << abs_model.string() << "\"\n";
+
+	ofs.close();
+
+	// chmod +x
+	std::filesystem::permissions(file,
+		std::filesystem::perms::owner_exec |
+		std::filesystem::perms::group_exec |
+		std::filesystem::perms::others_exec,
+		std::filesystem::perm_options::add);
+
+	return true;
+}
 #endif
 
 namespace casioemu {
