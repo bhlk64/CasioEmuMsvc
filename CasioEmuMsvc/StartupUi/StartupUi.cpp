@@ -44,6 +44,10 @@
 #include <android/log.h>
 #include <jni.h>
 
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 static JavaVM* g_VM = nullptr;
 
 extern "C"
