@@ -239,6 +239,7 @@ jobs:
         if-no-files-found: error
     - name: Dump CMake error
       if: failure()
+      shell: bash
       run: |
         find . -name "CMakeError.log" -exec cat {} \;
         find . -name "CMakeOutput.log" -exec cat {} \;
