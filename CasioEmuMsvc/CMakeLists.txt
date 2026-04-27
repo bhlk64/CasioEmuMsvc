@@ -106,9 +106,14 @@ if(BUILD_EXECUTABLE)
             ${MAIN_SOURCES}
             ${APP_ICON}
         )
+    
+    elseif(WIN32)
+        set(WIN_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Resource.rc)
+        add_executable(${TARGET_NAME} ${MAIN_SOURCES} ${WIN_RESOURCES})
     else()
         add_executable(${TARGET_NAME} ${MAIN_SOURCES})
     endif()
+
 else()
     message(STATUS "Building shared library")
     set(TARGET_NAME "main")
@@ -242,12 +247,12 @@ if(NOT ANDROID AND NOT IOS)
 endif()
 
 if(APPLE AND BUILD_EXECUTABLE)
-
-add_custom_command(TARGET CasioEmuMsvc POST_BUILD
-    COMMAND ${CMAKE_COMMAND}
-        -DAPP="$<TARGET_BUNDLE_DIR:CasioEmuMsvc>"
-        -P ${CMAKE_SOURCE_DIR}/MacResources/BundleFix.cmake
-)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+            -DAPP="$<TARGET_BUNDLE_DIR:${TARGET_NAME}>"
+            -P ${CMAKE_SOURCE_DIR}/MacResources/BundleFix.cmake
+    )
+endif()
 
 endif()
 
