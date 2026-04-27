@@ -254,7 +254,5 @@ if(APPLE AND BUILD_EXECUTABLE)
     )
 endif()
 
-endif()
-
 set(CPACK_GENERATOR "DragNDrop")
 include(CPack)
