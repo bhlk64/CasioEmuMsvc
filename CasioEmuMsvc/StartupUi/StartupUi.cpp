@@ -46,6 +46,7 @@
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
+#include <limits.h>
 #endif
 
 static JavaVM* g_VM = nullptr;
