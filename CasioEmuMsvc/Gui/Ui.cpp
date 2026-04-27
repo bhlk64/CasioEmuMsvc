@@ -46,6 +46,66 @@ Breakpoints* membp = 0;
 
 std::vector<UIWindow*> windows{};
 
+void RenderWindowManagerUI() {
+	ImGui::SetNextWindowBgAlpha(0.0f);
+
+	ImGui::Begin("Window Manager", nullptr,
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoCollapse);
+
+	static UIWindow* current = nullptr;
+
+	float comboWidth = 220.0f;
+	float btnWidth = 100.0f;
+
+	// ===== SAFE: empty windows check =====
+	if (windows.empty()) {
+		ImGui::TextDisabled("No windows registered");
+		ImGui::End();
+		return;
+	}
+
+	ImGui::SetNextItemWidth(comboWidth);
+
+	const char* preview = current ? current->name : "Select Window";
+
+	if (ImGui::BeginCombo("##window_list", preview)) {
+		for (auto* w : windows) {
+			if (!w) continue; // 🔥 SAFE NULL GUARD
+
+			bool selected = (current == w);
+
+			if (ImGui::Selectable(w->name ? w->name : "Unnamed", selected))
+				current = w;
+
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::SameLine();
+
+	// ===== OPEN =====
+	if (ImGui::Button("Open", ImVec2(btnWidth, 0))) {
+		if (current) {
+			current->open = true;
+		}
+	}
+
+	ImGui::SameLine();
+
+	// ===== CLOSE ALL (SAFE CROSS PLATFORM) =====
+	if (ImGui::Button("Close all", ImVec2(btnWidth, 0))) {
+		for (auto& w : windows) {
+			if (w) w->open = false;
+		}
+	}
+
+	ImGui::End();
+}
+
 void gui_loop() {
 	if (!m_emu->Running())
 		return;
@@ -232,64 +292,4 @@ void gui_cleanup() {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
-}
-
-void RenderWindowManagerUI() {
-	ImGui::SetNextWindowBgAlpha(0.0f);
-
-	ImGui::Begin("Window Manager", nullptr,
-		ImGuiWindowFlags_NoTitleBar |
-		ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoCollapse);
-
-	static UIWindow* current = nullptr;
-
-	float comboWidth = 220.0f;
-	float btnWidth = 100.0f;
-
-	// ===== SAFE: empty windows check =====
-	if (windows.empty()) {
-		ImGui::TextDisabled("No windows registered");
-		ImGui::End();
-		return;
-	}
-
-	ImGui::SetNextItemWidth(comboWidth);
-
-	const char* preview = current ? current->name : "Select Window";
-
-	if (ImGui::BeginCombo("##window_list", preview)) {
-		for (auto* w : windows) {
-			if (!w) continue; // 🔥 SAFE NULL GUARD
-
-			bool selected = (current == w);
-
-			if (ImGui::Selectable(w->name ? w->name : "Unnamed", selected))
-				current = w;
-
-			if (selected)
-				ImGui::SetItemDefaultFocus();
-		}
-		ImGui::EndCombo();
-	}
-
-	ImGui::SameLine();
-
-	// ===== OPEN =====
-	if (ImGui::Button("Open", ImVec2(btnWidth, 0))) {
-		if (current) {
-			current->open = true;
-		}
-	}
-
-	ImGui::SameLine();
-
-	// ===== CLOSE ALL (SAFE CROSS PLATFORM) =====
-	if (ImGui::Button("Close all", ImVec2(btnWidth, 0))) {
-		for (auto& w : windows) {
-			if (w) w->open = false;
-		}
-	}
-
-	ImGui::End();
 }
