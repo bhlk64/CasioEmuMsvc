@@ -11,6 +11,7 @@
 #include "ePSCpu.h"
 #include "imgui/imgui.h"
 #include <Localization.h>
+#include <cctype>
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
@@ -379,20 +380,27 @@ void CodeViewer::Search(bool next) {
 
 	// Normalize needle for Hex search
 	if (search_mode == 0) { // Hex Pattern
-		std::string hex_needle = "";
+		std::string hex_needle;
+		hex_needle.reserve(needle.size());
+		
 		for (char c : needle) {
-			if (c != ' ')
-				hex_needle += toupper(c);
+			unsigned char uc = static_cast<unsigned char>(c);
+		
+			if (std::isxdigit(uc)) {
+				hex_needle += std::toupper(uc);
+			}
 		}
-		needle = hex_needle;
+	needle = hex_needle;
 	}
+	
 	else { // Instruction / Opcode
 		   // Just make uppercase for case-insensitive search if desired, or keep as is.
 		   // Assuming case-insensitive search for instruction mnemonics.
 		std::transform(needle.begin(), needle.end(), needle.begin(), ::toupper);
 	}
-
-	int start_idx = next ? (last_found_idx + 1) : 0;
+	if (search_mode == 0 && needle.empty())
+		return;
+	size_t start_idx = next ? (last_found_idx + 1) : 0;
 	if (start_idx >= codes.size())
 		start_idx = 0;
 
@@ -415,8 +423,9 @@ void CodeViewer::Search(bool next) {
 		// Clean hex part
 		std::string hex_clean = "";
 		for (char c : hex_part) {
-			if (isalnum(c))
-				hex_clean += c;
+			if (std::isxdigit(static_cast<unsigned char>(c))) {
+				hex_clean += std::toupper(static_cast<unsigned char>(c));
+			}
 		}
 
 		bool found = false;
@@ -426,7 +435,10 @@ void CodeViewer::Search(bool next) {
 			}
 		}
 		else { // Instruction
-			std::transform(instr_part.begin(), instr_part.end(), instr_part.begin(), ::toupper);
+			std::transform(instr_part.begin(), instr_part.end(), instr_part.begin(),
+				[](unsigned char c) {
+					return std::toupper(c);
+				});
 			if (instr_part.find(needle) != std::string::npos) {
 				found = true;
 			}

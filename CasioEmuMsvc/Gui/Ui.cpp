@@ -59,6 +59,7 @@ void gui_loop() {
 	ImGui_ImplSDLRenderer2_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
+	RenderWindowManagerUI();
 #ifndef __ANDROID__
 	ImGui::SetNextWindowBgAlpha(0.0f);
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
@@ -67,6 +68,7 @@ void gui_loop() {
 #ifndef __ANDROID__
 		ImGui::SetNextWindowDockID(ImGui::GetCurrentContext()->DockContext.Nodes.Data[0].key, ImGuiCond_FirstUseEver);
 #endif
+		if (!win) continue;
 		win->Render();
 	}
 
@@ -123,95 +125,43 @@ void gui_loop() {
 	//	}
 	// #endif
 
-#ifdef SINGLE_WINDOW
-	ImGui::SetNextWindowBgAlpha(0.0f);
-	ImGui::Begin("Overlay", nullptr,
-		ImGuiWindowFlags_NoDecoration |
-			ImGuiWindowFlags_NoDocking |
-			ImGuiWindowFlags_AlwaysAutoResize |
-			ImGuiWindowFlags_NoBackground |
-			ImGuiWindowFlags_NoTitleBar |
-			ImGuiWindowFlags_NoMove);
-
-	auto& tm = ThemeManager::Instance();
-	float safeAreaPadding = tm.padding * 1.5f;
-	ImGui::SetWindowPos(ImVec2(safeAreaPadding, safeAreaPadding));
-
-	float displayWidth = ImGui::GetIO().DisplaySize.x;
-	float totalWidth = displayWidth - (safeAreaPadding * 2);
-	float spacingBetweenElements = tm.padding * 1.2f;
-	float buttonWidth = (totalWidth - spacingBetweenElements * 2) * 0.25f;
-	float comboWidth = totalWidth - (buttonWidth * 2) - (spacingBetweenElements * 2);
-
-	static UIWindow* current_filter = 0;
-	ImGui::SetNextItemWidth(comboWidth);
-	if (ImGui::BeginCombo("##cb", current_filter ? current_filter->name : 0)) {
-		for (int n = 0; n < windows.size(); n++) {
-			bool is_selected = (current_filter == windows[n]);
-			if (ImGui::Selectable(windows[n]->name, is_selected))
-				current_filter = windows[n];
-			if (is_selected)
-				ImGui::SetItemDefaultFocus();
-		}
-		ImGui::EndCombo();
-	}
-
-	ImGui::SameLine(0, spacingBetweenElements);
-	ImVec2 buttonSize(buttonWidth, tm.buttonHeight * 1.2f);
-	if (ImGui::Button("Open", buttonSize)) {
-		if (current_filter != 0)
-			current_filter->open = true;
-	}
-
-	ImGui::SameLine(0, spacingBetweenElements);
-	if (ImGui::Button("Close all", buttonSize)) {
-		for (auto& win : windows) {
-			win->open = false;
-		}
-	}
-	ImGui::End();
-#endif
+	
 
 	ImGui::Render();
-#ifdef SINGLE_WINDOW
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-#else
 	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 	SDL_RenderPresent(renderer);
-#endif
 }
 
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
-#ifdef SINGLE_WINDOW
-	window = wnd;
-	renderer = rnd;
-#else
-#ifdef __ANDROID__
-	window = SDL_CreateWindow("CasioEmuMsvc Debugger",
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		(int)ThemeManager::Instance().windowWidth,
-		(int)ThemeManager::Instance().windowHeight,
-		SDL_WINDOW_RESIZABLE);
-#else
-	window = SDL_CreateWindow("CasioEmuMsvc Debugger",
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		1600, 1080,
-		SDL_WINDOW_RESIZABLE);
-#endif
+	bool external_window = (wnd && rnd);
+	
+	if ((wnd && !rnd) || (!wnd && rnd)) {
+		SDL_Log("Invalid window/renderer pair");
+		return nullptr;
+	}
+	
+	if (external_window) {
+		window = wnd;
+		renderer = rnd;
+	} else {
+		window = SDL_CreateWindow("CasioEmuMsvc Debugger",
+			SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED,
+			1600, 1080,
+			SDL_WINDOW_RESIZABLE);
+	
+		renderer = SDL_CreateRenderer(window, -1,
+			SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+	}
 #ifdef _WIN32
 	EnableDarkTitleBar(GetSDLWindowHandle(window));
-#endif
-	renderer = SDL_CreateRenderer(window, -1,
-		SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 #endif
 
 	if (renderer == nullptr) {
 		SDL_Log("Error creating SDL_Renderer!");
-		return 0;
+		return nullptr;
 	}
 
 	IMGUI_CHECKVERSION();
@@ -282,4 +232,64 @@ void gui_cleanup() {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+}
+
+void RenderWindowManagerUI() {
+	ImGui::SetNextWindowBgAlpha(0.0f);
+
+	ImGui::Begin("Window Manager", nullptr,
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoCollapse);
+
+	static UIWindow* current = nullptr;
+
+	float comboWidth = 220.0f;
+	float btnWidth = 100.0f;
+
+	// ===== SAFE: empty windows check =====
+	if (windows.empty()) {
+		ImGui::TextDisabled("No windows registered");
+		ImGui::End();
+		return;
+	}
+
+	ImGui::SetNextItemWidth(comboWidth);
+
+	const char* preview = current ? current->name : "Select Window";
+
+	if (ImGui::BeginCombo("##window_list", preview)) {
+		for (auto* w : windows) {
+			if (!w) continue; // 🔥 SAFE NULL GUARD
+
+			bool selected = (current == w);
+
+			if (ImGui::Selectable(w->name ? w->name : "Unnamed", selected))
+				current = w;
+
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::SameLine();
+
+	// ===== OPEN =====
+	if (ImGui::Button("Open", ImVec2(btnWidth, 0))) {
+		if (current) {
+			current->open = true;
+		}
+	}
+
+	ImGui::SameLine();
+
+	// ===== CLOSE ALL (SAFE CROSS PLATFORM) =====
+	if (ImGui::Button("Close all", ImVec2(btnWidth, 0))) {
+		for (auto& w : windows) {
+			if (w) w->open = false;
+		}
+	}
+
+	ImGui::End();
 }
