@@ -306,15 +306,15 @@ jobs:
         fi
         
         # Copy macOS DMG if exists
-        if [ -f "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.dmg" ]; then
-          cp "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.dmg" \
-             "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.dmg"
+        DMG=$(find ./artifacts -name "*.dmg" | head -n 1)
+        if [ -n "$DMG" ]; then
+          cp "$DMG" "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.dmg"
         fi
         
         # Copy macOS APP if exists
-        if [ -d "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.app" ]; then
-          cp -R "./artifacts/CasioEmuMsvc-macOS/CasioEmuMsvc.app" \
-                "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.app"
+        APP=$(find ./artifacts -name "*.app" -type d | head -n 1)
+        if [ -n "$APP" ]; then
+          cp -R "$APP" "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.app"
         fi
         
         ls -la release_assets/
