@@ -33,6 +33,8 @@ char sentry_user_comments[1024] = "";
 char sentry_user_email[128] = "";
 char sentry_user_name[128] = "";
 
+
+
 char* n_ram_buffer = 0;
 casioemu::MMU* me_mmu = 0;
 SDL_Window* window = 0;
@@ -46,64 +48,59 @@ Breakpoints* membp = 0;
 
 std::vector<UIWindow*> windows{};
 
-void RenderWindowManagerUI() {
-	ImGui::SetNextWindowBgAlpha(0.0f);
+void RenderDebuggerToolbar() {
+    float padding = 10.0f;
+    float spacing = 10.0f;
+    float buttonWidth = 100.0f;
 
-	ImGui::Begin("Window Manager", nullptr,
-		ImGuiWindowFlags_NoTitleBar |
-		ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoCollapse);
+    float totalWidth = ImGui::GetIO().DisplaySize.x - padding * 2;
+    float comboWidth = totalWidth - buttonWidth * 2 - spacing * 2;
 
-	static UIWindow* current = nullptr;
+    ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
+    ImGui::SetCursorPosY(40); // đẩy UI xuống dưới toolbar
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 0), ImGuiCond_Always);
+    ImGui::SetNextWindowBgAlpha(0.0f);
 
-	float comboWidth = 220.0f;
-	float btnWidth = 100.0f;
+    ImGui::Begin("##toolbar", nullptr,
+        ImGuiWindowFlags_NoDecoration |
+        ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoSavedSettings);
 
-	// ===== SAFE: empty windows check =====
-	if (windows.empty()) {
-		ImGui::TextDisabled("No windows registered");
-		ImGui::End();
-		return;
-	}
+    static UIWindow* current = nullptr;
 
-	ImGui::SetNextItemWidth(comboWidth);
+    ImGui::SetNextItemWidth(comboWidth);
 
-	const char* preview = current ? current->name : "Select Window";
+    if (ImGui::BeginCombo("##cb", current ? current->name : "Select Window")) {
+        for (auto* w : windows) {
+            if (!w) continue;
 
-	if (ImGui::BeginCombo("##window_list", preview)) {
-		for (auto* w : windows) {
-			if (!w) continue; // 🔥 SAFE NULL GUARD
+            bool selected = (current == w);
+            if (ImGui::Selectable(w->name, selected))
+                current = w;
 
-			bool selected = (current == w);
+            if (selected)
+                ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
 
-			if (ImGui::Selectable(w->name ? w->name : "Unnamed", selected))
-				current = w;
+    ImGui::SameLine(0, spacing);
 
-			if (selected)
-				ImGui::SetItemDefaultFocus();
-		}
-		ImGui::EndCombo();
-	}
+    if (ImGui::Button("Open", ImVec2(buttonWidth, 0))) {
+        if (current) current->open = true;
+    }
 
-	ImGui::SameLine();
+    ImGui::SameLine(0, spacing);
 
-	// ===== OPEN =====
-	if (ImGui::Button("Open", ImVec2(btnWidth, 0))) {
-		if (current) {
-			current->open = true;
-		}
-	}
+    if (ImGui::Button("Close all", ImVec2(buttonWidth, 0))) {
+        for (auto& w : windows) {
+            if (w) w->open = false;
+        }
+    }
 
-	ImGui::SameLine();
-
-	// ===== CLOSE ALL (SAFE CROSS PLATFORM) =====
-	if (ImGui::Button("Close all", ImVec2(btnWidth, 0))) {
-		for (auto& w : windows) {
-			if (w) w->open = false;
-		}
-	}
-
-	ImGui::End();
+    ImGui::End();
 }
 
 void gui_loop() {
@@ -119,16 +116,12 @@ void gui_loop() {
 	ImGui_ImplSDLRenderer2_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
-	RenderWindowManagerUI();
 #ifndef __ANDROID__
 	ImGui::SetNextWindowBgAlpha(0.0f);
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 #endif
 	for (auto win : windows) {
-#ifndef __ANDROID__
-		ImGui::SetNextWindowDockID(ImGui::GetCurrentContext()->DockContext.Nodes.Data[0].key, ImGuiCond_FirstUseEver);
-#endif
-		if (!win) continue;
+		if (!win || !win->open) continue;
 		win->Render();
 	}
 
@@ -185,43 +178,46 @@ void gui_loop() {
 	//	}
 	// #endif
 
-	
+	RenderDebuggerToolbar();
 
 	ImGui::Render();
 	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+#ifndef __ANDROID__
 	SDL_RenderPresent(renderer);
+#endif
 }
 
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
-	bool external_window = (wnd && rnd);
-	
-	if ((wnd && !rnd) || (!wnd && rnd)) {
-		SDL_Log("Invalid window/renderer pair");
-		return nullptr;
-	}
-	
-	if (external_window) {
-		window = wnd;
-		renderer = rnd;
-	} else {
-		window = SDL_CreateWindow("CasioEmuMsvc Debugger",
-			SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED,
-			1600, 1080,
-			SDL_WINDOW_RESIZABLE);
-	
-		renderer = SDL_CreateRenderer(window, -1,
-			SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-	}
+#ifdef SINGLE_WINDOW
+	window = wnd;
+	renderer = rnd;
+#else
+#ifdef __ANDROID__
+	window = SDL_CreateWindow("CasioEmuMsvc Debugger",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		(int)ThemeManager::Instance().windowWidth,
+		(int)ThemeManager::Instance().windowHeight,
+		SDL_WINDOW_RESIZABLE);
+#else
+	window = SDL_CreateWindow("CasioEmuMsvc Debugger",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		1600, 1080,
+		SDL_WINDOW_RESIZABLE);
+#endif
 #ifdef _WIN32
 	EnableDarkTitleBar(GetSDLWindowHandle(window));
+#endif
+	renderer = SDL_CreateRenderer(window, -1,
+		SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 #endif
 
 	if (renderer == nullptr) {
 		SDL_Log("Error creating SDL_Renderer!");
-		return nullptr;
+		return 0;
 	}
 
 	IMGUI_CHECKVERSION();
@@ -229,8 +225,8 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	ImGuiIO& io = ImGui::GetIO();
 
 #ifdef __ANDROID__
-	ThemeManager::Instance().UpdateUIScale();
 	ThemeManager::Instance().LoadSettings();
+	ThemeManager::Instance().UpdateUIScale();
 #endif
 
 	RebuildFont();
