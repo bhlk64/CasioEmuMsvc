@@ -245,10 +245,14 @@ void gui_loop() {
 	ImGui::Render();
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
+
+	// 🔥 Vẽ interface trước
+	SDL_RenderCopy(renderer, interface_texture, NULL, NULL);
+	
+	// ImGui vẽ sau -> nằm trên
 	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-#ifndef __ANDROID__
+	
 	SDL_RenderPresent(renderer);
-#endif
 }
 
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
