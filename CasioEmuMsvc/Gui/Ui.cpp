@@ -48,7 +48,7 @@ Breakpoints* membp = 0;
 
 std::vector<UIWindow*> windows{};
 
-void RenderDebuggerToolbar() {
+/*void RenderDebuggerToolbar() {
     float padding = 10.0f;
     float spacing = 10.0f;
     float buttonWidth = 100.0f;
@@ -101,6 +101,49 @@ void RenderDebuggerToolbar() {
     }
 
     ImGui::End();
+}*/
+
+void RenderDebuggerToolbar() {
+    if (ImGui::BeginMainMenuBar()) {
+        static UIWindow* current = nullptr;
+
+        // Dropdown chọn window
+        ImGui::Text("Window:");
+        ImGui::SameLine();
+
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.3f);
+        if (ImGui::BeginCombo("##cb", current ? current->name : "Select Window")) {
+            for (auto* w : windows) {
+                if (!w) continue;
+
+                bool selected = (current == w);
+                if (ImGui::Selectable(w->name, selected))
+                    current = w;
+
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::SameLine();
+
+        // Open
+        if (ImGui::Button("Open")) {
+            if (current) current->open = true;
+        }
+
+        ImGui::SameLine();
+
+        // Close all
+        if (ImGui::Button("Close all")) {
+            for (auto& w : windows) {
+                if (w) w->open = false;
+            }
+        }
+
+        ImGui::EndMainMenuBar();
+    }
 }
 
 void gui_loop() {
@@ -116,9 +159,30 @@ void gui_loop() {
 	ImGui_ImplSDLRenderer2_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
-#ifndef __ANDROID__
-	ImGui::SetNextWindowBgAlpha(0.0f);
-	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
+	RenderDebuggerToolbar();
+	
+	#ifndef __ANDROID__
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	
+	ImGuiWindowFlags flags =
+	    ImGuiWindowFlags_NoDecoration |
+	    ImGuiWindowFlags_NoMove |
+	    ImGuiWindowFlags_NoDocking |
+	    ImGuiWindowFlags_NoBringToFrontOnFocus;
+	
+	ImGui::Begin("DockSpaceWnd", nullptr, flags);
+	
+	ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+	ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+	
+	ImGui::DockSpace(dockspace_id, ImVec2(0, 0), dock_flags);
+	
+	ImGui::End();
 #endif
 	for (auto win : windows) {
 		if (!win || !win->open) continue;
@@ -178,9 +242,9 @@ void gui_loop() {
 	//	}
 	// #endif
 
-	RenderDebuggerToolbar();
-
 	ImGui::Render();
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
 	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 #ifndef __ANDROID__
 	SDL_RenderPresent(renderer);
@@ -189,6 +253,12 @@ void gui_loop() {
 
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+	
+	if (window || renderer) {
+		gui_cleanup();
+		window = nullptr;
+		renderer = nullptr;
+	}
 
 #ifdef SINGLE_WINDOW
 	window = wnd;
@@ -206,7 +276,8 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		1600, 1080,
-		SDL_WINDOW_RESIZABLE);
+		SDL_WINDOW_RESIZABLE |
+		SDL_WINDOW_ALLOW_HIGHDPI);
 #endif
 #ifdef _WIN32
 	EnableDarkTitleBar(GetSDLWindowHandle(window));
@@ -214,10 +285,17 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	renderer = SDL_CreateRenderer(window, -1,
 		SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 #endif
+	for (auto& w : windows) {
+	    if (w) {
+	        delete w;
+	        w = nullptr;
+	    }
+	}
+	windows.clear();
 
-	if (renderer == nullptr) {
+	if (!renderer) {
 		SDL_Log("Error creating SDL_Renderer!");
-		return 0;
+		return nullptr;
 	}
 
 	IMGUI_CHECKVERSION();
@@ -240,8 +318,13 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	ImGui_ImplSDLRenderer2_Init(renderer);
 	if (guiCreated)
 		*guiCreated = true;
-	while (!me_mmu)
-		std::this_thread::sleep_for(std::chrono::microseconds(1));
+	for (int i = 0; i < 5000 && !me_mmu; i++)
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	
+	if (!me_mmu) {
+		SDL_Log("MMU not ready!");
+		return nullptr;
+	}
 	auto label_file = m_emu->GetModelFilePath("labels.txt");
 	if (std::filesystem::exists(label_file))
 		g_labels = parseFile(label_file);
@@ -277,7 +360,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	}
 #endif
 
-	return 0;
+	return code_viewer;
 }
 
 void gui_cleanup() {
@@ -287,5 +370,9 @@ void gui_cleanup() {
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+	
+	renderer = nullptr;
+	window = nullptr;
+	
 	SDL_Quit();
 }
