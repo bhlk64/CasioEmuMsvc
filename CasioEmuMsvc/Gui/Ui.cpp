@@ -245,11 +245,11 @@ void gui_loop() {
 	ImGui::Render();
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
-
-	// 🔥 Vẽ interface trước
-	SDL_RenderCopy(renderer, interface_texture, NULL, NULL);
 	
-	// ImGui vẽ sau -> nằm trên
+	// 🔥 QUAN TRỌNG
+	m_emu->Frame();
+	
+	// ImGui overlay
 	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 	
 	SDL_RenderPresent(renderer);
