@@ -249,6 +249,12 @@ void gui_loop() {
 	// 🔥 QUAN TRỌNG
 	m_emu->Frame();
 	
+	// reset toàn bộ state về mặc định
+	SDL_SetRenderTarget(renderer, NULL);
+	SDL_RenderSetViewport(renderer, NULL);
+	SDL_RenderSetClipRect(renderer, NULL);
+	SDL_RenderSetScale(renderer, 1.0f, 1.0f);
+	
 	// ImGui overlay
 	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 	
@@ -265,8 +271,8 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	}
 
 #ifdef SINGLE_WINDOW
-	window = wnd;
-	renderer = rnd;
+	renderer = m_emu->GetRenderer();
+	window = m_emu->window; // nếu expose
 #else
 #ifdef __ANDROID__
 	window = SDL_CreateWindow("CasioEmuMsvc Debugger",
