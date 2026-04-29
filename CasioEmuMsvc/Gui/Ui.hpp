@@ -21,47 +21,54 @@ extern std::vector<Label> g_labels;
 void SetDebugbreak(void);
 class UIWindow {
 public:
-	UIWindow(const char* name) : name(name) {
+    UIWindow(const char* name) : name(name) {
 #ifdef __ANDROID__
-		inital_size = ImVec2(
-			800 * ThemeManager::Instance().fontScale,
-			800 * ThemeManager::Instance().fontScale);
+        inital_size = ImVec2(
+            800 * ThemeManager::Instance().fontScale,
+            800 * ThemeManager::Instance().fontScale);
 #else
-		inital_size = ImVec2(800, 800);
+        inital_size = ImVec2(800, 800);
 #endif
-	}
-	const char* name{};
-	bool open = true;
-	bool bring_to_front_requested = false;
-	ImVec2 inital_size;
-	ImGuiWindowFlags flags{};
+    }
+    const char* name{};
+    bool open = false;
+    bool bring_to_front_requested = false;
+    ImVec2 inital_size;
+    ImGuiWindowFlags flags{};
+    ImGui::SetNextWindowCollapsed(!open, ImGuiCond_Always);
 
-	virtual void Render() {
-		if (!open)
-			return;
-#ifdef __ANDROID__
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
-			ImVec2(ThemeManager::Instance().padding, ThemeManager::Instance().padding));
-#endif
-		if (bring_to_front_requested) {
-			ImGui::SetNextWindowFocus();
-			bring_to_front_requested = false;
-		}
-		ImGui::SetNextWindowSize(inital_size, ImGuiCond_FirstUseEver);
-		if (ImGui::Begin(name, &open, flags)) {
-			RenderCore();
-		}
-		ImGui::End();
+    virtual void Render() {
+        #ifdef __ANDROID__
+        ImGui::PushStyleVar(
+            ImGuiStyleVar_WindowPadding,
+            ImVec2(ThemeManager::Instance().padding,
+                   ThemeManager::Instance().padding));
+        #endif
+    
+        ImGui::SetNextWindowSize(inital_size, ImGuiCond_FirstUseEver);
+    
+        if (bring_to_front_requested) {
+            ImGui::SetNextWindowFocus();
+            bring_to_front_requested = false;
+        }
+    
+        bool visible = open;
+        if (ImGui::Begin(name, &visible, flags)) {
+            open = visible;
+            RenderCore();
+        }
+        ImGui::End();
+    
+        #ifdef __ANDROID__
+        ImGui::PopStyleVar();
+        #endif
+    }
 
-#ifdef __ANDROID__
-		ImGui::PopStyleVar();
-#endif
-	}
-	void BringToFront() {
-		bring_to_front_requested = true;
-	}
-	virtual void RenderCore() = 0;
-	virtual ~UIWindow() {}
+    void BringToFront() {
+        bring_to_front_requested = true;
+    }
+    virtual void RenderCore() = 0;
+    virtual ~UIWindow() {}
 };
 
 inline constexpr ImGuiTableFlags pretty_table = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Resizable;
