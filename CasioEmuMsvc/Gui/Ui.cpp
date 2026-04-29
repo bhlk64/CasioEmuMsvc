@@ -180,8 +180,6 @@ void gui_loop() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
     
-    RenderDebuggerToolbar(); // 👈 gọi TRƯỚC DockSpace
-
     #ifndef __ANDROID__
     
       // --- BẮT ĐẦU DOCKSPACE ---
@@ -231,7 +229,7 @@ void gui_loop() {
     
     ImGui::End();*/
 #endif
-    //RenderDebuggerToolbar();
+    RenderDebuggerToolbar();
     for (auto win : windows) {
         if (!win) continue;
         win->Render();
@@ -291,9 +289,9 @@ void gui_loop() {
     // #endif
 
     ImGui::Render();
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     
-    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+    //ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 #ifndef __ANDROID__
     SDL_RenderPresent(renderer);
 #endif
