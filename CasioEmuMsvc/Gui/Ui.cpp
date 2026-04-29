@@ -260,8 +260,8 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 	}
 
 #ifdef SINGLE_WINDOW
-	renderer = m_emu->GetRenderer();
-	window = m_emu->window; // nếu expose
+	window = wnd;
+	renderer = rnd;
 #else
 #ifdef __ANDROID__
 	window = SDL_CreateWindow("CasioEmuMsvc Debugger",
