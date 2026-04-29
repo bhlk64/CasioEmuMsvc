@@ -245,17 +245,6 @@ void gui_loop() {
 	ImGui::Render();
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
-	
-	// 🔥 QUAN TRỌNG
-	m_emu->Frame();
-	
-	// reset toàn bộ state về mặc định
-	SDL_SetRenderTarget(renderer, NULL);
-	SDL_RenderSetViewport(renderer, NULL);
-	SDL_RenderSetClipRect(renderer, NULL);
-	SDL_RenderSetScale(renderer, 1.0f, 1.0f);
-	
-	// ImGui overlay
 	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 	
 	SDL_RenderPresent(renderer);
