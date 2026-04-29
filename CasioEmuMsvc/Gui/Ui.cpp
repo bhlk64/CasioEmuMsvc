@@ -103,6 +103,7 @@ std::vector<UIWindow*> windows{};
     ImGui::End();
 }*/
 
+/*
 void RenderDebuggerToolbar() {
     if (ImGui::BeginMainMenuBar()) {
         static UIWindow* current = nullptr;
@@ -144,7 +145,26 @@ void RenderDebuggerToolbar() {
 
         ImGui::EndMainMenuBar();
     }
+}*/
+
+void RenderDebuggerToolbar() {
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("Debugger Windows")) {
+            for (auto* w : windows) {
+                if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
+                    // MenuItem sẽ tự động toggle biến w->open
+                }
+            }
+            ImGui::EndMenu();
+        }
+        
+        if (ImGui::Button("Close All")) {
+            for (auto* w : windows) if (w) w->open = false;
+        }
+        ImGui::EndMainMenuBar();
+    }
 }
+
 
 void gui_loop() {
 	if (!m_emu->Running())
@@ -160,36 +180,32 @@ void gui_loop() {
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
-	RenderDebuggerToolbar();
-	
 	#ifndef __ANDROID__
 	
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->Pos);
-	ImGui::SetNextWindowSize(viewport->Size);
-	ImGui::SetNextWindowViewport(viewport->ID);
-	
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	  // --- BẮT ĐẦU DOCKSPACE ---
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
 
-	ImGui::Begin("MyMainDockSpace", nullptr, window_flags);
-	ImGui::PopStyleVar(2);
+    ImGuiWindowFlags host_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | 
+                                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | 
+                                  ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                                  ImGuiWindowFlags_NoBackground;
 
-	// Đây là lệnh quan trọng nhất:
-	ImGuiID dockspace_id = ImGui::GetID("RootDockSpace");
-	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	RenderDebuggerToolbar(); // Vẽ thanh menu bên trong DockSpace
+    ImGui::Begin("MainDockHost", nullptr, host_flags);
+    ImGui::PopStyleVar(3);
 
-	for (auto win : windows) {
-		if (!win || !win->open) continue;
-		win->Render(); // Các cửa sổ con bây giờ có thể kéo vào nhau
-	}
-
-	ImGui::End(); // Kết thúc "MyMainDockSpace"
+    // Lệnh này tạo ra vùng để bạn gộp Tab
+    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+    
+    ImGui::End(); // Kết thúc Host
+    // --- KẾT THÚC DOCKSPACE ---
 	
 	/*
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -213,6 +229,7 @@ void gui_loop() {
 	
 	ImGui::End();*/
 #endif
+	RenderDebuggerToolbar();
 	for (auto win : windows) {
 		if (!win || !win->open) continue;
 		win->Render();
