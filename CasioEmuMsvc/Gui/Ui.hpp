@@ -6,6 +6,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 
+class UIWindow;
 
 class CodeViewer;
 CodeViewer* test_gui(bool* guiCreated, SDL_Window*, SDL_Renderer*);
@@ -17,7 +18,7 @@ extern casioemu::Emulator* m_emu;
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 extern std::vector<Label> g_labels;
-extern std::vector<UIWindow*> windows{};
+extern std::vector<UIWindow*> windows;
 
 void SetDebugbreak(void);
 class UIWindow {
