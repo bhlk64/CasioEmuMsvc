@@ -25,22 +25,66 @@ void ThemeManager::SaveSettings() {
 }
 
 void ThemeManager::LoadSettings() {
-	std::ifstream file("./theme.bin", std::ios::binary);
-	if (file.is_open()) {
-		Binary::Read(file, m_settings);
-		file.close();
+	std::ifstream file("./theme.bin", std::ios::binary | std::ios::ate);
 
-		if (m_settings.isDarkMode) {
+	if (!file.is_open())
+		return;
+
+	size_t size = file.tellg();
+	file.seekg(0);
+
+	// 💀 file quá nhỏ → bỏ luôn
+	if (size < 64) {
+		file.close();
+		return;
+	}
+
+	ThemeSettings tmp;
+
+	try {
+		std::ifstream stm("./theme.bin", std::ios::binary);
+
+		// ==== LOAD CORE ====
+		Binary::Read(stm, tmp.isDarkMode);
+		stm.read(tmp.language, sizeof(tmp.language));
+		Binary::Read(stm, tmp.scale);
+		stm.read(tmp.injectionFilePath, sizeof(tmp.injectionFilePath));
+
+		if (!stm.good())
+			return;
+
+		Binary::Read(stm, tmp.lowPerformanceMode);
+		Binary::Read(stm, tmp.igs_light);
+		Binary::Read(stm, tmp.igs_dark);
+
+		if (!stm.good())
+			return;
+
+		Binary::Read(stm, tmp.enableAutoTint);
+		Binary::Read(stm, tmp.seedColor);
+
+		// 👇 NEW FIELD (startupWindows)
+		if (stm.good() && stm.peek() != EOF) {
+			Binary::Read(stm, tmp.startupWindows);
+		}
+
+		// ===== APPLY ONLY IF OK =====
+		m_settings = tmp;
+
+		if (m_settings.isDarkMode)
 			SetDarkMode();
-		}
-		else {
+		else
 			SetLightMode();
-		}
-		if (strlen(m_settings.language) > 0) {
+
+		if (strlen(m_settings.language) > 0)
 			g_local.ChangeLanguage(m_settings.language);
-		}
+
 		m_fontScale = m_settings.scale;
 		m_fontRebuildRequested = true;
+
+	} catch (...) {
+		// 💀 file corrupt → ignore luôn
+		return;
 	}
 }
 
