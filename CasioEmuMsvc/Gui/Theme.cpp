@@ -23,7 +23,10 @@ public:
     std::once_flag loadFlag;
     void RenderCore() override {
     
-        ImGui::TextUnformatted("Startup Config")
+        auto& tm = ThemeManager::Instance();
+        auto& settings = tm.Settings();
+    
+        ImGui::TextUnformatted("Startup Config");
         
         if (ImGui::BeginCombo("Startup Windows", "Select...")) {
             for (auto* w : windows) {
@@ -58,9 +61,7 @@ public:
     
         std::call_once(loadFlag, []() {
             ThemeManager::Instance().LoadSettings();
-        });
-        auto& tm = ThemeManager::Instance();
-        auto& settings = tm.Settings();
+        })
 
         if (ImGui::Button("Ui.DarkMode"_lc)) {
             tm.SetDarkMode();
