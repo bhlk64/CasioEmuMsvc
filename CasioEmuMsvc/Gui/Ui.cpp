@@ -179,6 +179,8 @@ void gui_loop() {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
+    
+    RenderDebuggerToolbar(); // 👈 gọi TRƯỚC DockSpace
 
     #ifndef __ANDROID__
     
@@ -229,7 +231,7 @@ void gui_loop() {
     
     ImGui::End();*/
 #endif
-    RenderDebuggerToolbar();
+    //RenderDebuggerToolbar();
     for (auto win : windows) {
         if (!win) continue;
         win->Render();
