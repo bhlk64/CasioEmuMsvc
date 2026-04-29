@@ -12,6 +12,7 @@ struct ThemeSettings {
 	ImGuiStyle igs_light = ImGuiStyle();
 	ImGuiStyle igs_dark = ImGuiStyle();
 	char language[30] = "";
+	std::vector<std::string> startupWindows;
 	float scale = 1.0f;
 	char injectionFilePath[256] = "./hc-inj.txt";
 	bool lowPerformanceMode = false;
