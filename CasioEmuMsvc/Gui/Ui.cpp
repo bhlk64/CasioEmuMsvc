@@ -404,12 +404,12 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     }
 #endif
 
-    ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = "imgui.ini";
     bool firstLaunch = !std::filesystem::exists("imgui.ini");
 
     if (firstLaunch) {
-        windows[i]->open = true;
+        for (auto* w : windows)
+            w->open = true;
     }
 
     return nullptr;
