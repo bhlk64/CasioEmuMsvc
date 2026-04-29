@@ -26,6 +26,7 @@
 #include <string>
 #include <thread>
 #include <unordered_set>
+#include <cstdlib>
 casioemu::Emulator* m_emu = nullptr;
 
 uint32_t pc_cache = 0;
@@ -540,19 +541,19 @@ void CodeViewer::RenderCore() {
 	// Second line: Goto and Control
 	ImGui::TextUnformatted("CodeViewer.Goto"_lc);
 	ImGui::SameLine();
-	ImGui::SetNextItemWidth(ImGui::CalcTextSize("000000").x);
-	if (ImGui::InputText("##input", adrbuf, 8, ImGuiInputTextFlags_EnterReturnsTrue)) {
-	    uint32_t addr = 0;
-	    auto end = adrbuf + strlen(adrbuf);
+	if (ImGui::InputText("##input", adrbuf, 9, ImGuiInputTextFlags_EnterReturnsTrue)) {
+	    // skip khoảng trắng đầu
+	    char* start = adrbuf;
+	    while (*start && std::isspace((unsigned char)*start)) start++;
 	
-	    auto [ptr, ec] = std::from_chars(adrbuf, end, addr, 16);
+	    char* endptr = nullptr;
+	    unsigned long val = std::strtoul(start, &endptr, 16);
 	
-	    if (ec == std::errc() && ptr == end) {
-	        JumpTo(addr);
-	    }
-	    else {
-	        // optional: clear hoặc báo lỗi nhẹ
-	        adrbuf[0] = '\0';
+	    // skip khoảng trắng cuối
+	    while (*endptr && std::isspace((unsigned char)*endptr)) endptr++;
+	
+	    if (endptr != start && *endptr == '\0') {
+	        JumpTo((uint32_t)val);
 	    }
 	}
 	ImGui::SameLine();
