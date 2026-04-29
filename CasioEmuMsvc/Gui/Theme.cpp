@@ -61,7 +61,7 @@ public:
     
         std::call_once(loadFlag, []() {
             ThemeManager::Instance().LoadSettings();
-        })
+        });
 
         if (ImGui::Button("Ui.DarkMode"_lc)) {
             tm.SetDarkMode();
