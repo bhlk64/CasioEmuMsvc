@@ -555,7 +555,6 @@ void CodeViewer::RenderCore() {
 	        adrbuf[0] = '\0';
 	    }
 	}
-	}
 	ImGui::SameLine();
 	if (m_emu->GetPaused()) {
 		if (ImGui::Button("CodeViewer.Step"_lc)) {
