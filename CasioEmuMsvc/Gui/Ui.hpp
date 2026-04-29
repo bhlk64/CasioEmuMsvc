@@ -57,7 +57,7 @@ public:
             open = visible;
             RenderCore();
         }
-        open = visible;
+        //open = visible;
         ImGui::End();
     
         #ifdef __ANDROID__
