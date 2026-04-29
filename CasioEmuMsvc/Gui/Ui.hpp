@@ -57,8 +57,8 @@ public:
             open = visible;
             RenderCore();
         }
-        //open = visible;
         ImGui::End();
+        open = visible;
     
         #ifdef __ANDROID__
         ImGui::PopStyleVar();

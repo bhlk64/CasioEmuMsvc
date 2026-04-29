@@ -169,6 +169,8 @@ void RenderDebuggerToolbar() {
 void gui_loop() {
     if (!m_emu->Running())
         return;
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // hoặc màu nền
+    SDL_RenderClear(renderer);
 
     ImGuiIO& io = ImGui::GetIO();
 
@@ -393,24 +395,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     for (auto item : GetEditors())
         windows.push_back(item);
 
-#ifdef __ANDROID__
-    static bool firstRun = true;
-    
-    if (firstRun) {
-        for (auto* w : windows)
-            w->open = false;
-    
-        firstRun = false;
-    }
-#endif
-
     io.IniFilename = "imgui.ini";
-    bool firstLaunch = !std::filesystem::exists("imgui.ini");
-
-    if (firstLaunch) {
-        for (auto* w : windows)
-            w->open = true;
-    }
 
     return nullptr;
 }
