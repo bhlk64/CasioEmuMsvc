@@ -541,10 +541,20 @@ void CodeViewer::RenderCore() {
 	ImGui::TextUnformatted("CodeViewer.Goto"_lc);
 	ImGui::SameLine();
 	ImGui::SetNextItemWidth(ImGui::CalcTextSize("000000").x);
-	ImGui::InputText("##input", adrbuf, 8);
-	if (adrbuf[0] != '\0' && ImGui::IsItemFocused()) {
-		uint32_t addr = std::stoi(adrbuf, 0, 16);
-		JumpTo(addr);
+	if (ImGui::InputText("##input", adrbuf, 8, ImGuiInputTextFlags_EnterReturnsTrue)) {
+	    uint32_t addr = 0;
+	    auto end = adrbuf + strlen(adrbuf);
+	
+	    auto [ptr, ec] = std::from_chars(adrbuf, end, addr, 16);
+	
+	    if (ec == std::errc() && ptr == end) {
+	        JumpTo(addr);
+	    }
+	    else {
+	        // optional: clear hoặc báo lỗi nhẹ
+	        adrbuf[0] = '\0';
+	    }
+	}
 	}
 	ImGui::SameLine();
 	if (m_emu->GetPaused()) {
