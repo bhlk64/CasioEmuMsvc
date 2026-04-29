@@ -541,6 +541,7 @@ void CodeViewer::RenderCore() {
 	// Second line: Goto and Control
 	ImGui::TextUnformatted("CodeViewer.Goto"_lc);
 	ImGui::SameLine();
+	ImGui::SetNextItemWidth(80); // 👈 chỉnh độ dài ở đây
 	if (ImGui::InputText("##input", adrbuf, 9, ImGuiInputTextFlags_EnterReturnsTrue)) {
 	    // skip khoảng trắng đầu
 	    char* start = adrbuf;
