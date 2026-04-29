@@ -46,7 +46,7 @@ CodeViewer* code_viewer = 0;
 Injector* injector = 0;
 Breakpoints* membp = 0;
 
-extern std::vector<UIWindow*> windows{};
+std::vector<UIWindow*> windows{};
 
 /*void RenderDebuggerToolbar() {
     float padding = 10.0f;
