@@ -163,6 +163,35 @@ void gui_loop() {
 	RenderDebuggerToolbar();
 	
 	#ifndef __ANDROID__
+	
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+	ImGui::Begin("MyMainDockSpace", nullptr, window_flags);
+	ImGui::PopStyleVar(2);
+
+	// Đây là lệnh quan trọng nhất:
+	ImGuiID dockspace_id = ImGui::GetID("RootDockSpace");
+	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
+	RenderDebuggerToolbar(); // Vẽ thanh menu bên trong DockSpace
+
+	for (auto win : windows) {
+		if (!win || !win->open) continue;
+		win->Render(); // Các cửa sổ con bây giờ có thể kéo vào nhau
+	}
+
+	ImGui::End(); // Kết thúc "MyMainDockSpace"
+	
+	/*
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	
 	ImGui::SetNextWindowPos(viewport->Pos);
@@ -182,7 +211,7 @@ void gui_loop() {
 	
 	ImGui::DockSpace(dockspace_id, ImVec2(0, 0), dock_flags);
 	
-	ImGui::End();
+	ImGui::End();*/
 #endif
 	for (auto win : windows) {
 		if (!win || !win->open) continue;
