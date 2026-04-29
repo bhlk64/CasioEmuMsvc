@@ -410,6 +410,18 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
             w->name
         ) != settings.startupWindows.end();
     }
+    
+    // 👇 fallback
+    if (!anyOpen) {
+        for (auto* w : windows) {
+            if (!w) continue;
+    
+            if (std::string(w->name) == "Theme") {
+                w->open = true;
+                break;
+            }
+        }
+    }
 
     return nullptr;
 }
