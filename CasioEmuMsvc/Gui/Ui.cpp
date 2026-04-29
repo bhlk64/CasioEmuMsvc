@@ -342,7 +342,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     ImGuiIO& io = ImGui::GetIO();
 
 #ifdef __ANDROID__
-    ThemeManager::Instance().LoadSettings();
+    //ThemeManager::Instance().LoadSettings();
     ThemeManager::Instance().UpdateUIScale();
 #endif
 
@@ -393,16 +393,12 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     for (auto item : GetEditors())
         windows.push_back(item);
 
-#ifdef __ANDROID__
-    for (auto item : windows) {
-        item->open = false;
-    }
-#endif
+    ThemeManager::Instance().LoadSettings();
 
     auto& settings = ThemeManager::Instance().Settings();
     
     bool anyOpen = false;
-
+    
     for (auto* w : windows) {
         if (!w) continue;
     
@@ -416,12 +412,12 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
             anyOpen = true;
     }
     
-    // 👇 giờ mới dùng được
+    // fallback
     if (!anyOpen) {
         for (auto* w : windows) {
             if (!w) continue;
     
-            if (std::string(w->name) == "Theme") {
+            if (std::string(w->name).find("Theme") != std::string::npos) {
                 w->open = true;
                 break;
             }
