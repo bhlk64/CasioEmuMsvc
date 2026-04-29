@@ -35,7 +35,6 @@ public:
     bool bring_to_front_requested = false;
     ImVec2 inital_size;
     ImGuiWindowFlags flags{};
-    ImGui::SetNextWindowCollapsed(!open, ImGuiCond_Always);
 
     virtual void Render() {
         #ifdef __ANDROID__
@@ -45,6 +44,7 @@ public:
                    ThemeManager::Instance().padding));
         #endif
     
+        //ImGui::SetNextWindowCollapsed(!open, ImGuiCond_Always);
         ImGui::SetNextWindowSize(inital_size, ImGuiCond_FirstUseEver);
     
         if (bring_to_front_requested) {
@@ -57,6 +57,7 @@ public:
             open = visible;
             RenderCore();
         }
+        open = visible;
         ImGui::End();
     
         #ifdef __ANDROID__
