@@ -401,6 +401,8 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 
     auto& settings = ThemeManager::Instance().Settings();
     
+    bool anyOpen = false;
+
     for (auto* w : windows) {
         if (!w) continue;
     
@@ -409,9 +411,12 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
             settings.startupWindows.end(),
             w->name
         ) != settings.startupWindows.end();
+    
+        if (w->open)
+            anyOpen = true;
     }
     
-    // 👇 fallback
+    // 👇 giờ mới dùng được
     if (!anyOpen) {
         for (auto* w : windows) {
             if (!w) continue;
