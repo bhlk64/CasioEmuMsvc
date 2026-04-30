@@ -135,6 +135,30 @@ inline std::string GetCJKFontPath() {
 	return FindBestFont(candidates);
 }
 
+inline const ImWchar* GetGlobalRanges() {
+    static const ImWchar ranges[] = {
+        // Basics (ASCII + symbols)
+        0x0020, 0x00FF,
+
+        // Vietnamese + Latin Extended
+        0x0100, 0x017F,
+
+        // General punctuation
+        0x2000, 0x206F,
+
+        // CJK (Chinese / Japanese basic)
+        0x3000, 0x30FF,
+        0x31F0, 0x31FF,
+        0x4E00, 0x9FFF,
+
+        // Emoji (IMPORTANT)
+        //0x1F300, 0x1FAFF,
+
+        0
+    };
+    return ranges;
+}
+
 // Theme/font/scaling globals are now managed by ThemeManager.
 // See ThemeManager.h for the unified API.
 
@@ -161,7 +185,7 @@ inline void RebuildFont(float scale = 0.0f) {
 	AddFontsFromDir(externalFonts, "./fonts/");
 	if (!externalFonts.empty()) {
 		for (const auto& font : externalFonts) {
-			io.Fonts->AddFontFromFileTTF(font.c_str(), 15 * scale, &config, io.Fonts->GetGlyphRangesDefault());
+			io.Fonts->AddFontFromFileTTF(font.c_str(), 15 * scale, &config, GetGlobalRanges());
 			printf("[Ui][Info] Loaded Users Fonts: %s\n", font.c_str());
 		}
 	}
