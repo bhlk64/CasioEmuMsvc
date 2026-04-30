@@ -219,7 +219,7 @@ int main(int argc, char* argv[]) {
 		background = IMG_Load("background.jpg");
 		bg_txt = 0;
 		if (background) {
-			bg_txt = SDL_CreateTextureFromSurface(renderer, background);
+			bg_txt = SDL_CreateTextureFromSurface(emulator.renderer, background);
 			ThemeManager::Instance().ExtractAndApplyAutoTint(bg_txt, renderer);
 		}
 	}
@@ -326,6 +326,7 @@ int main(int argc, char* argv[]) {
 
 				SDL_RenderCopy(renderer, bg_txt, NULL, &dst_rect);
 			}
+			std::lock_guard<std::mutex> lock(emulator.render_mx);
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 20);
 			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 			SDL_RenderFillRect(renderer, 0);

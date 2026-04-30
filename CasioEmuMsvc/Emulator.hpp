@@ -37,6 +37,7 @@ namespace casioemu
 	class Emulator
 	{
     public:
+    std::mutex render_mx;
     SDL_Texture* tx = nullptr;
 		SDL_Renderer *renderer;
 		SDL_Surface* interface_surface;

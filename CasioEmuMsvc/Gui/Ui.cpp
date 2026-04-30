@@ -292,9 +292,6 @@ void gui_loop() {
     //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-#ifndef __ANDROID__
-    SDL_RenderPresent(renderer);
-#endif
 }
 
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
