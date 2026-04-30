@@ -24,7 +24,7 @@
 #include <Gui.h>
 #include <SDL.h>
 #include <filesystem>
-#include <fstream>
+/*#include <fstream>
 
 void DebugLog(const std::string& msg) {
     static std::ofstream log("debug_log.txt", std::ios::app);
@@ -32,7 +32,7 @@ void DebugLog(const std::string& msg) {
         log << msg << std::endl;
         log.flush();
     }
-}
+}*/
 
 #ifdef ENABLE_SENTRY
 #include <sentry.h>
@@ -399,13 +399,10 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         windows.push_back(item);
     for (auto item : GetEditors())
         windows.push_back(item);
-    for (auto* w : windows) {
-        if (w) w->open = true;
-    }
   
     io.IniFilename = "imgui.ini";
     
-    for (auto* w : windows) {
+    /*for (auto* w : windows) {
         if (!w) continue;
     
         char buf[256];
@@ -417,7 +414,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         );
     
         DebugLog(buf);
-    }
+    }*/
     
     return nullptr;
 }

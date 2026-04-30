@@ -52,13 +52,15 @@ public:
             bring_to_front_requested = false;
         }
     
-        bool visible = open;
-        if (ImGui::Begin(name, &visible, flags)) {
-            open = visible;
+        if (!open) return;
+
+        bool keep_open = open;
+        if (ImGui::Begin(name, &keep_open, flags)) {
             RenderCore();
         }
         ImGui::End();
-        open = visible;
+        
+        open = keep_open;
     
         #ifdef __ANDROID__
         ImGui::PopStyleVar();
