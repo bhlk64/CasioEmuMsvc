@@ -160,6 +160,17 @@ void RenderDebuggerToolbar() {
     }
 }*/
 
+std::string ui_state_fn = "ui_state.txt";
+
+void SaveUIState() {
+    std::ofstream f(ui_state_fn);
+
+    for (auto* w : windows) {
+        if (!w) continue;
+        f << w->name << "=" << (w->open ? 1 : 0) << "\n";
+    }
+}
+
 void RenderDebuggerToolbar() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Debugger Windows")) {
@@ -176,17 +187,6 @@ void RenderDebuggerToolbar() {
             for (auto* w : windows) if (w) w->open = false;
         }
         ImGui::EndMainMenuBar();
-    }
-}
-
-std::string ui_state_fn = "ui_state.txt";
-
-void SaveUIState() {
-    std::ofstream f(ui_state_fn);
-
-    for (auto* w : windows) {
-        if (!w) continue;
-        f << w->name << "=" << (w->open ? 1 : 0) << "\n";
     }
 }
 
