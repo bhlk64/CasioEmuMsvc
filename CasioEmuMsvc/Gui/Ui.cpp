@@ -343,7 +343,7 @@ void gui_loop() {
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     
     #ifndef __ANDROID__
-    ImGui::RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
     #endif
 }
 
