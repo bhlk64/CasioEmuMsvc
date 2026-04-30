@@ -16,6 +16,7 @@
 #include "Theme.h"
 #include "VariableWindow.h"
 #include "WatchWindow.hpp"
+#include "Rop/RopCompilerUI.h"
 #include "PluginLogWindow.hpp"
 #include "SnapshotWindow.h"
 #include "imgui/imgui.h"
@@ -437,6 +438,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
              membp = new Breakpoints(),
              CreateAddressWindow(),
              // MakeAssemblerUI(),
+             CreateRopCompilerWindow(),
              MakeThemeWindow(),
              CreateBitmapViewer(),
              CreateSnapshotWindow(),
