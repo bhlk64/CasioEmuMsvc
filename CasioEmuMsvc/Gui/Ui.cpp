@@ -169,8 +169,6 @@ void RenderDebuggerToolbar() {
 void gui_loop() {
     if (!m_emu->Running())
         return;
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // hoặc màu nền
-    SDL_RenderClear(renderer);
 
     ImGuiIO& io = ImGui::GetIO();
 

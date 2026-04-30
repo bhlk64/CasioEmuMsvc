@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include 
 
 namespace casioemu {
 	Emulator::Emulator(std::map<std::string, std::string>& _argv_map, bool _paused) : Paused(_paused), argv_map(_argv_map), chipset(*new Chipset(*this)), m_step_requested(false) {
@@ -84,7 +85,8 @@ namespace casioemu {
 			SDL_WINDOW_SHOWN | (SDL_WINDOW_RESIZABLE));
 		if (!window)
 			PANIC("SDL_CreateWindow failed: %s\n", SDL_GetError());
-		renderer = SDL_CreateRenderer(window, -1, 0);
+		//renderer = SDL_CreateRenderer(window, -1, 0);
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 		if (!renderer)
 			PANIC("SDL_CreateRenderer failed: %s\n", SDL_GetError());
 
@@ -92,6 +94,15 @@ namespace casioemu {
 		if (!interface_surface)
 			PANIC("IMG_Load failed: %s\n", IMG_GetError());
 		interface_texture = SDL_CreateTextureFromSurface(renderer, interface_surface);
+		
+		Uint32 format;
+		SDL_QueryTexture(interface_texture, &format, nullptr, nullptr, nullptr);
+		if (!interface_texture)
+			PANIC("interface_texture null");
+		this->tx = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, interface_background.dest.w, interface_background.dest.h);
+		if (!tx)
+			PANIC("Failed to create tx: %s\n", SDL_GetError());
+
 
 		SetupInternals();
 		cycles.Reset();
@@ -153,6 +164,7 @@ namespace casioemu {
 
 		// std::lock_guard<decltype(access_mx)> access_lock(access_mx);
 
+		SDL_DestroyTexture(tx); 
 		SDL_DestroyTexture(interface_texture);
 		SDL_DestroyRenderer(renderer);
 		SDL_DestroyWindow(window);
@@ -241,16 +253,12 @@ namespace casioemu {
 		// std::lock_guard<decltype(access_mx)> access_lock(access_mx);
 		// SDL_RenderPresent(renderer);
 	}
+	
 	void Emulator::Frame() {
 		// std::lock_guard<decltype(access_mx)> access_lock(access_mx);
-
-		// create texture `tx` with the same format as `interface_texture`
-		Uint32 format;
-		SDL_QueryTexture(interface_texture, &format, nullptr, nullptr, nullptr);
-		SDL_Texture* tx = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, interface_background.dest.w, interface_background.dest.h);
-
 		// render on `tx`
-		SDL_SetRenderTarget(renderer, tx);
+		if (SDL_SetRenderTarget(renderer, tx) != 0)
+			PANIC("SetRenderTarget failed: %s\n", SDL_GetError());
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_RenderClear(renderer);
 		SDL_SetTextureColorMod(interface_texture, 255, 255, 255);
@@ -271,9 +279,10 @@ namespace casioemu {
 		dest.h = interface_background.src.h * uf;
 		dest.x = (w - dest.w) / 2;
 		dest.y = (h - dest.h) / 2; // Centre it
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, tx, nullptr, &dest);
 		emu_rect = dest;
-		SDL_DestroyTexture(tx);
 		Repaint();
 	}
 
