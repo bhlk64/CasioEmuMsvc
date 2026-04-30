@@ -179,7 +179,7 @@ void RenderDebuggerToolbar() {
     }
 }
 
-std::string ui_state_fn = "ui_state.txt"
+std::string ui_state_fn = "ui_state.txt";
 
 void SaveUIState() {
     std::ofstream f(ui_state_fn);
