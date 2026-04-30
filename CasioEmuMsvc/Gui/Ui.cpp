@@ -405,10 +405,20 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
   
     io.IniFilename = "imgui.ini";
     
-    char buf[256];
-    snprintf(buf, sizeof(buf), "%s ptr=%p open=%d", name, name, open);
-    DebugLog(buf);
-
+    for (auto* w : windows) {
+        if (!w) continue;
+    
+        char buf[256];
+        snprintf(buf, sizeof(buf),
+            "%s ptr=%p open=%d",
+            w->name,
+            (void*)w,
+            w->open
+        );
+    
+        DebugLog(buf);
+    }
+    
     return nullptr;
 }
 
