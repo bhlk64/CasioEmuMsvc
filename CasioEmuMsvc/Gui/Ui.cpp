@@ -24,6 +24,9 @@
 #include <Gui.h>
 #include <SDL.h>
 #include <filesystem>
+#include <fstream>
+#include <string>
+#include <unordered_map>
 /*#include <fstream>
 
 void DebugLog(const std::string& msg) {
@@ -163,6 +166,7 @@ void RenderDebuggerToolbar() {
             for (auto* w : windows) {
                 if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
                     // MenuItem sẽ tự động toggle biến w->open
+                    SaveUIState();
                 }
             }
             ImGui::EndMenu();
@@ -175,6 +179,41 @@ void RenderDebuggerToolbar() {
     }
 }
 
+std::string ui_state_fn = "ui_state.txt"
+
+void SaveUIState() {
+    std::ofstream f(ui_state_fn);
+
+    for (auto* w : windows) {
+        if (!w) continue;
+        f << w->name << "=" << (w->open ? 1 : 0) << "\n";
+    }
+}
+
+void LoadUIState() {
+    std::ifstream f(ui_state_fn);
+    if (!f.is_open()) return;
+
+    std::unordered_map<std::string, bool> state;
+
+    std::string line;
+    while (std::getline(f, line)) {
+        auto pos = line.find('=');
+        if (pos == std::string::npos) continue;
+
+        std::string name = line.substr(0, pos);
+        bool open = line.substr(pos + 1) == "1";
+
+        state[name] = open;
+    }
+
+    for (auto* w : windows) {
+        if (!w) continue;
+
+        if (state.find(w->name) != state.end())
+            w->open = state[w->name];
+    }
+} 
 
 void gui_loop() {
     if (!m_emu->Running())
@@ -401,7 +440,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         windows.push_back(item);
     for (auto item : GetEditors())
         windows.push_back(item);
-    if (!std::filesystem::exists("imgui.ini")) {
+    if (!std::filesystem::exists(ui_state_fn)) {
         for (auto* w : windows) {
             if (w) {
                 w->open = true;
@@ -409,7 +448,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
             }
         }
     }
-    
+    LoadUIState();
     /*for (auto* w : windows) {
         if (!w) continue;
     
