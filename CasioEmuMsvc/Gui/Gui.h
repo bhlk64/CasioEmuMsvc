@@ -158,11 +158,13 @@ inline void RebuildFont(float scale = 0.0f) {
 
 	// 3. External Users Fonts
 	std::vector<std::string> externalFonts;
-	AddFontsFromDir(externalFonts,  + "./fonts/");
+	AddFontsFromDir(externalFonts, "./fonts/");
 	if (!externalFonts.empty()) {
-		io.Fonts->AddFontFromFileTTF(externalFonts.c_str(), 15 * scale, &config, io.Fonts->GetGlyphRangesDefault());
-		base_loaded = true;
-		printf("[Ui][Info] Loaded Users Fonts: %s\n", externalFonts.c_str());
+		for (const auto& font : externalFonts) {
+			io.Fonts->AddFontFromFileTTF(font.c_str(), 15 * scale, &config, io.Fonts->GetGlyphRangesDefault());
+			base_loaded = true;
+			printf("[Ui][Info] Loaded Users Fonts: %s\n", font.c_str());
+		}
 	}
 	
 
