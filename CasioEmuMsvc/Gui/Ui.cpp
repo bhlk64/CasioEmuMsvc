@@ -389,7 +389,10 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         windows.push_back(item);
     for (auto item : GetEditors())
         windows.push_back(item);
-
+    for (auto* w : windows) {
+        if (w) w->open = true;
+    }
+  
     io.IniFilename = "imgui.ini";
 
     return nullptr;
