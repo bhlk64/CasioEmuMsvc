@@ -138,17 +138,7 @@ inline std::string GetCJKFontPath() {
 inline const ImWchar* GetGlobalRanges() {
     static const ImWchar ranges[] = {
         // Basics (ASCII + symbols)
-        0x0020, 0x03ff,
-
-        // Vietnamese + Latin Extended
-
-        // General punctuation
-        0x2000, 0x206F,
-
-        // CJK (Chinese / Japanese basic)
-        0x3000, 0x30FF,
-        0x31F0, 0x31FF,
-        0x4E00, 0x9FFF,
+        0x0001, 0xffff
 
         // Emoji (IMPORTANT)
         //0x1F300, 0x1FAFF,
