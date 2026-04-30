@@ -356,9 +356,11 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     RebuildFont();
     // SetupDefaultTheme();
 
+    io.IniFilename = "imgui.ini";
     io.WantCaptureKeyboard = true;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer2_Init(renderer);
@@ -399,8 +401,12 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         windows.push_back(item);
     for (auto item : GetEditors())
         windows.push_back(item);
-  
-    io.IniFilename = "imgui.ini";
+    for (auto* w : windows) {
+        if (w) {
+            w->open = true;
+            w->bring_to_front_requested = false;
+        }
+    }
     
     /*for (auto* w : windows) {
         if (!w) continue;

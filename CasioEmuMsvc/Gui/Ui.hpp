@@ -37,6 +37,8 @@ public:
     ImGuiWindowFlags flags{};
 
     virtual void Render() {
+        if (!open && !bring_to_front_requested)
+        return;
         #ifdef __ANDROID__
         ImGui::PushStyleVar(
             ImGuiStyleVar_WindowPadding,
@@ -52,7 +54,7 @@ public:
             bring_to_front_requested = false;
         }
     
-        if (!open) return;
+        //if (!open) return;
 
         bool keep_open = open;
         if (ImGui::Begin(name, &keep_open, flags)) {
