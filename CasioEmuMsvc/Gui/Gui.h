@@ -138,10 +138,9 @@ inline std::string GetCJKFontPath() {
 inline const ImWchar* GetGlobalRanges() {
     static const ImWchar ranges[] = {
         // Basics (ASCII + symbols)
-        0x0020, 0x00FF,
+        0x0020, 0x03ff,
 
         // Vietnamese + Latin Extended
-        0x0100, 0x017F,
 
         // General punctuation
         0x2000, 0x206F,
