@@ -402,6 +402,7 @@ void gui_cleanup() {
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
+    windows.clear();
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
