@@ -38,7 +38,7 @@ public:
 
     virtual void Render() {
         if (!open && !bring_to_front_requested)
-        return;
+            return;
         #ifdef __ANDROID__
         ImGui::PushStyleVar(
             ImGuiStyleVar_WindowPadding,
