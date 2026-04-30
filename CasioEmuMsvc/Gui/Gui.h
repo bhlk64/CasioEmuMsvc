@@ -162,7 +162,6 @@ inline void RebuildFont(float scale = 0.0f) {
 	if (!externalFonts.empty()) {
 		for (const auto& font : externalFonts) {
 			io.Fonts->AddFontFromFileTTF(font.c_str(), 15 * scale, &config, io.Fonts->GetGlyphRangesDefault());
-			base_loaded = true;
 			printf("[Ui][Info] Loaded Users Fonts: %s\n", font.c_str());
 		}
 	}
