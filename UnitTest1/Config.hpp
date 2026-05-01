@@ -32,7 +32,7 @@
 #define PANIC(...)           \
 	{                        \
 		printf(__VA_ARGS__); \
-		__debugbreak();      \
+		throw 0;      \
 	}
 #endif
 #else
@@ -81,17 +81,7 @@ public:                       \
 	virtual y Get##x##() = 0; \
 	virtual void Set##x##(y a) = 0;
 
-#include "git_info.h"
-
-#define EMULATOR_VERSION GIT_COMMIT_HASH
-
-#define DISABLE_SENTRY
+#define EMULATOR_VERSION ""
+#define DISCORD_APP_ID ""
 
 #define TEST_BUILD
-
-#if !defined(__ANDROID__) && !defined(DISABLE_SENTRY)
-#define ENABLE_SENTRY
-#define SENTRY_BUILD_STATIC 1
-#endif
-
-#define DISCORD_APP_ID "1494244788055179344"

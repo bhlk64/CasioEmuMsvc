@@ -16,9 +16,11 @@
 #include "Theme.h"
 #include "VariableWindow.h"
 #include "WatchWindow.hpp"
+#ifndef TEST_BUILD
 #include "Rop/RopCompilerUI.h"
 #include "PluginLogWindow.hpp"
 #include "SnapshotWindow.h"
+#endif
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer2.h"
@@ -343,7 +345,7 @@ void gui_loop() {
     
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     
-    #ifndef __ANDROID__
+    #ifndef SINGLE_WINDOW
     SDL_RenderPresent(renderer);
     #endif
 }
@@ -438,11 +440,13 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
              membp = new Breakpoints(),
              CreateAddressWindow(),
              // MakeAssemblerUI(),
+#ifndef TEST_BUILD
              CreateRopCompilerWindow(),
-             MakeThemeWindow(),
-             CreateBitmapViewer(),
+             new PluginLogWindow(),
              CreateSnapshotWindow(),
-             new PluginLogWindow()})
+#endif
+             MakeThemeWindow(),
+             CreateBitmapViewer(), })
         windows.push_back(item);
     for (auto item : GetEditors())
         windows.push_back(item);

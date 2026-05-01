@@ -41,7 +41,6 @@
 #include <sentry.h>
 #endif
 
-#include "DiscordRPC.h"
 #include "StartupUi/StartupUi.h"
 #include <Gui.h>
 #include <Plugin/PluginMan.h>
@@ -140,8 +139,6 @@ int main(int argc, char* argv[]) {
 	}
 #endif
 
-	DiscordRPC::Init();
-	DiscordRPC::UpdatePresence("");
 
 	std::map<std::string, std::string> argv_map;
 	for (int ix = 1; ix != argc; ++ix) {
@@ -177,7 +174,6 @@ int main(int argc, char* argv[]) {
 		auto s = sui_loop();
 		argv_map["model"] = std::move(s);
 		if (argv_map["model"].empty()) {
-			DiscordRPC::Shutdown();
 			return -1;
 		}
 	}
@@ -188,8 +184,6 @@ int main(int argc, char* argv[]) {
 	m_emu = &emulator;
 
 	// static std::atomic<bool> running(true);
-
-	DiscordRPC::UpdatePresence(emulator.ModelDefinition.model_name);
 
 	bool guiCreated = false;
 	auto frame_event = SDL_RegisterEvents(1);
@@ -294,7 +288,6 @@ int main(int argc, char* argv[]) {
 	while (emulator.Running()) {
 		SDL_Event event{};
 		busy = false;
-		DiscordRPC::Update();
 		if (!SDL_PollEvent(&event))
 			continue;
 		busy = true;
@@ -326,7 +319,6 @@ int main(int argc, char* argv[]) {
 
 				SDL_RenderCopy(renderer, bg_txt, NULL, &dst_rect);
 			}
-			std::lock_guard<std::mutex> lock(emulator.render_mx);
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 20);
 			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 			SDL_RenderFillRect(renderer, 0);
@@ -634,7 +626,6 @@ int main(int argc, char* argv[]) {
 #ifdef ENABLE_SENTRY
 	sentry_close();
 #endif
-	DiscordRPC::Shutdown();
 
 	return 0;
 };

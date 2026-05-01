@@ -34,7 +34,6 @@
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "shell32.lib")
 #endif
-#include "DiscordRPC.h"
 #include "Ext/Random.hpp"
 
 #ifdef __APPLE__
@@ -1636,7 +1635,6 @@ std::string sui_loop() {
 
 			needs_render = false;
 		}
-		DiscordRPC::Update();
 		ThemeManager::Instance().ProcessFontRebuild();
 		if (!ui.selected_path.empty()) {
 			done = true;
