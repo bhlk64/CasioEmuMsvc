@@ -832,7 +832,8 @@ void CodeViewer::RenderCore() {
 	float total_bottom_height = search_height + help_height + bottom_controls_height + ImGui::GetStyle().ItemSpacing.y * 3;
 	
 	// BeginChild with proper height calculation
-	ImGui::BeginChild("##scrolling", ImVec2(0, -total_bottom_height));
+	float avail = ImGui::GetContentRegionAvail().y;
+	ImGui::BeginChild("##scrolling", ImVec2(0, avail - 100));
 	DrawContent();
 	ImGui::EndChild();
 	
