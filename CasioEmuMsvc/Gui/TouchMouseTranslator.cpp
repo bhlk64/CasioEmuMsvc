@@ -8,8 +8,8 @@ TouchMouseTranslator::TouchMouseTranslator(
 	EventSink sink,
 	GuiHitTest guiHitTest)
 	: windowId_(windowId),
-	  sink_(std::move(sink)),
-	  guiHitTest_(std::move(guiHitTest)) {
+	sink_(std::move(sink)),
+	guiHitTest_(std::move(guiHitTest)) {
 }
 
 void TouchMouseTranslator::SetWindowId(Uint32 windowId) {
@@ -17,16 +17,16 @@ void TouchMouseTranslator::SetWindowId(Uint32 windowId) {
 }
 
 bool TouchMouseTranslator::HandleEvent(const SDL_Event& event, int windowW, int windowH) {
-	bool handled = false;
 	switch (event.type) {
 	case SDL_FINGERDOWN:
-		handled = HandleFingerDown(event.tfinger, windowW, windowH);
+		return HandleFingerDown(event.tfinger, windowW, windowH);
 	case SDL_FINGERUP:
-		handled = HandleFingerUp(event.tfinger, windowW, windowH);
+		return HandleFingerUp(event.tfinger, windowW, windowH);
 	case SDL_FINGERMOTION:
-		handled = HandleFingerMotion(event.tfinger, windowW, windowH);
+		return HandleFingerMotion(event.tfinger, windowW, windowH);
+	default:
+		return false;
 	}
-	return handled;
 }
 
 bool TouchMouseTranslator::HandleFingerDown(const SDL_TouchFingerEvent& finger, int windowW, int windowH) {
@@ -44,13 +44,13 @@ bool TouchMouseTranslator::HandleFingerDown(const SDL_TouchFingerEvent& finger, 
 		 * 如果目标是 ImGui，必须在 FINGERDOWN 时立刻按下鼠标，
 		 * 否则拖动窗口时会漂移。
 		 */
-		if (target == TouchTarget::ImGui) {
-			EmitMouseMotion(target, x, y);
-			EmitMouseButton(target, SDL_BUTTON_LEFT, SDL_PRESSED, x, y);
+		 //if (target == TouchTarget::ImGui) {
+		EmitMouseMotion(target, x, y);
+		EmitMouseButton(target, SDL_BUTTON_LEFT, SDL_PRESSED, x, y);
 
-			primary_.dragging = true;
-			primary_.suppressTap = true;
-		}
+		primary_.dragging = true;
+		primary_.suppressTap = true;
+		// }
 
 		return true;
 	}
@@ -79,8 +79,6 @@ bool TouchMouseTranslator::HandleFingerUp(const SDL_TouchFingerEvent& finger, in
 	const float x = finger.x * static_cast<float>(windowW);
 	const float y = finger.y * static_cast<float>(windowH);
 	const Uint32 now = SDL_GetTicks();
-	
-	leftButtonDown_ = false;
 
 	if (primary_.active && primary_.fingerId == finger.fingerId) {
 		primary_.currentX = x;
@@ -90,6 +88,7 @@ bool TouchMouseTranslator::HandleFingerUp(const SDL_TouchFingerEvent& finger, in
 			EmitMouseMotion(primary_.target, x, y);
 			EmitMouseButton(primary_.target, SDL_BUTTON_LEFT, SDL_RELEASED, x, y);
 
+			// ResetTrail(primaryTrail_);
 			ResetFinger(primary_);
 
 			if (secondary_.active) {
@@ -119,7 +118,7 @@ bool TouchMouseTranslator::HandleFingerUp(const SDL_TouchFingerEvent& finger, in
 				}
 			}
 		}
-
+		// ResetTrail(primaryTrail_);
 		ResetFinger(primary_);
 
 		if (secondary_.active) {
@@ -134,6 +133,7 @@ bool TouchMouseTranslator::HandleFingerUp(const SDL_TouchFingerEvent& finger, in
 		secondary_.currentY = y;
 
 		if (secondary_.target == TouchTarget::ImGui) {
+			// ResetTrail(secondaryTrail_);
 			ResetFinger(secondary_);
 			primary_.suppressTap = true;
 			return true;
@@ -143,7 +143,7 @@ bool TouchMouseTranslator::HandleFingerUp(const SDL_TouchFingerEvent& finger, in
 			EmitMouseButton(secondary_.target, SDL_BUTTON_LEFT, SDL_RELEASED, x, y);
 			secondary_.dragging = false;
 		}
-
+		// ResetTrail(secondaryTrail_);
 		ResetFinger(secondary_);
 		primary_.suppressTap = true;
 		return true;
@@ -215,6 +215,12 @@ void TouchMouseTranslator::StartFinger(TouchState& state, SDL_FingerID fingerId,
 	state.currentY = y;
 	state.startTime = SDL_GetTicks();
 	state.target = target;
+	if (&state == &primary_) {
+		ResetTrail(primaryTrail_);
+	}
+	else {
+		ResetTrail(secondaryTrail_);
+	}
 }
 
 void TouchMouseTranslator::ResetFinger(TouchState& state) {
@@ -256,14 +262,22 @@ void TouchMouseTranslator::PromoteSecondFingerToPrimary() {
 	primary_.startTime = SDL_GetTicks();
 	primary_.dragging = false;
 	primary_.suppressTap = true;
+	// ResetTrail(secondaryTrail_);
 	ResetFinger(secondary_);
 }
 
 void TouchMouseTranslator::AddTrail(TouchTrail& trail, float x, float y) {
-	trail.samples[trail.currentIndex] = TouchSample{x, y, SDL_GetTicks()};
+	trail.samples[trail.currentIndex] = TouchSample{ x, y, SDL_GetTicks() };
 	trail.currentIndex = (trail.currentIndex + 1) % TrailBufferSize;
 	trail.count = std::min<std::size_t>(trail.count + 1, TrailBufferSize);
 }
+
+void TouchMouseTranslator::ResetTrail(TouchTrail& trail) {
+	trail.currentIndex = 0;
+	trail.count = 0;
+}
+
+
 
 void TouchMouseTranslator::RenderDebug(SDL_Renderer* renderer) const {
 	if (!renderer) {
@@ -325,7 +339,7 @@ void TouchMouseTranslator::DrawTrail(SDL_Renderer* renderer, const TouchTrail& t
 
 		float t = static_cast<float>(age) / static_cast<float>(trailDurationMs_);
 		float radius = 2.0f + 8.0f * (1.0f - t);
-		Uint8 alpha = static_cast<Uint8>(160.0f * (1.0f - t));
+		Uint8 alpha = static_cast<Uint8>(80.0f * (1.0f - t));
 
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, alpha);
 		RenderInterpolatedCircleLine(renderer, s1.x, s1.y, s2.x, s2.y, radius);
@@ -337,19 +351,19 @@ void TouchMouseTranslator::DrawCross(SDL_Renderer* renderer, const TouchState& s
 		return;
 	}
 
-	SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+	//SDL_SetRenderDrawColor(renderer, r, g, b, 255);
 
-	SDL_RenderDrawLine(renderer,
-		static_cast<int>(state.currentX - 10),
-		static_cast<int>(state.currentY),
-		static_cast<int>(state.currentX + 10),
-		static_cast<int>(state.currentY));
+	//SDL_RenderDrawLine(renderer,
+	//	static_cast<int>(state.currentX - 10),
+	//	static_cast<int>(state.currentY),
+	//	static_cast<int>(state.currentX + 10),
+	//	static_cast<int>(state.currentY));
 
-	SDL_RenderDrawLine(renderer,
-		static_cast<int>(state.currentX),
-		static_cast<int>(state.currentY - 10),
-		static_cast<int>(state.currentX),
-		static_cast<int>(state.currentY + 10));
+	//SDL_RenderDrawLine(renderer,
+	//	static_cast<int>(state.currentX),
+	//	static_cast<int>(state.currentY - 10),
+	//	static_cast<int>(state.currentX),
+	//	static_cast<int>(state.currentY + 10));
 }
 
 void TouchMouseTranslator::EmitMouseMotion(TouchTarget target, float x, float y) {
@@ -361,16 +375,12 @@ void TouchMouseTranslator::EmitMouseMotion(TouchTarget target, float x, float y)
 	event.type = SDL_MOUSEMOTION;
 	event.motion.timestamp = SDL_GetTicks();
 	event.motion.windowID = windowId_;
-#ifndef SINGLE_WINDOW
-	event.motion.which = SDL_MOUSE_TOUCHID;
-#else
 	event.motion.which = SDL_TOUCH_MOUSEID;
-#endif
 	event.motion.state = leftButtonDown_ ? SDL_BUTTON_LMASK : 0;
 	event.motion.x = static_cast<Sint32>(std::lround(x));
 	event.motion.y = static_cast<Sint32>(std::lround(y));
-	event.motion.xrel = static_cast<Sint32>(std::lround(x - primary_.currentX));
-	event.motion.yrel = static_cast<Sint32>(std::lround(y - primary_.currentY));
+	event.motion.xrel = 0;
+	event.motion.yrel = 0;
 
 	sink_(event, target);
 }
