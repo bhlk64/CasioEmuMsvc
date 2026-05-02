@@ -17,16 +17,16 @@ void TouchMouseTranslator::SetWindowId(Uint32 windowId) {
 }
 
 bool TouchMouseTranslator::HandleEvent(const SDL_Event& event, int windowW, int windowH) {
+	bool handled = false;
 	switch (event.type) {
 	case SDL_FINGERDOWN:
-		return HandleFingerDown(event.tfinger, windowW, windowH);
+		handled = HandleFingerDown(event.tfinger, windowW, windowH);
 	case SDL_FINGERUP:
-		return HandleFingerUp(event.tfinger, windowW, windowH);
+		handled = HandleFingerUp(event.tfinger, windowW, windowH);
 	case SDL_FINGERMOTION:
-		return HandleFingerMotion(event.tfinger, windowW, windowH);
-	default:
-		return false;
+		handled = HandleFingerMotion(event.tfinger, windowW, windowH);
 	}
+	return handled
 }
 
 bool TouchMouseTranslator::HandleFingerDown(const SDL_TouchFingerEvent& finger, int windowW, int windowH) {
@@ -79,6 +79,8 @@ bool TouchMouseTranslator::HandleFingerUp(const SDL_TouchFingerEvent& finger, in
 	const float x = finger.x * static_cast<float>(windowW);
 	const float y = finger.y * static_cast<float>(windowH);
 	const Uint32 now = SDL_GetTicks();
+	
+	leftButtonDown_ = false;
 
 	if (primary_.active && primary_.fingerId == finger.fingerId) {
 		primary_.currentX = x;
@@ -359,12 +361,16 @@ void TouchMouseTranslator::EmitMouseMotion(TouchTarget target, float x, float y)
 	event.type = SDL_MOUSEMOTION;
 	event.motion.timestamp = SDL_GetTicks();
 	event.motion.windowID = windowId_;
+#ifndef SINGLE_WINDOW
+	event.motion.which = SDL_MOUSE_TOUCHID;
+#else
 	event.motion.which = SDL_TOUCH_MOUSEID;
+#endif
 	event.motion.state = leftButtonDown_ ? SDL_BUTTON_LMASK : 0;
 	event.motion.x = static_cast<Sint32>(std::lround(x));
 	event.motion.y = static_cast<Sint32>(std::lround(y));
-	event.motion.xrel = 0;
-	event.motion.yrel = 0;
+	event.motion.xrel = x - lastX;
+	event.motion.yrel = y - lastY;
 
 	sink_(event, target);
 }
