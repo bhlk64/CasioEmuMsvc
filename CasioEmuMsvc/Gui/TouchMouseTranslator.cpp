@@ -26,7 +26,7 @@ bool TouchMouseTranslator::HandleEvent(const SDL_Event& event, int windowW, int 
 	case SDL_FINGERMOTION:
 		handled = HandleFingerMotion(event.tfinger, windowW, windowH);
 	}
-	return handled
+	return handled;
 }
 
 bool TouchMouseTranslator::HandleFingerDown(const SDL_TouchFingerEvent& finger, int windowW, int windowH) {
@@ -369,8 +369,8 @@ void TouchMouseTranslator::EmitMouseMotion(TouchTarget target, float x, float y)
 	event.motion.state = leftButtonDown_ ? SDL_BUTTON_LMASK : 0;
 	event.motion.x = static_cast<Sint32>(std::lround(x));
 	event.motion.y = static_cast<Sint32>(std::lround(y));
-	event.motion.xrel = x - lastX;
-	event.motion.yrel = y - lastY;
+	event.motion.xrel = static_cast<Sint32>(std::lround(x - primary_.currentX));
+	event.motion.yrel = static_cast<Sint32>(std::lround(y - primary_.currentY));
 
 	sink_(event, target);
 }
