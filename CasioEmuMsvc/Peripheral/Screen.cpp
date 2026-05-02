@@ -192,7 +192,6 @@ namespace casioemu {
 	public:
 		Screen(Emulator& emu)
 			: Peripheral(emu) {
-#ifndef TEST_BUILD
 			std::thread thd([&]() {
 				while (1) {
 					tick();
@@ -206,7 +205,6 @@ namespace casioemu {
 				}
 				});
 			thd.detach();
-#endif
 		}
 		~Screen() {
 			if (screen_buffer)
