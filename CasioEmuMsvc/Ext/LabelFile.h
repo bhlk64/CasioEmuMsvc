@@ -1,16 +1,7 @@
 #pragma once
 #include <fstream>
 #include <iostream>
-#pragma push_macro("in")
-#pragma push_macro("out")
-#undef in
-#undef out
-
 #include <sstream>
-
-#pragma pop_macro("in")
-#pragma pop_macro("out")
-
 #include <string>
 #include <stringhelper.h>
 #include <vector>
