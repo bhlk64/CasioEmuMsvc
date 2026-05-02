@@ -38,9 +38,6 @@ namespace casioemu {
     public:
     SDL_Texture* tx = nullptr;
 		SDL_Renderer *renderer;
-	class Emulator {
-	public:
-		SDL_Renderer* renderer;
 		SDL_Surface* interface_surface;
 		SDL_Texture* interface_texture;
 		unsigned int cycles_per_second;
@@ -133,4 +130,4 @@ namespace casioemu {
 		friend class CPU;
 		friend class MMU;
 	};
-} // namespace casioemu
+}; // namespace casioemu
