@@ -824,10 +824,18 @@ void CodeViewer::RenderCore() {
 	}
 	ImGui::TextUnformatted(header.c_str());
 	ImGui::Separator();
-	ImGui::BeginChild("##scrolling", ImVec2(0, -30 * (1 + s(search_activated) + s(help_activated) * 1.6))); // Adjusted to make space for bottom controls
+	
+	// Calculate heights for bottom controls
+	float search_height = search_activated ? ImGui::GetTextLineHeightWithSpacing() * 1.5f : 0.0f;
+	float help_height = help_activated ? ImGui::GetTextLineHeightWithSpacing() * 1.6f : 0.0f;
+	float bottom_controls_height = ImGui::GetTextLineHeightWithSpacing() * 1.5f;
+	float total_bottom_height = search_height + help_height + bottom_controls_height + ImGui::GetStyle().ItemSpacing.y * 3;
+	
+	// BeginChild with proper height calculation
+	ImGui::BeginChild("##scrolling", ImVec2(0, -total_bottom_height));
 	DrawContent();
 	ImGui::EndChild();
-	// ImGui::SameLine(); // ？？？
+	
 	ImGui::Separator();
 	if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
 		if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_F, false)) {
