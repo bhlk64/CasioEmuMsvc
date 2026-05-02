@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 class ScreenMirror {
 private:
 	SDL_Window* mirrorWindow;
@@ -8,6 +8,8 @@ private:
 	int captureHeight;
 	SDL_Rect displayRect;
 	bool isOpen;
+	int lastWindowWidth;
+	int lastWindowHeight;
 
 	void updateDisplayRect(int windowWidth, int windowHeight) {
 		float aspectRatio = (float)captureWidth / captureHeight;
@@ -25,11 +27,13 @@ private:
 			displayRect.x = 0;
 			displayRect.y = (windowHeight - displayRect.h) / 2;
 		}
+		lastWindowWidth = windowWidth;
+		lastWindowHeight = windowHeight;
 	}
 
 public:
 	ScreenMirror(int captureWidth, int captureHeight)
-		: captureWidth(captureWidth), captureHeight(captureHeight), isOpen(false), mirrorWindow(nullptr), mirrorRenderer(nullptr), mirrorTexture(nullptr) {
+		: captureWidth(captureWidth), captureHeight(captureHeight), isOpen(false), mirrorWindow(nullptr), mirrorRenderer(nullptr), mirrorTexture(nullptr), lastWindowWidth(0), lastWindowHeight(0) {
 	}
 
 	~ScreenMirror() {
@@ -122,12 +126,17 @@ public:
 		if (!isOpen)
 			return;
 
+		int windowWidth = 0, windowHeight = 0;
+		SDL_GetWindowSize(mirrorWindow, &windowWidth, &windowHeight);
+		
+		// Only update display rect if window size changed
+		if (windowWidth != lastWindowWidth || windowHeight != lastWindowHeight) {
+			updateDisplayRect(windowWidth, windowHeight);
+		}
+
 		SDL_UpdateTexture(mirrorTexture, nullptr, pixels, pitch);
 		SDL_SetRenderDrawColor(mirrorRenderer, 0, 0, 0, 255);
 		SDL_RenderClear(mirrorRenderer);
-		int windowWidth = 0, windowHeight = 0;
-		SDL_GetWindowSize(mirrorWindow, &windowWidth, &windowHeight);
-		updateDisplayRect(windowWidth, windowHeight);
 		SDL_RenderCopy(mirrorRenderer, mirrorTexture, nullptr, &displayRect);
 		SDL_RenderPresent(mirrorRenderer);
 	}
