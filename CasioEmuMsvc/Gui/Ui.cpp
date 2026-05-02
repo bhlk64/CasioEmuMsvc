@@ -60,6 +60,7 @@ std::vector<Label> g_labels;
 
 CodeViewer* code_viewer = 0;
 Injector* injector = 0;
+int top_bar_size = 0;
 Breakpoints* membp = 0;
 
 std::vector<UIWindow*> windows{};
@@ -339,6 +340,7 @@ void gui_loop() {
     //        ImGui::EndPopup();
     //    }
     // #endif
+    top_bar_size = ImGui::GetCursorPosY();
 
     ImGui::Render();
     //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
