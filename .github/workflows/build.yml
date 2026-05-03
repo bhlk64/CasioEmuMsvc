@@ -27,9 +27,9 @@ jobs:
           - platform: android
             os: ubuntu-latest
             name: "Android"
-          #- platform: mac
-          #  os: macos-latest
-          #  name: "macOS"
+          - platform: mac
+            os: macos-latest
+            name: "macOS"
           #- platform: linux
           #  os: ubuntu-latest
           #  name: "Linux-x64"
@@ -124,13 +124,13 @@ jobs:
     - name: Build for macOS
       if: matrix.platform == 'mac'
       env:
-        MACOSX_DEPLOYMENT_TARGET: 12.0
+        MACOSX_DEPLOYMENT_TARGET: 11.0
       run: |
         cmake -S . -B build \
         -G Ninja \
         -DBUILD_EXECUTABLE=ON \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
         -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
         -DCMAKE_C_COMPILER_LAUNCHER=ccache \
         -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
