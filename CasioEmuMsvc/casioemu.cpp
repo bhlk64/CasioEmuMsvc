@@ -287,7 +287,7 @@ int main(int argc, char* argv[]) {
 		background = IMG_Load("background.jpg");
 		bg_txt = 0;
 		if (background) {
-			bg_txt = SDL_CreateTextureFromSurface(emulator.renderer, background);
+			bg_txt = SDL_CreateTextureFromSurface(renderer, background);
 			ThemeManager::Instance().ExtractAndApplyAutoTint(bg_txt, renderer);
 		}
 	}
