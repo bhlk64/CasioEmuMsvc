@@ -789,6 +789,7 @@ public:
             ext.compilePattern();
             extensions_.push_back(std::move(ext));
         }
+        // Sort longest syntax first
         sort(extensions_.begin(), extensions_.end(),
             [](const Extension& a, const Extension& b) { return a.syntax.size() > b.syntax.size(); });
     }
@@ -886,41 +887,19 @@ public:
 
     string expandVariables(const string& line) const {
         string expanded = line;
-        
-        // Replace indexed variables
         regex indexRegex(R"(\b(\w+)\[(\d+)\])");
-        string temp;
-        sregex_iterator it(expanded.begin(), expanded.end(), indexRegex);
-        sregex_iterator end_it;
-        size_t lastPos = 0;
-        for (; it != end_it; ++it) {
-            const smatch& m = *it;
-            temp.append(expanded, lastPos, m.position() - lastPos);
-            string vn = m[1].str();
-            int idx = stoi(m[2].str());
-            if (hasVar(vn)) temp += resolveIndex(getVar(vn), idx);
-            else temp += m[0].str();
-            lastPos = m.position() + m.length();
-        }
-        temp.append(expanded, lastPos, string::npos);
-        expanded = std::move(temp);
-
-        // Replace simple variables
+        expanded = regex_replace(expanded, indexRegex, [this](const smatch& m) -> string {
+            string vn = m[1].str(); int idx = stoi(m[2].str());
+            if (hasVar(vn)) return resolveIndex(getVar(vn), idx);
+            return m[0].str();
+        });
         regex varRegex(R"(\b\w+\b)");
-        temp.clear();
-        it = sregex_iterator(expanded.begin(), expanded.end(), varRegex);
-        lastPos = 0;
-        for (; it != end_it; ++it) {
-            const smatch& m = *it;
-            temp.append(expanded, lastPos, m.position() - lastPos);
+        expanded = regex_replace(expanded, varRegex, [this](const smatch& m) -> string {
             string vn = m[0].str();
-            if (hasVar(vn)) temp += getVar(vn);
-            else temp += m[0].str();
-            lastPos = m.position() + m.length();
-        }
-        temp.append(expanded, lastPos, string::npos);
-        
-        return temp;
+            if (hasVar(vn)) return getVar(vn);
+            return vn;
+        });
+        return expanded;
     }
 
     const unordered_map<string, string>& vars() const { return vars_; }
@@ -1074,16 +1053,20 @@ public:
 
         if (line[0] == '"') return parseQuotedString(line);
 
+        // def alias: def <new> = <old>
         if (startsWith(low, "def ") && line.find('=') != string::npos) {
             smatch m;
             if (regex_match(line, m, regex(R"(^\s*(\w+)\s+(\w+)\s*=\s*(.+)$)")))
                 return DefAliasStmt{lower(m[2].str()), lower(trim(m[3].str()))};
         }
+        // def (Python-style)
         if (startsWith(low, "def ") && endsWith(low, "{"))
             return UserFuncDefStmt{lower(trim(low.substr(4))), {}, {}};
+        // func
         if (startsWith(low, "func "))
             return FuncDefStmt{lower(trim(low.substr(5))), {}, {}};
 
+        // repeat / loop
         if (startsWith(low, "repeat ") || startsWith(low, "loop "))
             return RepeatStmt{low, {}};
 
@@ -1108,6 +1091,7 @@ public:
         return FreeformStmt{low};
     }
 
+    // Multi-line block collector for repeat/func/def
     static vector<string> collectBlock(vector<string>::iterator& it, vector<string>::iterator end) {
         vector<string> body;
         int depth = 1;
@@ -1212,7 +1196,10 @@ private:
             auto me = sregex_iterator();
             for (auto it = mb; it != me; ++it) bracketParts.push_back((*it)[1].str());
             if (bracketParts.size() == 1) offset = (int)parseInteger(trim(bracketParts[0]), 0);
-            else if (bracketParts.size() >= 2) offset = (int)parseInteger(trim(bracketParts[0]), 0);
+            else if (bracketParts.size() >= 2) {
+                offset = (int)parseInteger(trim(bracketParts[0]), 0);
+                // Base offset support would need currentHome context
+            }
         }
         else {
             label = lower(trim(inner));
@@ -1302,29 +1289,12 @@ private:
 };
 
 // ==========================
-// Compiler State & Fixups
+// Compiler State
 // ==========================
 
-struct AdrOfFixup {
-    int pos;
-    int offset;
-    string label;
-};
-struct AdrArithFixup {
-    int pos;
-    int leftOffset;
-    string leftLabel;
-    int rightOffset;
-    string rightLabel;
-};
 struct DeferredEvalFixup {
     int pos;
     string expr;
-};
-
-struct CompiledSegment {
-    int baseAddress = 0;
-    vector<int> bytes;
 };
 
 struct CompilerState {
@@ -1434,6 +1404,7 @@ public:
                 continue;
             }
             if (startsWith(low, "def ") && low.find('=') == string::npos) {
+                // Ignore Python execution blocks since exec() is omitted
                 Parser::collectBlock(it, lines.end());
                 continue;
             }
@@ -1581,34 +1552,20 @@ private:
         st.result.push_back(0);
     }
 
-    bool isRegister(const string& r) const {
-        if (r.empty()) return false;
-        if (r.size() >= 2 && (startsWith(r, "er") || startsWith(r, "xr") || startsWith(r, "qr"))) return true;
-        if (r.size() >= 2 && r[0] == 'r' && isdigit(r[1])) return true;
-        return false;
-    }
-
     void emit(const AssignmentStmt& x) {
-        string target = x.target;
-        if (startsWith(target, "reg ")) target = trim(target.substr(4));
-
-        if (isRegister(target)) {
-            compileLine("call pop " + target);
-            size_t old = st.result.size();
-            string value = x.valueText;
-            replace(value.begin(), value.end(), ',', ';');
-            if (value.find(';') != string::npos) {
-                for (auto& p : split(value, ';')) compileLine(p);
-            } else {
-                compileLine(value);
-            }
-            int got = (int)(st.result.size() - old);
-            int need = sizeofRegister(target);
-            if (got != need)
-                throw runtime_error("register assignment size mismatch: " + target + ", need " + to_string(need) + ", got " + to_string(got));
+        compileLine("call pop " + x.target);
+        size_t old = st.result.size();
+        string value = x.valueText;
+        replace(value.begin(), value.end(), ',', ';');
+        if (value.find(';') != string::npos) {
+            for (auto& p : split(value, ';')) compileLine(p);
         } else {
-            st.vars[target] = x.valueText;
+            compileLine(value);
         }
+        int got = (int)(st.result.size() - old);
+        int need = sizeofRegister(x.target);
+        if (got != need)
+            throw runtime_error("register assignment size mismatch: " + x.target + ", need " + to_string(need) + ", got " + to_string(got));
     }
 
     void emit(const OrgStmt& x) {
@@ -1748,10 +1705,6 @@ private:
 
     void emit(const FuncDefStmt& x) {
         // Dynamic functions omitted in C++ port
-    }
-
-    void emit(const UserFuncDefStmt& x) {
-        // Dynamic Python functions omitted in C++ port
     }
 
     void emit(const DefAliasStmt& x) {
@@ -1993,10 +1946,9 @@ public:
                     KeypressTable& kt, DefinitionDatabase& defs)
         : db(db), fontTable(ft), calcTable(ct), keypressTable(kt), defs(defs) {}
 
-    vector<CompiledSegment> compileProgram(const vector<string>& source, const CompileOptions& opt) {
+    void compileProgram(const vector<string>& source, const CompileOptions& opt) {
         auto sections = SourcePreprocessor::splitSections(source);
         int previousLen = 0;
-        vector<CompiledSegment> outputSegments;
 
         for (size_t i = 0; i < sections.size(); ++i) {
             vector<string> modified_program = SourcePreprocessor::processSetupLoop(sections[i]);
@@ -2067,32 +2019,36 @@ public:
 
             cout << "Length (HEX): 0x" << hex << uppercase << st.result.size() << dec << " bytes | (DEC): " << st.result.size() << " bytes\n";
 
-            CompiledSegment seg;
-            if (opt.target == "loader") {
-                seg.baseAddress = home2;
-                seg.bytes = vector<int>(home2, 0);
-                seg.bytes.insert(seg.bytes.end(), st.result.begin(), st.result.end());
-            } else if (opt.target == "overflow") {
+            if (opt.target == "overflow") {
                 vector<int> hackstring(100);
                 string pattern = "1234567890";
                 for (int k = 0; k < 100; ++k) hackstring[k] = pattern[k % 10];
                 for (size_t k = 0; k < st.result.size(); ++k)
                     hackstring[(home + k - 0x8154) % 100] = st.result[k];
-                seg.baseAddress = home;
-                seg.bytes = std::move(hackstring);
-            } else {
-                seg.baseAddress = home;
-                seg.bytes = st.result;
+                if (opt.format == "hex") OutputEmitter::emitHex(hackstring);
+                else if (opt.format == "key") OutputEmitter::emitKey(hackstring, keypressTable);
+            } else if (opt.target == "none") {
+                if (opt.format == "hex") {
+                    int addr_val = st.orgAddress.has_value() ? (*st.orgAddress + (int)st.result.size()) : (home + (int)st.result.size());
+                    cout << "=====0x" << hex << uppercase << home << " -> 0x" << addr_val << dec << "=====\n";
+                    OutputEmitter::emitHex(st.result);
+                    cout << "======================\n";
+                } else if (opt.format == "key") {
+                    cout << "0x" << hex << home << dec << ": ";
+                    OutputEmitter::emitKey(st.result, keypressTable);
+                }
+            } else if (opt.target == "loader") {
+                if (opt.format == "key") {
+                    cout << "Address to load: " << keypressTable.byteToKey((home - home2) & 255) << " " << keypressTable.byteToKey((home - home2) >> 8) << "\n";
+                    vector<int> final_result(home2, 0);
+                    final_result.insert(final_result.end(), st.result.begin(), st.result.end());
+                    OutputEmitter::emitKey(final_result, keypressTable);
+                } else OutputEmitter::emitHex(st.result);
             }
-            
-            if (opt.format == "hex") OutputEmitter::emitHex(seg.bytes);
-            else if (opt.format == "key") OutputEmitter::emitKey(seg.bytes, keypressTable);
 
-            outputSegments.push_back(std::move(seg));
             previousLen = (int)st.result.size();
             if (i < sections.size() - 1) cout << "\n============================================================\n";
         }
-        return outputSegments;
     }
 };
 
@@ -2112,5 +2068,4 @@ namespace lc {
     using DefinitionDatabase = details::DefinitionDatabase;
     using ExtensionManager = details::ExtensionManager;
     using VariableStore = details::VariableStore;
-    using CompiledSegment = details::CompiledSegment;
 } // namespace lc
