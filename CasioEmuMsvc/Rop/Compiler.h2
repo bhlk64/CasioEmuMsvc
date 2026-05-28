@@ -887,6 +887,7 @@ public:
     string expandVariables(const string& line) const {
         string expanded = line;
         
+        // Replace indexed variables
         regex indexRegex(R"(\b(\w+)\[(\d+)\])");
         string temp;
         sregex_iterator it(expanded.begin(), expanded.end(), indexRegex);
@@ -904,6 +905,7 @@ public:
         temp.append(expanded, lastPos, string::npos);
         expanded = std::move(temp);
 
+        // Replace simple variables
         regex varRegex(R"(\b\w+\b)");
         temp.clear();
         it = sregex_iterator(expanded.begin(), expanded.end(), varRegex);
@@ -1106,7 +1108,7 @@ public:
         return FreeformStmt{low};
     }
 
-    static vector<string> collectBlock(vector<string>::const_iterator& it, vector<string>::const_iterator end) {
+    static vector<string> collectBlock(vector<string>::iterator& it, vector<string>::iterator end) {
         vector<string> body;
         int depth = 1;
         while (it != end) {
@@ -1373,29 +1375,17 @@ class Compiler {
     CommandDatabase& db;
     CompilerState st;
     Parser parser;
-    
-    FontTable defaultFontTable_;
-    CalcTable defaultCalcTable_;
-    KeypressTable defaultKeypressTable_;
-    DefinitionDatabase defaultDefs_;
-    
-    const FontTable* fontTable_;
-    const CalcTable* calcTable_;
-    const KeypressTable* keypressTable_;
-    const DefinitionDatabase* defs_;
+    const FontTable& fontTable;
+    const CalcTable& calcTable;
+    const KeypressTable& keypressTable;
+    const DefinitionDatabase& defs;
 
     int maxCallAdr = 0x3ffff;
 
 public:
-    explicit Compiler(CommandDatabase& db)
-        : db(db), parser(&db, &defaultDefs_), 
-          fontTable_(&defaultFontTable_), calcTable_(&defaultCalcTable_), 
-          keypressTable_(&defaultKeypressTable_), defs_(&defaultDefs_) {}
-
     explicit Compiler(CommandDatabase& db, const FontTable& ft, const CalcTable& ct, 
-                      const KeypressTable& kt, const DefinitionDatabase& d)
-        : db(db), parser(&db, &d), 
-          fontTable_(&ft), calcTable_(&ct), keypressTable_(&kt), defs_(&d) {}
+                      const KeypressTable& kt, const DefinitionDatabase& defs)
+        : db(db), parser(&db, &defs), fontTable(ft), calcTable(ct), keypressTable(kt), defs(defs) {}
 
     CompilerState& state() { return st; }
     void setPreviousSectionLength(int n) { st.previousSectionLength = n; }
@@ -1412,8 +1402,7 @@ public:
     void compileLines(const vector<string>& lines) {
         bool blockComment = false;
         auto it = lines.begin();
-        auto endIt = lines.end();
-        while (it != endIt) {
+        while (it != lines.end()) {
             string line = *it; ++it;
             string t = trim(line);
             if (t == "/*") { blockComment = true; continue; }
@@ -1426,12 +1415,12 @@ public:
             string low = lower(trim(noComment));
             
             if (startsWith(low, "repeat ") || startsWith(low, "loop ")) {
-                auto body = Parser::collectBlock(it, endIt);
+                auto body = Parser::collectBlock(it, lines.end());
                 emit(RepeatStmt{low, body});
                 continue;
             }
             if (startsWith(low, "func ")) {
-                auto body = Parser::collectBlock(it, endIt);
+                auto body = Parser::collectBlock(it, lines.end());
                 smatch m;
                 if (regex_match(low, m, regex(R"(func\s+(\w+)\s*\((.*?)\)\s*\{)"))) {
                     string name = lower(m[1].str());
@@ -1445,7 +1434,7 @@ public:
                 continue;
             }
             if (startsWith(low, "def ") && low.find('=') == string::npos) {
-                Parser::collectBlock(it, endIt);
+                Parser::collectBlock(it, lines.end());
                 continue;
             }
             if (startsWith(low, "[")) {
@@ -1454,7 +1443,7 @@ public:
                     content = content.substr(0, content.find(']'));
                 } else {
                     vector<string> parts = {content};
-                    while (it != endIt) {
+                    while (it != lines.end()) {
                         string cur = trim(*it); ++it;
                         if (cur.find(']') != string::npos) {
                             parts.push_back(cur.substr(0, cur.find(']')));
@@ -1550,7 +1539,7 @@ private:
         }
         if (adr < 0 || adr > maxCallAdr)
             throw runtime_error("invalid call address");
-        adr = keypressTable_->optimizeAdrForNpress(adr);
+        adr = keypressTable.optimizeAdrForNpress(adr);
         emitHexLiteral(hexWord(adr + 0x30300000, 8));
     }
 
@@ -1657,7 +1646,7 @@ private:
     void emit(const StrStoreStmt& x) { st.stringVars[x.name] = x.text; }
 
     void emit(const StrEmitStmt& x) {
-        auto bytes = fontTable_->encodeString(x.text);
+        auto bytes = fontTable.encodeString(x.text);
         st.result.insert(st.result.end(), bytes.begin(), bytes.end());
     }
 
@@ -1665,12 +1654,12 @@ private:
         auto it = st.stringVars.find(x.name);
         if (it == st.stringVars.end())
             throw runtime_error("unknown string variable: " + x.name);
-        auto bytes = fontTable_->encodeString(it->second);
+        auto bytes = fontTable.encodeString(it->second);
         st.result.insert(st.result.end(), bytes.begin(), bytes.end());
     }
 
     void emit(const TokenLiteralStmt& x) {
-        auto bytes = fontTable_->encodeTokens(x.content);
+        auto bytes = fontTable.encodeTokens(x.content);
         st.result.insert(st.result.end(), bytes.begin(), bytes.end());
     }
 
@@ -1683,9 +1672,9 @@ private:
         while (i < content.size()) {
             if (isspace(content[i])) { ++i; continue; }
             bool found = false;
-            for (const auto& key : calcTable_->keys) {
+            for (const auto& key : calcTable.keys) {
                 if (content.compare(i, key.size(), key) == 0) {
-                    hexs.push_back(calcTable_->tokens.at(key));
+                    hexs.push_back(calcTable.tokens.at(key));
                     i += key.size();
                     found = true;
                     break;
@@ -1694,8 +1683,8 @@ private:
             if (!found) {
                 if (isalpha(content[i])) {
                     string var(1, content[i]);
-                    if (calcTable_->tokens.count(var)) {
-                        hexs.push_back(calcTable_->tokens.at(var));
+                    if (calcTable.tokens.count(var)) {
+                        hexs.push_back(calcTable.tokens.at(var));
                         ++i; continue;
                     }
                 }
