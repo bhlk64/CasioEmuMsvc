@@ -124,15 +124,6 @@ static string replaceAll(string s, const string& from, const string& to) {
     return s;
 }
 
-static string join(const vector<string>& v, const string& delim) {
-    string out;
-    for (size_t i = 0; i < v.size(); ++i) {
-        if (i) out += delim;
-        out += v[i];
-    }
-    return out;
-}
-
 // ==========================
 // ROM Data
 // ==========================
@@ -1508,6 +1499,7 @@ public:
     void resolveDeferredEvals(int home) {
         for (auto& f : st.deferredEvals) {
             string expr = f.expr;
+            // Replace adr(label, offset) or adr(label) with the resolved value
             regex adrRegex(R"(adr\(\s*(\w+)\s*(?:,\s*(-?\d+|0x[0-9a-fA-F]+)\s*)?\))");
             
             string temp1;
@@ -1529,6 +1521,7 @@ public:
             }
             temp1.append(expr, lastPos1, string::npos);
 
+            // Replace adr_of [offset] label or adr_of label
             regex adrOfRegex(R"(adr_of\s*(?:\[\s*([^\]]+)\s*\]\s*)?(\w+))");
             string resolved;
             sregex_iterator it2(temp1.begin(), temp1.end(), adrOfRegex);
@@ -1548,6 +1541,7 @@ public:
             }
             resolved.append(temp1, lastPos2, string::npos);
 
+            // Normalize spacing for math evaluation
             string normalized;
             for (char ch : resolved) {
                 if (ch == '+' || ch == '-') {
@@ -1807,8 +1801,13 @@ private:
         }
     }
 
-    void emit(const FuncDefStmt& x) {}
-    void emit(const UserFuncDefStmt& x) {}
+    void emit(const FuncDefStmt& x) {
+        // Dynamic functions omitted in C++ port
+    }
+
+    void emit(const UserFuncDefStmt& x) {
+        // Dynamic Python functions omitted in C++ port
+    }
 
     void emit(const DefAliasStmt& x) {
         if (db.hasCommand(x.oldName)) {
@@ -1935,231 +1934,3 @@ private:
         while (ss >> token) {
             if (token == "+" || token == "-") { op = token[0]; continue; }
             long long val = parseInteger(token, 0);
-            if (op == '+') result += val;
-            else if (op == '-') result -= val;
-        }
-        return result;
-    }
-};
-
-// ==========================
-// Source preprocessing
-// ==========================
-
-class SourcePreprocessor {
-public:
-    static vector<vector<string>> splitSections(const vector<string>& src) {
-        vector<vector<string>> sections;
-        vector<string> cur;
-        for (auto line : src) {
-            if (trim(line) == "!===") {
-                if (!cur.empty()) { sections.push_back(cur); cur.clear(); }
-            } else cur.push_back(line);
-        }
-        if (!cur.empty()) sections.push_back(cur);
-        if (sections.empty()) sections.push_back(src);
-        return sections;
-    }
-
-    static vector<string> processSetupLoop(const vector<string>& program) {
-        vector<string> modified;
-        bool setup_loop_detected = false;
-        for (string line : program) {
-            string cleanLine = removeInlineComment(line);
-            string lowerLine = lower(trim(cleanLine));
-            if (startsWith(lowerLine, "setup_loop")) {
-                setup_loop_detected = true;
-                auto parts = split(cleanLine, ',');
-                if (parts.size() < 2 || parts.size() > 3)
-                    throw runtime_error("Invalid setup_loop directive: " + line);
-                auto firstPartWords = split(trim(parts[0]), ' ');
-                string src = firstPartWords.size() > 1 ? firstPartWords[1] : "";
-                string src_backup = trim(parts[1]);
-                string label = (parts.size() == 3 && trim(parts[2]) != "none") ? trim(parts[2]) : "home";
-                modified.push_back("restore:");
-                modified.push_back("    setlr");
-                modified.push_back("    DI,RT");
-                modified.push_back("    xr0 = adr_of length, 0x01, 0x00");
-                modified.push_back("    [er0] = er2,rt");
-                modified.push_back("    qr0 = pr_length, " + src_backup + ", " + src + ", 0x0000");
-                modified.push_back("    0x8932");
-                modified.push_back("length:");
-                modified.push_back("    0x0800");
-                modified.push_back("    0x0000");
-                modified.push_back("set_sp:");
-                modified.push_back("    er6 = adr_of [-2] " + label);
-                modified.push_back("    sp = er6,pop er8");
-            } else modified.push_back(line);
-        }
-        return setup_loop_detected ? modified : program;
-    }
-};
-
-// ==========================
-// Output emitter
-// ==========================
-
-class OutputEmitter {
-public:
-    static void emitHex(const vector<int>& bytes) {
-        for (size_t i = 0; i < bytes.size(); ++i) {
-            if (i) cout << ' ';
-            cout << uppercase << hex << setw(2) << setfill('0') << (bytes[i] & 0xff);
-        }
-        cout << dec << "\n";
-    }
-
-    static void emitKey(const vector<int>& bytes, const KeypressTable& kt) {
-        for (size_t i = 0; i < bytes.size(); ++i) {
-            if (i) cout << ' ';
-            cout << kt.byteToKey(bytes[i] & 0xff);
-        }
-        cout << dec << "\n";
-    }
-};
-
-// ==========================
-// Multi-section driver
-// ==========================
-
-struct CompileOptions {
-    string target = "none";
-    string format = "hex";
-    int overflowInitialSp = 0x8154;
-};
-
-class Driver {
-    CommandDatabase& db;
-    FontTable& fontTable;
-    CalcTable& calcTable;
-    KeypressTable& keypressTable;
-    DefinitionDatabase& defs;
-
-public:
-    explicit Driver(CommandDatabase& db, FontTable& ft, CalcTable& ct, 
-                    KeypressTable& kt, DefinitionDatabase& defs)
-        : db(db), fontTable(ft), calcTable(ct), keypressTable(kt), defs(defs) {}
-
-    vector<CompiledSegment> compileProgram(const vector<string>& source, const CompileOptions& opt) {
-        auto sections = SourcePreprocessor::splitSections(source);
-        int previousLen = 0;
-        vector<CompiledSegment> outputSegments;
-
-        for (size_t i = 0; i < sections.size(); ++i) {
-            vector<string> modified_program = SourcePreprocessor::processSetupLoop(sections[i]);
-            Compiler cc(db, fontTable, calcTable, keypressTable, defs);
-            cc.setPreviousSectionLength(previousLen);
-            cc.compileLines(modified_program);
-            cc.finish();
-
-            auto& st = cc.state();
-            int home = 0, home2 = 0;
-
-            if (opt.target == "none" || opt.target == "overflow") {
-                if (opt.target == "overflow" && st.result.size() > 100)
-                    throw runtime_error("Program too long for overflow (max 100 bytes)");
-
-                if (st.home.has_value()) {
-                    home = *st.home;
-                } else {
-                    home = opt.overflowInitialSp;
-                    if (st.labels.count("home")) home -= st.labels["home"];
-                    if (home + (int)st.result.size() > 0x8E00)
-                        cerr << "Warning: Program length after home > available space\n";
-
-                    int min_home = home;
-                    while (min_home >= 0x8154 + 200) min_home -= 100;
-                    while (home + (int)st.result.size() <= 0x8E00) home += 100;
-
-                    int best_home = min_home;
-                    int best_score = 9999999;
-                    int best_home_val = -min_home; // mimic Python's tie-breaker: higher 'home' is preferred when scores match
-
-                    for (int h = min_home; h < home; h += 100) {
-                        int score = 0;
-                        for (auto& fixup : st.adrOfFixups) {
-                            int target_adr = h + st.labels[fixup.label] + fixup.offset;
-                            if (keypressTable.getNpressAdr(target_adr) >= 100) score += 1;
-                        }
-                        if (score < best_score || (score == best_score && h > best_home_val)) {
-                            best_score = score;
-                            best_home_val = h;
-                            best_home = h;
-                        }
-                    }
-                    home = best_home;
-                }
-            } else if (opt.target == "loader") {
-                if (st.home.has_value()) {
-                    home = *st.home;
-                } else {
-                    home = 0x85b0 - (int)st.result.size();
-                    int entry = home + (st.labels.count("home") ? st.labels["home"] : 0) - 2;
-                    vector<int> loader_tail = {0x6a, 0x4f, 0, 0, entry & 255, (entry >> 8) & 255, 0x68, 0x4f, 0, 0};
-                    st.result.insert(st.result.end(), loader_tail.begin(), loader_tail.end());
-                    while (home + (int)st.result.size() < 0x85d7) st.result.push_back(0);
-                    st.result.insert(st.result.end(), {0xff, 0xae, 0x85});
-                    home2 = 0;
-                    if (home - home2 < 0x8501) throw runtime_error("Program too long for loader mode");
-                    while (keypressTable.getNpressAdr(home - home2) >= 100) home2 += 1;
-                }
-            } else throw runtime_error("Internal error: Unknown target");
-
-            cc.resolveAdrOf(home);
-            cc.resolveDeferredEvals(home);
-
-            cout << "\n=== Section " << (i + 1) << "/" << sections.size() << " ===\n";
-            if (i > 0) cout << "Previous section length: 0x" << hex << uppercase << previousLen << dec << " (" << previousLen << " bytes)\n";
-
-            for (auto const& [label, offset] : st.labels)
-                cout << "The " << label << " code is being redirected to address 0x" << hex << uppercase << (home + offset) << dec << ".\n";
-
-            cout << "Length (HEX): 0x" << hex << uppercase << st.result.size() << dec << " bytes | (DEC): " << st.result.size() << " bytes\n";
-
-            CompiledSegment seg;
-            if (opt.target == "loader") {
-                seg.baseAddress = home2;
-                seg.bytes = vector<int>(home2, 0);
-                seg.bytes.insert(seg.bytes.end(), st.result.begin(), st.result.end());
-            } else if (opt.target == "overflow") {
-                vector<int> hackstring(100);
-                string pattern = "1234567890";
-                for (int k = 0; k < 100; ++k) hackstring[k] = pattern[k % 10];
-                for (size_t k = 0; k < st.result.size(); ++k)
-                    hackstring[(home + k - 0x8154) % 100] = st.result[k];
-                seg.baseAddress = home;
-                seg.bytes = std::move(hackstring);
-            } else {
-                seg.baseAddress = home;
-                seg.bytes = st.result;
-            }
-            
-            if (opt.format == "hex") OutputEmitter::emitHex(seg.bytes);
-            else if (opt.format == "key") OutputEmitter::emitKey(seg.bytes, keypressTable);
-
-            outputSegments.push_back(std::move(seg));
-            previousLen = (int)st.result.size();
-            if (i < sections.size() - 1) cout << "\n============================================================\n";
-        }
-        return outputSegments;
-    }
-};
-
-} // namespace lc::details
-
-namespace lc {
-    using Parser = details::Parser;
-    using CommandDatabase = details::CommandDatabase;
-    using Compiler = details::Compiler;
-    using CompilerState = details::CompilerState;
-    using Diagnostic = details::Diagnostic;
-    using CompileOptions = details::CompileOptions;
-    using Driver = details::Driver;
-    using FontTable = details::FontTable;
-    using CalcTable = details::CalcTable;
-    using KeypressTable = details::KeypressTable;
-    using DefinitionDatabase = details::DefinitionDatabase;
-    using ExtensionManager = details::ExtensionManager;
-    using VariableStore = details::VariableStore;
-    using CompiledSegment = details::CompiledSegment;
-} // namespace lc
