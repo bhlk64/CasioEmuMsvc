@@ -74,7 +74,7 @@ static bool IsImmediate(std::string_view word) {
 static void RenderSyntaxHighlight(const char* text, bool is_label) {
 	if (is_label) {
 		// 标号整体着色为高亮黄
-		ImGui::TextColored(~ImVec4(1.0f, 1.0f, 0.4f, 1.0f), "%s", text);
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.4f, 1.0f), "%s", text);
 		return;
 	}
 
@@ -85,12 +85,12 @@ static void RenderSyntaxHighlight(const char* text, bool is_label) {
 	}
 
 	// 定义语法高亮的主题颜色
-	ImVec4 col_hex = ~ImVec4(0.5f, 0.5f, 0.5f, 1.0f);	// 机器码：灰色
-	ImVec4 col_mnem = ~ImVec4(0.3f, 0.8f, 1.0f, 1.0f);	// 助记符：亮蓝
-	ImVec4 col_reg = ~ImVec4(1.0f, 0.6f, 0.6f, 1.0f);	// 寄存器：粉红
-	ImVec4 col_imm = ~ImVec4(0.6f, 1.0f, 0.6f, 1.0f);	// 立即数：亮绿
-	ImVec4 col_punct = ~ImVec4(0.8f, 0.8f, 0.8f, 1.0f); // 标点符：浅灰
-	ImVec4 col_def = ~ImVec4(0.9f, 0.9f, 0.9f, 1.0f);	// 默认符：白色
+	ImVec4 col_hex = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);	// 机器码：灰色
+	ImVec4 col_mnem = ImVec4(0.3f, 0.8f, 1.0f, 1.0f);	// 助记符：亮蓝
+	ImVec4 col_reg = ImVec4(1.0f, 0.6f, 0.6f, 1.0f);	// 寄存器：粉红
+	ImVec4 col_imm = ImVec4(0.6f, 1.0f, 0.6f, 1.0f);	// 立即数：亮绿
+	ImVec4 col_punct = ImVec4(0.8f, 0.8f, 0.8f, 1.0f); // 标点符：浅灰
+	ImVec4 col_def = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);	// 默认符：白色
 
 	struct Token {
 		ImVec4 color;
@@ -411,7 +411,7 @@ void CodeViewer::DrawContent() {
 			auto bb = it == break_points.end();
 			if (!e.is_label) {
 				if (e.offset == pc_cache) {
-					ImGui::TextColored(~ImVec4(0.0, 1.0, 0.0, 1.0), " > ");
+					ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), " > ");
 				}
 				else {
 					if (bb) {
@@ -422,7 +422,7 @@ void CodeViewer::DrawContent() {
 					}
 					else {
 						if (it->second == 1) {
-							ImGui::TextColored(~ImVec4(1.0, 0.0, 0.0, 1.0), " x ");
+							ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), " x ");
 							if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
 								break_points.erase(line_i);
 							}
@@ -434,7 +434,7 @@ void CodeViewer::DrawContent() {
 					}
 				}
 				ImGui::SameLine();
-				ImGui::TextColored(~ImVec4(1.0, 1.0, 0.0, 1.0), "%05x", e.offset);
+				ImGui::TextColored(ImVec4(1.0, 1.0, 0.0, 1.0), "%05x", e.offset);
 				ImGui::SameLine();
 			}
 			ImGui::PushID(line_i);

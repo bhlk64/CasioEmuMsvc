@@ -16,11 +16,9 @@
 #include "Theme.h"
 #include "VariableWindow.h"
 #include "WatchWindow.hpp"
-#ifndef TEST_BUILD
 #include "Rop/RopCompilerUI.h"
 #include "PluginLogWindow.hpp"
 #include "SnapshotWindow.h"
-#endif
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer2.h"
@@ -442,11 +440,9 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
              membp = new Breakpoints(),
              CreateAddressWindow(),
              // MakeAssemblerUI(),
-#ifndef TEST_BUILD
              CreateRopCompilerWindow(),
              new PluginLogWindow(),
              CreateSnapshotWindow(),
-#endif
              MakeThemeWindow(),
              CreateBitmapViewer(), })
         windows.push_back(item);
