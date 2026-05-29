@@ -1436,8 +1436,8 @@ class Compiler {
     const KeypressTable* keypressTable_ = nullptr;
 
 public:
-    Compiler(CommandDatabase* db) : db_(db) {
-        state_.db = db;
+    Compiler(CommandDatabase& db) : db_(&db) {
+        state_.db = &db;
     }
 
     void setFontTable(FontTable* ft) { state_.fontTable = ft; }
