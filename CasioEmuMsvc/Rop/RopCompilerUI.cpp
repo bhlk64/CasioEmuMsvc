@@ -54,8 +54,15 @@ public:
 	}
 
 	void RenderCore() override {
+	
 		drawMenuBar();
 		drawToolbar();
+		ImGuiIO& io = ImGui::GetIO();
+
+    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+    {
+        io.WantTextInput = true;
+    }
 		ImGui::Separator();
 
 		// Show database prompt banner if no database loaded
@@ -460,18 +467,29 @@ private:
 	}
 
 	void drawSourcePanel(float height) {
-		ImGui::BeginChild("##source_panel", ImVec2(-1, height), true);
-		ImGui::TextUnformatted("RopCompiler.SourceTitle"_lc);
-		ImGui::Separator();
-		const float footerHeight = 24.0f;
-		editor_.Render("##source_editor",
-			ImVec2(-1, ImGui::GetContentRegionAvail().y - footerHeight), true);
-		auto cpos = editor_.GetCursorPosition();
-		auto statusText = g_local.Format("RopCompiler.CursorStatus",
-			cpos.mLine + 1, cpos.mColumn + 1, editor_.GetTotalLines());
-		ImGui::TextUnformatted(statusText.c_str());
-		ImGui::EndChild();
-	}
+    ImGui::BeginChild("##source_panel", ImVec2(-1, height), true);
+
+    ImGui::TextUnformatted("RopCompiler.SourceTitle"_lc);
+    ImGui::Separator();
+
+    const float footerHeight = 24.0f;
+
+    editor_.Render("##source_editor",
+        ImVec2(-1, ImGui::GetContentRegionAvail().y - footerHeight), true);
+
+    // 🔥 FORCE FOCUS VÀO EDITOR
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
+        ImGui::SetWindowFocus(); // quan trọng hơn SetKeyboardFocusHere
+    }
+
+    auto cpos = editor_.GetCursorPosition();
+    auto statusText = g_local.Format("RopCompiler.CursorStatus",
+        cpos.mLine + 1, cpos.mColumn + 1, editor_.GetTotalLines());
+
+    ImGui::TextUnformatted(statusText.c_str());
+
+    ImGui::EndChild();
+}
 
 	void drawOutputPanel(float height) {
 		ImGui::BeginChild("##output_panel", ImVec2(-1, height), true);
