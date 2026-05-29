@@ -154,7 +154,14 @@ int main(int argc, char* argv[]) {
 #ifdef __ANDROID__
 	chdir(SDL_AndroidGetExternalStoragePath());
 #elif defined(__APPLE__) && defined(__MACH__)
-	chhdir(getenv("HOME")); // hoặc folder riêng của app
+	{
+		const char* home = getenv("HOME");
+		if (home) {
+			std::string path = std::string(home) + "/CasioEmuMsvc";
+			std::filesystem::create_directories(path);
+			chdir(path.c_str());
+		}
+	}
 #endif
 	g_local.Load();
 
