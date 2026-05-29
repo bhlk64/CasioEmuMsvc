@@ -97,7 +97,6 @@ static string canonicalize(string st) {
 
 static long long parseInteger(string s, int base = 0) {
     s = trim(s);
-    if (s.empty()) throw runtime_error("invalid integer: empty string");
     size_t idx = 0;
     long long v = stoll(s, &idx, base);
     if (idx != s.size()) throw runtime_error("invalid integer: " + s);
@@ -133,19 +132,6 @@ static string join(const vector<string>& v, const string& delim) {
     }
     return out;
 }
-
-static string regexEscape(const string& s) {
-    string out;
-    for (char c : s) {
-        if (string(R"(\.^$*+?()[]{}|)").find(c) != string::npos)
-            out.push_back('\\');
-        out.push_back(c);
-    }
-    return out;
-}
-
-template<class... Ts>
-struct overloaded : Ts... { using Ts::operator()...; };
 
 // ==========================
 // ROM Data
@@ -882,7 +868,6 @@ public:
         return it->second;
     }
     bool hasVar(const string& name) const { return vars_.count(name); }
-    void clearVar(const string& name) { vars_.erase(name); }
     void setStringVar(const string& name, const string& value) { stringVars_[name] = value; }
     string getStringVar(const string& name) const {
         auto it = stringVars_.find(name);
@@ -890,30 +875,6 @@ public:
         return it->second;
     }
     bool hasStringVar(const string& name) const { return stringVars_.count(name); }
-
-    int resolveIntOrVar(const string& s) const {
-        string t = trim(s);
-        bool negative = false;
-        if (!t.empty() && t[0] == '-') {
-            negative = true;
-            t = t.substr(1);
-        }
-        try {
-            long long val = parseInteger(t, 0);
-            return negative ? (int)-val : (int)val;
-        } catch (...) {
-            if (hasVar(t)) {
-                string v = trim(getVar(t));
-                try {
-                    long long val = parseInteger(v, 0);
-                    return negative ? (int)-val : (int)val;
-                } catch (...) {
-                    throw runtime_error("Variable '" + t + "' value '" + v + "' is not a valid integer");
-                }
-            }
-            throw runtime_error("Unknown integer or variable: '" + trim(s) + "'");
-        }
-    }
 
     string resolveIndex(const string& value, int index) const {
         if (value.size() >= 2 && value.front() == '"' && value.back() == '"') {
@@ -934,8 +895,7 @@ public:
 
     string expandVariables(const string& line) const {
         string expanded = line;
-
-        // Replace indexed variables first: varname[idx]
+        
         regex indexRegex(R"(\b(\w+)\[(\d+)\])");
         string temp;
         sregex_iterator it(expanded.begin(), expanded.end(), indexRegex);
@@ -953,7 +913,6 @@ public:
         temp.append(expanded, lastPos, string::npos);
         expanded = std::move(temp);
 
-        // Replace remaining word-boundary variables
         regex varRegex(R"(\b\w+\b)");
         temp.clear();
         it = sregex_iterator(expanded.begin(), expanded.end(), varRegex);
@@ -967,19 +926,8 @@ public:
             lastPos = m.position() + m.length();
         }
         temp.append(expanded, lastPos, string::npos);
-
+        
         return temp;
-    }
-
-    string expandVarsInExpr(const string& expr) const {
-        string expanded = expr;
-        for (const auto& [name, value] : vars_) {
-            string pat = "\\b" + regexEscape(name) + "\\b";
-            try {
-                expanded = regex_replace(expanded, regex(pat), value);
-            } catch (...) {}
-        }
-        return expanded;
     }
 
     const unordered_map<string, string>& vars() const { return vars_; }
@@ -1026,11 +974,11 @@ struct RawHexStmt { string hex; };
 struct CallStmt { string target; };
 struct GotoStmt { string label; };
 struct NextStmt { string label; };
-struct AdrOfStmt { string offsetExpr; string label; string bracketSpec; };
-struct AdrStmt { string label; string offsetExpr; };
-struct JumpStmt { string offsetExpr; string label; };
-struct AdrArithStmt { string leftOffsetExpr; string leftLabel; string rightOffsetExpr; string rightLabel; };
-struct SizeLengthStmt { string leftLabel; string rightLabel; string leftOffsetExpr; string rightOffsetExpr; };
+struct AdrOfStmt { int offset = 0; string label; string bracketSpec; };
+struct AdrStmt { string label; int offset = 0; };
+struct JumpStmt { int offset = 0; string label; };
+struct AdrArithStmt { int leftOffset = 0; string leftLabel; int rightOffset = 0; string rightLabel; };
+struct SizeLengthStmt { string leftLabel; string rightLabel; int leftOffset = 0; int rightOffset = 0; };
 struct AssignmentStmt { string target; string valueText; };
 struct OrgStmt { string expr; };
 struct PrLengthStmt {};
@@ -1182,10 +1130,10 @@ public:
     }
 
 private:
-    pair<string, string> parseAdrOfBracketSyntax(const string& spec, optional<int> /*currentHome*/) const {
+    pair<int, string> parseAdrOfBracketSyntax(const string& spec, optional<int> currentHome) const {
         string s = trim(spec);
         if (s.empty()) diag_.error("adr_of/jump requires label or bracket arguments");
-        if (s[0] != '[') return {"0", lower(trim(s))};
+        if (s[0] != '[') return {0, lower(trim(s))};
 
         vector<string> parts;
         regex bracketRegex(R"(\[([^\]]+)\])");
@@ -1197,45 +1145,58 @@ private:
         trailingLabel = trim(trailingLabel);
         bool firstIsLabel = !parts.empty() && !isNumericStr(parts[0]);
 
-        if (!trailingLabel.empty()) firstIsLabel = false;
-
         if (firstIsLabel) {
             if (!trailingLabel.empty())
                 diag_.error("adr_of: label in brackets and trailing");
             string label = lower(trim(parts[0]));
-            string offsetExpr = "0";
-            if (parts.size() >= 2) offsetExpr = trim(parts[1]);
-            if (parts.size() > 3) diag_.error("adr_of: too many brackets");
-            return {offsetExpr, label};
+            int offset = 0;
+            if (parts.size() == 2) offset = (int)parseInteger(trim(parts[1]), 0);
+            else if (parts.size() == 3) {
+                int baseOff = currentHome.has_value()
+                    ? (int)parseInteger(trim(parts[2]), 16) - *currentHome : 0;
+                offset = (int)parseInteger(trim(parts[1]), 0) + baseOff;
+            }
+            else if (parts.size() > 3) diag_.error("adr_of: too many brackets");
+            return {offset, label};
         }
 
         if (!trailingLabel.empty()) {
             if (trailingLabel.size() >= 2 && trailingLabel.front() == '<' && trailingLabel.back() == '>')
                 trailingLabel = trailingLabel.substr(1, trailingLabel.size() - 2);
             string label = lower(trim(trailingLabel));
-            string offsetExpr = "0";
-            if (parts.size() >= 1) offsetExpr = trim(parts[0]);
-            if (parts.size() > 2) diag_.error("adr_of trailing-label: too many brackets");
-            return {offsetExpr, label};
+            int offset = 0;
+            if (parts.size() == 1) offset = (int)parseInteger(trim(parts[0]), 0);
+            else if (parts.size() == 2) {
+                int baseOff = currentHome.has_value()
+                    ? (int)parseInteger(trim(parts[1]), 16) - *currentHome : 0;
+                offset = (int)parseInteger(trim(parts[0]), 0) + baseOff;
+            }
+            else diag_.error("adr_of trailing-label: too many brackets");
+            return {offset, label};
         }
 
         string label = lower(trim(parts[0]));
-        string offsetExpr = "0";
-        if (parts.size() >= 2) offsetExpr = trim(parts[1]);
-        if (parts.size() > 3) diag_.error("adr_of: too many brackets");
-        return {offsetExpr, label};
+        int offset = 0;
+        if (parts.size() == 2) offset = (int)parseInteger(trim(parts[1]), 0);
+        else if (parts.size() == 3) {
+            int baseOff = currentHome.has_value()
+                ? (int)parseInteger(trim(parts[2]), 16) - *currentHome : 0;
+            offset = (int)parseInteger(trim(parts[1]), 0) + baseOff;
+        }
+        else if (parts.size() > 3) diag_.error("adr_of: too many brackets");
+        return {offset, label};
     }
 
     Stmt parseAdrOf(const string& body) {
-        auto [offsetExpr, label] = parseAdrOfBracketSyntax(body, nullopt);
+        auto [offset, label] = parseAdrOfBracketSyntax(body, nullopt);
         if (label.empty()) diag_.error("adr_of requires a label");
-        return AdrOfStmt{offsetExpr, label, body};
+        return AdrOfStmt{offset, label, body};
     }
 
     Stmt parseJump(const string& body) {
-        auto [offsetExpr, label] = parseAdrOfBracketSyntax(body, nullopt);
+        auto [offset, label] = parseAdrOfBracketSyntax(body, nullopt);
         if (label.empty()) diag_.error("jump requires a label");
-        return JumpStmt{offsetExpr, label};
+        return JumpStmt{offset, label};
     }
 
     Stmt parseAdrStmt(const string& line) {
@@ -1244,36 +1205,40 @@ private:
         string inner = trim(line.substr(openParen + 1, closeParen - openParen - 1));
         string remainder = trim(line.substr(closeParen + 1));
 
-        string label; string offsetExpr = "0";
+        string label; int offset = 0;
         if (inner.find(',') != string::npos) {
             auto parts = split(inner, ',');
             label = lower(trim(parts[0]));
-            if (parts.size() >= 2) offsetExpr = trim(parts[1]);
-        } else if (!remainder.empty()) {
+            if (parts.size() >= 2) offset = (int)parseInteger(trim(parts[1]), 0);
+        }
+        else if (!remainder.empty()) {
             label = lower(trim(inner));
             vector<string> bracketParts;
             regex bracketRegex(R"(\[([^\]]+)\])");
             auto mb = sregex_iterator(remainder.begin(), remainder.end(), bracketRegex);
             auto me = sregex_iterator();
             for (auto it = mb; it != me; ++it) bracketParts.push_back((*it)[1].str());
-            if (bracketParts.size() >= 1) offsetExpr = trim(bracketParts[0]);
-        } else {
+            if (bracketParts.size() == 1) offset = (int)parseInteger(trim(bracketParts[0]), 0);
+            else if (bracketParts.size() >= 2) offset = (int)parseInteger(trim(bracketParts[0]), 0);
+        }
+        else {
             label = lower(trim(inner));
         }
-        return AdrStmt{label, offsetExpr};
+        return AdrStmt{label, offset};
     }
 
-    static pair<string, string> parseAdrPart(string part) {
+    static pair<int, string> parseAdrPart(string part) {
         part = trim(part);
         if (startsWith(part, "adr_arith")) part = trim(part.substr(9));
-        string offsetExpr = "0"; string label;
+        int offset = 0; string label;
         size_t lb = part.find('['), rb = part.find(']');
         if (lb != string::npos && rb != string::npos && rb > lb) {
-            offsetExpr = trim(part.substr(lb + 1, rb - lb - 1));
+            offset = (int)parseInteger(trim(part.substr(lb + 1, rb - lb - 1)), 0);
             label = trim(part.substr(rb + 1));
-        } else label = trim(part);
+        }
+        else label = trim(part);
         if (label.empty()) throw runtime_error("adr_arith part missing label");
-        return {offsetExpr, lower(label)};
+        return {offset, lower(label)};
     }
 
     Stmt parseAdrArith(const string& line) {
@@ -1285,9 +1250,9 @@ private:
         if (lastMinus <= 0) diag_.error("wrong adr_arith syntax");
         string left = trim(line.substr(9, lastMinus - 9));
         string right = trim(line.substr(lastMinus + 1));
-        auto [loe, ll] = parseAdrPart(left);
-        auto [roe, rl] = parseAdrPart(right);
-        return AdrArithStmt{loe, ll, roe, rl};
+        auto [lo, ll] = parseAdrPart(left);
+        auto [ro, rl] = parseAdrPart(right);
+        return AdrArithStmt{lo, ll, ro, rl};
     }
 
     Stmt parseSizeLength(const string& line) {
@@ -1303,20 +1268,20 @@ private:
         string leftRaw = trim(content.substr(0, sep));
         string rightRaw = trim(content.substr(sep + 1));
 
-        auto parsePart = [this](string part) -> pair<string, string> {
+        auto parsePart = [this](string part) -> pair<int, string> {
             part = trim(part);
             if (part.size() >= 2 && part.front() == '[' && part.back() == ']') {
                 string inner = part.substr(1, part.size() - 2);
                 if (isNumericStr(inner))
                     diag_.error("size/length: bracket contains number, not label");
-                return {"0", lower(trim(inner))};
+                return {0, lower(trim(inner))};
             }
-            return {"0", lower(part)};
+            return {0, lower(part)};
         };
 
-        auto [loe, ll] = parsePart(leftRaw);
-        auto [roe, rl] = parsePart(rightRaw);
-        return SizeLengthStmt{ll, rl, loe, roe};
+        auto [lo, ll] = parsePart(leftRaw);
+        auto [ro, rl] = parsePart(rightRaw);
+        return SizeLengthStmt{ll, rl, lo, ro};
     }
 
     Stmt parseStringStmt(const string& line) {
@@ -1349,42 +1314,64 @@ private:
 
 struct AdrOfFixup {
     int pos;
-    string offsetExpr;
+    int offset;
     string label;
 };
-
 struct AdrArithFixup {
     int pos;
-    string leftOffsetExpr;
+    int leftOffset;
     string leftLabel;
-    string rightOffsetExpr;
+    int rightOffset;
     string rightLabel;
 };
-
 struct DeferredEvalFixup {
     int pos;
     string expr;
 };
 
-struct PrLengthFixup {
-    int pos;
-};
-
-struct RemainingLengthFixup {
-    int pos;
-};
-
 struct CompiledSegment {
     int baseAddress = 0;
     vector<int> bytes;
+};
+
+struct CompilerState {
+    vector<int> result;
     unordered_map<string, int> labels;
+    unordered_map<string, string> vars;
+    unordered_map<string, string> stringVars;
+
     vector<AdrOfFixup> adrOfFixups;
     vector<AdrArithFixup> adrArithFixups;
-    vector<PrLengthFixup> prLengthFixups;
-    vector<RemainingLengthFixup> remainingLengthFixups;
-    vector<DeferredEvalFixup> deferredEvalFixups;
+    vector<int> prLengthFixups;
+    vector<int> remainingFixups;
+    vector<DeferredEvalFixup> deferredEvals;
+
     optional<int> home;
-    int hx = 0;
+    optional<int> orgAddress;
+
+    string backup;
+    string addrCopy;
+
+    int previousSectionLength = 0;
+    int remainingBase = 0;
+
+    void resetForSection(int prevLen) {
+        result.clear();
+        labels.clear();
+        vars.clear();
+        stringVars.clear();
+        adrOfFixups.clear();
+        adrArithFixups.clear();
+        prLengthFixups.clear();
+        remainingFixups.clear();
+        deferredEvals.clear();
+        home.reset();
+        orgAddress.reset();
+        backup.clear();
+        addrCopy.clear();
+        previousSectionLength = prevLen;
+        remainingBase = 0;
+    }
 };
 
 // ==========================
@@ -1392,986 +1379,769 @@ struct CompiledSegment {
 // ==========================
 
 class Compiler {
+    CommandDatabase& db;
+    CompilerState st;
+    Parser parser;
+    
+    FontTable defaultFontTable_;
+    CalcTable defaultCalcTable_;
+    KeypressTable defaultKeypressTable_;
+    DefinitionDatabase defaultDefs_;
+    
+    const FontTable* fontTable_;
+    const CalcTable* calcTable_;
+    const KeypressTable* keypressTable_;
+    const DefinitionDatabase* defs_;
+
+    int maxCallAdr = 0x3ffff;
+
 public:
-    vector<int> result;
-    unordered_map<string, int> labels;
-    VariableStore vars;
-    unordered_map<string, string> stringVars;
+    explicit Compiler(CommandDatabase& db)
+        : db(db), parser(&db, &defaultDefs_), 
+          fontTable_(&defaultFontTable_), calcTable_(&defaultCalcTable_), 
+          keypressTable_(&defaultKeypressTable_), defs_(&defaultDefs_) {}
 
-    vector<AdrOfFixup> adrOfFixups;
-    vector<AdrArithFixup> adrArithFixups;
-    vector<PrLengthFixup> prLengthFixups;
-    vector<RemainingLengthFixup> remainingLengthFixups;
-    vector<DeferredEvalFixup> deferredEvalFixups;
+    explicit Compiler(CommandDatabase& db, const FontTable& ft, const CalcTable& ct, 
+                      const KeypressTable& kt, const DefinitionDatabase& d)
+        : db(db), parser(&db, &d), 
+          fontTable_(&ft), calcTable_(&ct), keypressTable_(&kt), defs_(&d) {}
 
-    optional<int> home;
-    int hx = 0;
-    string addrcopy;
-    string backup;
+    CompilerState& state() { return st; }
+    void setPreviousSectionLength(int n) { st.previousSectionLength = n; }
 
-    const FontTable* fontTable = nullptr;
-    const CommandDatabase* db = nullptr;
-    const CalcTable* calcTable = nullptr;
-    const DefinitionDatabase* defs = nullptr;
-    const KeypressTable* keypressTable = nullptr;
-    const RomData* romData = nullptr;
-    const ExtensionManager* extMgr = nullptr;
-    UserFunctionStore userFuncs;
-
-    Diagnostic diag;
-
-    // Segment management
-    struct SegmentSnapshot {
-        vector<int> result;
-        unordered_map<string, int> labels;
-        vector<AdrOfFixup> adrOfFixups;
-        vector<AdrArithFixup> adrArithFixups;
-        vector<PrLengthFixup> prLengthFixups;
-        vector<RemainingLengthFixup> remainingLengthFixups;
-        vector<DeferredEvalFixup> deferredEvalFixups;
-        string endaddr;
-        vector<int> end;
-        int backup_seg = 0;
-        optional<int> home;
-        int hx = 0;
-    };
-
-    vector<SegmentSnapshot> segments;
-    string endaddr;
-    vector<int> end;
-
-    // ── Helpers ──────────────────────────────────────────────
-
-    int resolveOffset(const string& offsetExpr) const {
-        string t = trim(offsetExpr);
-        if (t.empty() || t == "0") return 0;
-        return vars.resolveIntOrVar(offsetExpr);
+    void compileStatement(const Stmt& stmt) {
+        std::visit([this](auto&& x) { emit(x); }, stmt);
     }
 
-    void emitByte(int b) { result.push_back(b & 0xFF); }
-
-    void emitWord(int w) {
-        result.push_back(w & 0xFF);
-        result.push_back((w >> 8) & 0xFF);
-    }
-
-    void emitDWord(int d) {
-        result.push_back(d & 0xFF);
-        result.push_back((d >> 8) & 0xFF);
-        result.push_back((d >> 16) & 0xFF);
-        result.push_back((d >> 24) & 0xFF);
-    }
-
-    void emitHexLiteral(const string& text) {
-        string hexStr = text.substr(2); // skip "0x"
-        if (hexStr.empty()) return;
-        if (hexStr.size() % 2 != 0) hexStr = "0" + hexStr;
-        int nBytes = (int)hexStr.size() / 2;
-        unsigned int data = (unsigned int)stoul(hexStr, nullptr, 16);
-        for (int i = 0; i < nBytes; ++i) {
-            result.push_back(data & 0xFF);
-            data >>= 8;
-        }
-    }
-
-    void emitHexString(const string& hexData) {
-        string d = hexData;
-        d.erase(remove_if(d.begin(), d.end(), ::isspace), d.end());
-        if (d.size() % 2 != 0) throw runtime_error("Invalid hex data length");
-        for (size_t i = 0; i < d.size(); i += 2)
-            result.push_back(stoi(d.substr(i, 2), nullptr, 16));
-    }
-
-    // ── Eval Expression Engine ───────────────────────────────
-
-    string resolveAdrOfInExpr(const string& expr) const {
-        regex pattern(R"(adr_of\s*((?:\[[^\]]+\]\s*|<(?:[^>]+)>\s*|[a-zA-Z_]\w*\s*)+))");
-        string result_str = expr;
-
-        auto mb = sregex_iterator(expr.begin(), expr.end(), pattern);
-        auto me = sregex_iterator();
-        vector<smatch> matches;
-        for (auto it = mb; it != me; ++it) matches.push_back(*it);
-
-        for (int i = (int)matches.size() - 1; i >= 0; --i) {
-            const smatch& m = matches[i];
-            string spec = trim(m[1].str());
-            string label;
-            string offsetExpr = "0";
-
-            if (!spec.empty() && spec[0] == '[') {
-                regex brk(R"(\[([^\]]+)\])");
-                auto bm = sregex_iterator(spec.begin(), spec.end(), brk);
-                auto be = sregex_iterator();
-                vector<string> parts;
-                for (auto bi = bm; bi != be; ++bi) parts.push_back((*bi)[1].str());
-                if (!parts.empty()) {
-                    if (!isNumericStr(parts[0])) {
-                        label = lower(trim(parts[0]));
-                        if (parts.size() >= 2) offsetExpr = trim(parts[1]);
-                    } else {
-                        offsetExpr = trim(parts[0]);
-                    }
-                }
-            } else {
-                label = lower(trim(spec));
-            }
-
-            if (label.empty()) continue;
-            auto lit = labels.find(label);
-            if (lit == labels.end())
-                throw runtime_error("Label '" + label + "' not found for adr_of in eval expression");
-            int offset = resolveOffset(offsetExpr);
-            int addr = (home.value_or(0)) + lit->second + offset;
-            result_str = result_str.substr(0, (size_t)m.position()) + to_string(addr)
-                       + result_str.substr((size_t)(m.position() + m.length()));
-        }
-        return result_str;
-    }
-
-    long long evalSimpleExpr(string expr) const {
-        expr = vars.expandVarsInExpr(expr);
-        expr = resolveAdrOfInExpr(expr);
-
-        if (expr.find("adr(") != string::npos)
-            throw runtime_error("Cannot evaluate expression with unresolved adr(): " + expr);
-
-        size_t pos = 0;
-        auto skipWs = [&]() { while (pos < expr.size() && isspace((unsigned char)expr[pos])) ++pos; };
-
-        function<long long()> parseExpr;
-        function<long long()> parseTerm;
-        function<long long()> parseFactor;
-        function<long long()> parseUnary;
-        function<long long()> parsePrimary;
-
-        parsePrimary = [&]() -> long long {
-            skipWs();
-            if (pos < expr.size() && expr[pos] == '(') {
-                ++pos;
-                long long v = parseExpr();
-                skipWs();
-                if (pos < expr.size() && expr[pos] == ')') ++pos;
-                return v;
-            }
-            size_t start = pos;
-            if (pos < expr.size() && (expr[pos] == '-' || expr[pos] == '+')) ++pos;
-            while (pos < expr.size() && (isxdigit((unsigned char)expr[pos]) || expr[pos] == 'x' || expr[pos] == 'X'))
-                ++pos;
-            string numStr = expr.substr(start, pos - start);
-            if (numStr.empty()) throw runtime_error("Expected number in eval: " + expr + " at pos " + to_string(pos));
-            return parseInteger(trim(numStr), 0);
-        };
-
-        parseUnary = [&]() -> long long {
-            skipWs();
-            if (pos < expr.size() && expr[pos] == '-') { ++pos; return -parseUnary(); }
-            if (pos < expr.size() && expr[pos] == '~') { ++pos; return ~parseUnary(); }
-            return parsePrimary();
-        };
-
-        parseFactor = [&]() -> long long {
-            long long v = parseUnary();
-            while (pos < expr.size()) {
-                skipWs();
-                if (pos < expr.size() && expr[pos] == '*') { ++pos; v *= parseUnary(); }
-                else if (pos < expr.size() && expr[pos] == '/' && (pos + 1 >= expr.size() || expr[pos+1] != '/')) { ++pos; v /= parseUnary(); }
-                else if (pos < expr.size() && expr[pos] == '%') { ++pos; v %= parseUnary(); }
-                else break;
-            }
-            return v;
-        };
-
-        parseTerm = [&]() -> long long {
-            long long v = parseFactor();
-            while (pos < expr.size()) {
-                skipWs();
-                if (pos < expr.size() && expr[pos] == '&') { ++pos; v &= parseFactor(); }
-                else if (pos < expr.size() && expr[pos] == '|') { ++pos; v |= parseFactor(); }
-                else if (pos < expr.size() && expr[pos] == '^') { ++pos; v ^= parseFactor(); }
-                else break;
-            }
-            return v;
-        };
-
-        parseExpr = [&]() -> long long {
-            long long v = parseTerm();
-            while (pos < expr.size()) {
-                skipWs();
-                if (pos < expr.size() && expr[pos] == '+') { ++pos; v += parseTerm(); }
-                else if (pos < expr.size() && expr[pos] == '-') { ++pos; v -= parseTerm(); }
-                else break;
-            }
-            return v;
-        };
-
-        return parseExpr();
-    }
-
-    // ── Compile single statement ─────────────────────────────
-
-    void compileStmt(const Stmt& stmt) {
-        visit(overloaded {
-            [&](const EmptyStmt&) {},
-
-            [&](const LabelStmt& s) {
-                string name = lower(s.name);
-                if (labels.count(name))
-                    diag.error("Duplicate label: " + name);
-                labels[name] = (int)result.size();
-            },
-
-            [&](const HexLiteralStmt& s) {
-                string line = s.text;
-                // Handle 0xNNNN+DD or 0xNNNN-DD
-                size_t plusPos = line.find('+');
-                size_t minusPos = line.find('-', 2); // skip 0x prefix
-                if (plusPos != string::npos) {
-                    string hexPart = line.substr(0, plusPos);
-                    string decPart = line.substr(plusPos + 1);
-                    string hexStr = hexPart.substr(2);
-                    if (hexStr.size() % 2 != 0) hexStr = "0" + hexStr;
-                    int nBytes = (int)hexStr.size() / 2;
-                    long long initial = stoll(hexStr, nullptr, 16);
-                    long long val = initial + stoll(decPart, nullptr, 0);
-                    for (int i = 0; i < nBytes; ++i) { result.push_back(val & 0xFF); val >>= 8; }
-                } else if (minusPos != string::npos) {
-                    string hexPart = line.substr(0, minusPos);
-                    string decPart = line.substr(minusPos + 1);
-                    string hexStr = hexPart.substr(2);
-                    if (hexStr.size() % 2 != 0) hexStr = "0" + hexStr;
-                    int nBytes = (int)hexStr.size() / 2;
-                    long long initial = stoll(hexStr, nullptr, 16);
-                    long long val = initial - stoll(decPart, nullptr, 0);
-                    for (int i = 0; i < nBytes; ++i) { result.push_back(val & 0xFF); val >>= 8; }
-                } else {
-                    emitHexLiteral(line);
-                }
-            },
-
-            [&](const RawHexStmt& s) {
-                emitHexString(s.hex);
-            },
-
-            [&](const CallStmt& s) {
-                if (!db) { diag.error("No command database for call: " + s.target); return; }
-                int adr;
-                try { adr = (int)parseInteger(s.target, 16); }
-                catch (...) {
-                    auto& cmd = db->getCommand(s.target);
-                    adr = cmd.address;
-                    for (const auto& tag : cmd.tags)
-                        if (startsWith(tag, "warning")) cerr << tag << "\n";
-                }
-                if (adr < 0 || adr > 0x3ffff)
-                    diag.error("Invalid call address: " + hexWord(adr));
-                // Determine call offset based on input range
-                long long callAddr = adr + 0x30300000LL;
-                if (db->hasDataLabel("input_range") || db->hasDataLabel("input_area")) {
-                    int inputRange = db->hasDataLabel("input_range") ? db->getDataLabel("input_range") : db->getDataLabel("input_area");
-                    if (home.has_value() && *home >= inputRange && *home < inputRange + 0xc8) {
-                        callAddr = adr + 0x30300000LL;
-                    } else {
-                        callAddr = adr + 0x00000000LL;
-                    }
-                }
-                emitDWord((int)callAddr);
-            },
-
-            [&](const GotoStmt& s) {
-                // er14 = eval(adr(label) - 0x02);call sp=er14,pop er14
-                // We emit the eval part which produces a deferred adr_of fixup
-                string expr = "adr(" + s.label + ") - 2";
-                deferredEvalFixups.push_back({(int)result.size(), expr});
-                result.push_back(0);
-                result.push_back(0);
-            },
-
-            [&](const NextStmt& s) {
-                // er6 = adr_of [-2] label; call sp=er6,pop er8
-                adrOfFixups.push_back({(int)result.size(), "-2", s.label});
-                result.push_back(0);
-                result.push_back(0);
-            },
-
-            [&](const AdrOfStmt& s) {
-                adrOfFixups.push_back({(int)result.size(), s.offsetExpr, s.label});
-                result.push_back(0);
-                result.push_back(0);
-            },
-
-            [&](const AdrStmt& s) {
-                // If label is simple and offset is 0, defer as eval for simple adr()
-                if (s.offsetExpr == "0" || trim(s.offsetExpr).empty()) {
-                    string expr = "adr(" + s.label + ")";
-                    deferredEvalFixups.push_back({(int)result.size(), expr});
-                } else {
-                    string expr = "adr(" + s.label + "," + s.offsetExpr + ")";
-                    deferredEvalFixups.push_back({(int)result.size(), expr});
-                }
-                result.push_back(0);
-                result.push_back(0);
-            },
-
-            [&](const JumpStmt& s) {
-                adrOfFixups.push_back({(int)result.size(), s.offsetExpr, s.label});
-                result.push_back(0);
-                result.push_back(0);
-            },
-
-            [&](const AdrArithStmt& s) {
-                adrArithFixups.push_back({(int)result.size(),
-                    s.leftOffsetExpr, s.leftLabel,
-                    s.rightOffsetExpr, s.rightLabel});
-                result.push_back(0);
-            },
-
-            [&](const SizeLengthStmt& s) {
-                adrArithFixups.push_back({(int)result.size(),
-                    s.leftOffsetExpr, s.leftLabel,
-                    s.rightOffsetExpr, s.rightLabel});
-                result.push_back(0);
-            },
-
-            [&](const AssignmentStmt& s) {
-                string reg = s.target;
-                string value = s.valueText;
-
-                // Check if it's a register assignment: er6 = value
-                bool isRegister = false;
-                int regSize = 0;
-                if (reg.size() >= 2) {
-                    if (reg[0] == 'r' && isdigit(reg[1])) { isRegister = true; regSize = 1; }
-                    else if (reg.size() >= 3 && reg[0] == 'e' && reg[1] == 'r' && isdigit(reg[2])) { isRegister = true; regSize = 2; }
-                    else if (reg.size() >= 3 && reg[0] == 'x' && reg[1] == 'r' && isdigit(reg[2])) { isRegister = true; regSize = 4; }
-                    else if (reg.size() >= 3 && reg[0] == 'q' && reg[1] == 'r' && isdigit(reg[2])) { isRegister = true; regSize = 8; }
-                }
-
-                if (isRegister) {
-                    // Emit: call pop <reg>
-                    if (db && db->hasCommand("pop " + reg)) {
-                        auto& cmd = db->getCommand("pop " + reg);
-                        long long callAddr = cmd.address + 0x30300000LL;
-                        emitDWord((int)callAddr);
-                    }
-                    int beforeSize = (int)result.size();
-                    // Emit the value (semicolon-separated bytes)
-                    string valStr = value;
-                    replaceAll(valStr, ";", ";"); // ensure semicolons
-                    auto parts = split(valStr, ';');
-                    for (auto& p : parts) {
-                        string tp = trim(p);
-                        if (tp.empty()) continue;
-                        processLine(tp);
-                    }
-                    int emitted = (int)result.size() - beforeSize;
-                    if (emitted != regSize)
-                        diag.warn("Register " + reg + " assignment size mismatch: expected " +
-                            to_string(regSize) + " got " + to_string(emitted));
-                } else {
-                    // Variable assignment
-                    vars.setVar(reg, value);
-                }
-            },
-
-            [&](const OrgStmt& s) {
-                int newHx;
-                try {
-                    newHx = vars.resolveIntOrVar(s.expr);
-                } catch (...) {
-                    newHx = (int)evalSimpleExpr(s.expr);
-                }
-
-                if (!result.empty() || !labels.empty()) {
-                    // Push current segment
-                    SegmentSnapshot snap;
-                    snap.result = result;
-                    snap.labels = labels;
-                    snap.adrOfFixups = adrOfFixups;
-                    snap.adrArithFixups = adrArithFixups;
-                    snap.prLengthFixups = prLengthFixups;
-                    snap.remainingLengthFixups = remainingLengthFixups;
-                    snap.deferredEvalFixups = deferredEvalFixups;
-                    snap.endaddr = endaddr;
-                    snap.end = end;
-                    snap.backup_seg = 0;
-                    snap.home = home;
-                    snap.hx = hx;
-                    segments.push_back(std::move(snap));
-
-                    // Reset state for new segment
-                    result.clear();
-                    labels.clear();
-                    adrOfFixups.clear();
-                    adrArithFixups.clear();
-                    prLengthFixups.clear();
-                    remainingLengthFixups.clear();
-                    deferredEvalFixups.clear();
-                    endaddr.clear();
-                    end.clear();
-                }
-
-                hx = newHx;
-                int home1 = newHx - (int)result.size();
-                if (!home.has_value()) home = home1;
-                else if (*home != home1) diag.warn("Inconsistent home value");
-            },
-
-            [&](const PrLengthStmt&) {
-                prLengthFixups.push_back({(int)result.size()});
-                result.push_back(0);
-                result.push_back(0);
-            },
-
-            [&](const RemainingLengthStmt&) {
-                endaddr = to_string(result.size());
-                end.push_back((int)result.size());
-                remainingLengthFixups.push_back({(int)result.size()});
-                result.push_back(0);
-                result.push_back(0);
-            },
-
-            [&](const LBytesStmt&) {},
-
-            [&](const BackupIsStmt& s) { backup = s.value; },
-
-            [&](const AddrCopyIsStmt& s) { addrcopy = s.value; },
-
-            [&](const MacroStmt& s) {
-                string name = s.name;
-                if (name == "loop880") {
-                    processLine("set_segment:");
-                    processLine("setlr");
-                    processLine("di,rt");
-                    processLine("call pop xr0");
-                    processLine("adr_of length");
-                    processLine("0x0001");
-                    processLine("[er0]=er2,rt");
-                    processLine("loop:");
-                    processLine("call pop qr0");
-                    processLine("adr_of " + addrcopy);
-                    processLine(backup);
-                    processLine("pr_length");
-                    processLine("adr_of [-2] " + addrcopy);
-                    processLine("hex e6 4d");
-                    processLine("length:");
-                    processLine("remaining_length");
-                    processLine("0x0000");
-                    processLine("call sp=er6,pop er8");
-                }
-                else if (name == "loop580") {
-                    processLine("set_segment:");
-                    processLine("setlr");
-                    processLine("di,rt");
-                    processLine("call pop xr0");
-                    processLine("adr_of length");
-                    processLine("0x0001");
-                    processLine("[er0]=er2,rt");
-                    processLine("call pop qr0");
-                    processLine("pr_length");
-                    processLine(backup);
-                    processLine("adr_of " + addrcopy);
-                    processLine("adr_of [-2] " + addrcopy);
-                    processLine("0x8932");
-                    processLine("length:");
-                    processLine("remaining_length");
-                    processLine("0x0000");
-                    processLine("sp=er6,pop er8");
-                }
-                else if (name == "backup580") {
-                    processLine("backup:");
-                    processLine("call pop xr0");
-                    processLine(backup);
-                    processLine("adr_of " + addrcopy);
-                    processLine("call 0x09450");
-                    processLine("pr_length");
-                }
-                else if (name == "backup880") {
-                    processLine("backup:");
-                    processLine("call pop xr0");
-                    processLine(backup);
-                    processLine("adr_of " + addrcopy);
-                    processLine("call 0x14DE8");
-                    processLine("pr_length");
-                    processLine("0x0000");
-                }
-            },
-
-            [&](const StrEmitStmt& s) {
-                if (!fontTable) { diag.error("No font table for string encoding"); return; }
-                string text = s.text;
-                // Handle variable interpolation in strings: {varname}
-                regex varInterp(R"(\{([a-zA-Z_]\w*(?:\[\d+\])?)\})");
-                text = regex_replace(text, varInterp, [&](const smatch& m) -> string {
-                    string vn = m[1].str();
-                    if (vars.hasVar(vn)) return vars.getVar(vn);
-                    return m[0].str();
-                });
-                // Replace spaces with ~
-                for (char& c : text) if (c == ' ') c = '~';
-                auto bytes = fontTable->encodeString(text);
-                result.insert(result.end(), bytes.begin(), bytes.end());
-            },
-
-            [&](const StrStoreStmt& s) {
-                stringVars[s.name] = s.text;
-            },
-
-            [&](const StrUseStmt& s) {
-                auto it = stringVars.find(s.name);
-                if (it == stringVars.end()) diag.error("Unknown string variable: " + s.name);
-                if (!fontTable) { diag.error("No font table for string encoding"); return; }
-                string text = it->second;
-                for (char& c : text) if (c == ' ') c = '~';
-                auto bytes = fontTable->encodeString(text);
-                result.insert(result.end(), bytes.begin(), bytes.end());
-            },
-
-            [&](const TokenLiteralStmt& s) {
-                if (!fontTable) { diag.error("No font table for token encoding"); return; }
-                auto bytes = fontTable->encodeTokens(s.content);
-                result.insert(result.end(), bytes.begin(), bytes.end());
-            },
-
-            [&](const CalcStmt& s) {
-                if (!calcTable) { diag.error("No calc table"); return; }
-                string content = s.content;
-                if (content.size() >= 2 && content.front() == '"' && content.back() == '"')
-                    content = content.substr(1, content.size() - 2);
-                vector<int> encoded;
-                size_t i = 0;
-                while (i < content.size()) {
-                    if (isspace((unsigned char)content[i])) { ++i; continue; }
-                    bool found = false;
-                    for (auto& key : calcTable->keys) {
-                        if (content.compare(i, key.size(), key) == 0) {
-                            auto tit = calcTable->tokens.find(key);
-                            if (tit != calcTable->tokens.end()) {
-                                encoded.push_back(tit->second);
-                                i += key.size();
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!found) {
-                        unsigned char ch = content[i];
-                        string sch(1, ch);
-                        auto tit = calcTable->tokens.find(sch);
-                        if (tit != calcTable->tokens.end()) {
-                            encoded.push_back(tit->second);
-                        } else if (isalpha(ch)) {
-                            auto tit2 = calcTable->tokens.find(string(1, (char)tolower(ch)));
-                            if (tit2 != calcTable->tokens.end())
-                                encoded.push_back(tit2->second);
-                            else
-                                diag.error("Unknown calc token: " + string(1, content[i]));
-                        } else {
-                            diag.error("Unknown calc token: " + string(1, content[i]));
-                        }
-                        ++i;
-                    }
-                }
-                // Emit as hex
-                string hexOut;
-                for (int b : encoded) {
-                    char buf[4];
-                    snprintf(buf, sizeof(buf), "%02x", b & 0xFF);
-                    hexOut += buf;
-                }
-                if (!hexOut.empty()) emitHexString(hexOut);
-            },
-
-            [&](const EvalStmt& s) {
-                string expanded = vars.expandVarsInExpr(s.expr);
-
-                // Handle nested eval() calls
-                regex nestedEval(R"(eval\(([^()]*(?:\([^()]*\)[^()]*)*)\))");
-                int safety = 100;
-                while (regex_search(expanded, nestedEval) && safety-- > 0) {
-                    expanded = regex_replace(expanded, nestedEval, [&](const smatch& m) -> string {
-                        string inner = m[1].str();
-                        inner = vars.expandVarsInExpr(inner);
-                        if (inner.find("adr(") != string::npos || inner.find("adr_of") != string::npos)
-                            return "(" + inner + ")";
-                        try {
-                            long long val = evalSimpleExpr(inner);
-                            return to_string(val);
-                        } catch (...) {
-                            return "(" + inner + ")";
-                        }
-                    });
-                }
-
-                // If adr( or adr_of is present, defer evaluation
-                if (expanded.find("adr(") != string::npos || expanded.find("adr_of") != string::npos) {
-                    deferredEvalFixups.push_back({(int)result.size(), expanded});
-                    result.push_back(0);
-                    result.push_back(0);
-                    return;
-                }
-
-                try {
-                    long long val = evalSimpleExpr(expanded);
-                    // Emit as hex bytes (2 bytes by default for eval result)
-                    emitWord((int)(val & 0xFFFF));
-                } catch (const exception& e) {
-                    diag.error(string("Eval error: ") + e.what() + " in '" + s.expr + "'");
-                }
-            },
-
-            [&](const VarAssignStmt& s) {
-                vars.setVar(s.name, s.value);
-            },
-
-            [&](const DataLabelStmt& s) {
-                if (!db) { diag.error("No command database for data label"); return; }
-                int addr = db->getDataLabel(s.name) + s.offset;
-                emitWord(addr);
-            },
-
-            [&](const DefAliasStmt& s) {
-                if (!db) return;
-                if (db->hasCommand(s.oldName)) {
-                    auto& cmd = db->getCommand(s.oldName);
-                    db->addCommand(cmd.address, s.newName, cmd.tags);
-                } else if (db->hasDataLabel(s.oldName)) {
-                    db->addDataLabel(s.newName, db->getDataLabel(s.oldName));
-                }
-            },
-
-            [&](const RepeatStmt&) { /* handled at higher level */ },
-            [&](const FuncDefStmt&) { /* handled at higher level */ },
-            [&](const UserFuncDefStmt&) { /* handled at higher level */ },
-
-            [&](const FreeformStmt& s) {
-                string expanded = vars.expandVariables(s.text);
-                if (expanded != s.text) {
-                    processLine(expanded);
-                } else {
-                    diag.error("Unrecognized command: " + s.text);
-                }
-            }
-        }, stmt);
-    }
-
-    // ── Process a single line (parse + compile) ──────────────
-
-    void processLine(const string& rawLine) {
-        string line = rawLine;
-        size_t dashPos = line.find("---");
-        if (dashPos != string::npos) line = line.substr(0, dashPos);
-        line = trim(line);
-        if (line.empty()) return;
-
-        // Expand variables before parsing
-        line = vars.expandVariables(line);
-
-        Parser parser(db, defs, diag);
+    void compileLine(const string& line) {
         Stmt stmt = parser.parseLine(line);
-        compileStmt(stmt);
+        compileStatement(stmt);
     }
 
-    // ── Apply fixups for current segment ─────────────────────
-
-    void applyFixupsForSegment(optional<int> segmentHome,
-                               vector<int>& segmentResult,
-                               unordered_map<string, int>& segmentLabels,
-                               vector<AdrOfFixup>& segAdrOfFixups,
-                               vector<AdrArithFixup>& segAdrArithFixups,
-                               vector<PrLengthFixup>& segPrLengthFixups,
-                               vector<RemainingLengthFixup>& segRemainingLengthFixups,
-                               vector<DeferredEvalFixup>& segDeferredEvalFixups) const {
-        int homeVal = segmentHome.value_or(0);
-
-        // AdrOf fixups
-        for (auto& fix : segAdrOfFixups) {
-            auto it = segmentLabels.find(fix.label);
-            if (it == segmentLabels.end())
-                throw runtime_error("Undefined label in adr_of: " + fix.label);
-            int offset = resolveOffset(fix.offsetExpr);
-            int targetAdr = homeVal + it->second + offset;
-            segmentResult[fix.pos] = targetAdr & 0xFF;
-            segmentResult[fix.pos + 1] = (targetAdr >> 8) & 0xFF;
-        }
-
-        // AdrArith fixups
-        for (auto& fix : segAdrArithFixups) {
-            auto lit = segmentLabels.find(fix.leftLabel);
-            auto rit = segmentLabels.find(fix.rightLabel);
-            if (lit == segmentLabels.end()) throw runtime_error("Undefined label: " + fix.leftLabel);
-            if (rit == segmentLabels.end()) throw runtime_error("Undefined label: " + fix.rightLabel);
-            int loff = resolveOffset(fix.leftOffsetExpr);
-            int roff = resolveOffset(fix.rightOffsetExpr);
-            int leftAdr = homeVal + lit->second + loff;
-            int rightAdr = homeVal + rit->second + roff;
-            segmentResult[fix.pos] = (rightAdr - leftAdr) & 0xFF;
-        }
-
-        // PrLength fixups
-        for (auto& fix : segPrLengthFixups) {
-            int val = (int)segmentResult.size() - fix.pos;
-            segmentResult[fix.pos] = val & 0xFF;
-            segmentResult[fix.pos + 1] = (val >> 8) & 0xFF;
-        }
-
-        // RemainingLength fixups
-        for (auto& fix : segRemainingLengthFixups) {
-            int remaining = (int)segmentResult.size() - fix.pos - 2;
-            segmentResult[fix.pos] = remaining & 0xFF;
-            segmentResult[fix.pos + 1] = (remaining >> 8) & 0xFF;
-        }
-
-        // Deferred eval fixups (adr() inside eval)
-        for (auto& fix : segDeferredEvalFixups) {
-            string expr = fix.expr;
-            // Replace adr(label) or adr(label,offset) with resolved address
-            regex adrRegex(R"(adr\(\s*([^,)]+)\s*(?:,\s*([^,)]+)\s*)?(?:,\s*([^)]+)\s*)?\))");
-            expr = regex_replace(expr, adrRegex, [&](const smatch& m) -> string {
-                string label = lower(trim(m[1].str()));
-                auto it = segmentLabels.find(label);
-                if (it == segmentLabels.end())
-                    throw runtime_error("Undefined label in adr(): " + label);
-                int offset = 0;
-                if (m.size() > 2 && m[2].matched) {
-                    string offStr = trim(m[2].str());
-                    if (!offStr.empty()) offset = resolveOffset(offStr);
-                }
-                if (m.size() > 3 && m[3].matched) {
-                    int baseOffset = resolveOffset(trim(m[3].str())) - homeVal;
-                    offset += baseOffset;
-                }
-                return to_string(homeVal + it->second + offset);
-            });
-
-            // Replace adr_of in expression
-            expr = resolveAdrOfInExpr(expr);
-
-            try {
-                long long val = evalSimpleExpr(expr);
-                segmentResult[fix.pos] = (int)(val & 0xFF);
-                segmentResult[fix.pos + 1] = (int)((val >> 8) & 0xFF);
-            } catch (const exception& e) {
-                throw runtime_error(string("Deferred eval error: ") + e.what() + " in '" + fix.expr + "'");
-            }
-        }
-    }
-
-    // ── Main compile entry point ─────────────────────────────
-
-    vector<CompiledSegment> compile(const vector<string>& programLines) {
-        // Reset
-        result.clear();
-        labels.clear();
-        adrOfFixups.clear();
-        adrArithFixups.clear();
-        prLengthFixups.clear();
-        remainingLengthFixups.clear();
-        deferredEvalFixups.clear();
-        segments.clear();
-        endaddr.clear();
-        end.clear();
-        home = nullopt;
-        hx = 0;
-
-        // Process lines
-        auto it = programLines.begin();
-        while (it != programLines.end()) {
+    void compileLines(const vector<string>& lines) {
+        bool blockComment = false;
+        auto it = lines.begin();
+        auto endIt = lines.end();
+        while (it != endIt) {
             string line = *it; ++it;
-            size_t dashPos = line.find("---");
-            if (dashPos != string::npos) line = line.substr(0, dashPos);
-            line = trim(line);
-            if (line.empty()) continue;
+            string t = trim(line);
+            if (t == "/*") { blockComment = true; continue; }
+            if (t == "*/") { blockComment = false; continue; }
+            if (blockComment) continue;
 
-            // Expand variables
-            line = vars.expandVariables(line);
-            string low = lower(line);
+            string noComment = removeInlineComment(line);
+            if (trim(noComment).empty()) continue;
 
-            // Handle repeat/loop blocks
+            string low = lower(trim(noComment));
+            
             if (startsWith(low, "repeat ") || startsWith(low, "loop ")) {
-                string countExpr = trim(line.substr(line.find(' ')));
-                if (!countExpr.empty() && countExpr.back() == '{')
-                    countExpr.pop_back();
-                countExpr = trim(countExpr);
-
-                vector<string> bodyLines;
-                while (it != programLines.end()) {
-                    string bline = *it; ++it;
-                    string bs = trim(bline.substr(0, bline.find("---")));
-                    if (bs.empty()) continue;
-                    if (bs == "}") break;
-                    bodyLines.push_back(bs);
-                }
-
-                int count = 0;
-                try { count = vars.resolveIntOrVar(countExpr); }
-                catch (...) { count = (int)evalSimpleExpr(countExpr); }
-
-                for (int r = 0; r < count; ++r) {
-                    compile(bodyLines);
-                }
+                auto body = Parser::collectBlock(it, endIt);
+                emit(RepeatStmt{low, body});
                 continue;
             }
-
-            // Handle def { } blocks (Python-style functions)
-            if (startsWith(low, "def ") && endsWith(low, "{")) {
-                vector<string> bodyLines;
-                while (it != programLines.end()) {
-                    string bline = *it; ++it;
-                    string bs = trim(bline.substr(0, bline.find("---")));
-                    if (bs.empty()) continue;
-                    if (bs == "}") break;
-                    bodyLines.push_back(bs);
-                }
-                // For now, just skip Python-style defs (no exec in C++)
-                continue;
-            }
-
-            // Handle func { } blocks
             if (startsWith(low, "func ")) {
-                vector<string> bodyLines;
-                while (it != programLines.end()) {
-                    string bline = *it; ++it;
-                    string bs = trim(bline.substr(0, bline.find("---")));
-                    if (bs.empty()) continue;
-                    if (bs == "}") break;
-                    bodyLines.push_back(bs);
+                auto body = Parser::collectBlock(it, endIt);
+                smatch m;
+                if (regex_match(low, m, regex(R"(func\s+(\w+)\s*\((.*?)\)\s*\{)"))) {
+                    string name = lower(m[1].str());
+                    string argsStr = m[2].str();
+                    vector<string> args;
+                    if (!argsStr.empty()) {
+                        for (auto& p : split(argsStr, ',')) args.push_back(trim(p));
+                    }
+                    emit(FuncDefStmt{name, args, body});
                 }
-                // Store function body for later expansion
                 continue;
             }
-
-            // Handle list commands [...]
-            if (line[0] == '[') {
-                string content = line.substr(1);
+            if (startsWith(low, "def ") && low.find('=') == string::npos) {
+                Parser::collectBlock(it, endIt);
+                continue;
+            }
+            if (startsWith(low, "[")) {
+                string content = noComment.substr(1);
                 if (content.find(']') != string::npos) {
                     content = content.substr(0, content.find(']'));
                 } else {
-                    while (it != programLines.end()) {
-                        string bline = *it; ++it;
-                        string bs = trim(bline.substr(0, bline.find("---")));
-                        if (bs.empty()) continue;
-                        if (bs.find(']') != string::npos) {
-                            content += ";" + bs.substr(0, bs.find(']'));
+                    vector<string> parts = {content};
+                    while (it != endIt) {
+                        string cur = trim(*it); ++it;
+                        if (cur.find(']') != string::npos) {
+                            parts.push_back(cur.substr(0, cur.find(']')));
                             break;
                         }
-                        content += ";" + bs;
+                        parts.push_back(cur);
                     }
+                    content = join(parts, ";");
                 }
-                replaceAll(content, "\n", ";");
-                processLine(content);
+                compileLine(content);
                 continue;
             }
 
-            // Handle assignment with [...] value
-            size_t eqPos = line.find('=');
-            if (eqPos != string::npos && trim(line.substr(eqPos + 1))[0] == '[') {
-                string target = trim(line.substr(0, eqPos));
-                string valueContent = trim(line.substr(eqPos + 1));
-                if (valueContent[0] == '[') {
-                    string inner = valueContent.substr(1);
-                    if (inner.find(']') != string::npos) {
-                        inner = inner.substr(0, inner.find(']'));
-                        string combined = lower(target) + "=" + inner;
-                        replaceAll(combined, "\n", ";");
-                        processLine(combined);
-                        continue;
-                    }
-                }
+            string canon = canonicalize(noComment);
+            if (canon.find(';') != string::npos) {
+                for (auto& part : split(canon, ';'))
+                    compileLine(part);
+            } else {
+                compileLine(canon);
             }
-
-            // Normal line processing
-            processLine(line);
         }
-
-        // Build final segments
-        vector<CompiledSegment> output;
-
-        // Process saved segments
-        for (auto& snap : segments) {
-            applyFixupsForSegment(snap.home, snap.result, snap.labels,
-                snap.adrOfFixups, snap.adrArithFixups,
-                snap.prLengthFixups, snap.remainingLengthFixups,
-                snap.deferredEvalFixups);
-
-            CompiledSegment seg;
-            seg.baseAddress = snap.home.value_or(0);
-            seg.bytes = std::move(snap.result);
-            seg.labels = std::move(snap.labels);
-            seg.home = snap.home;
-            seg.hx = snap.hx;
-            output.push_back(std::move(seg));
-        }
-
-        // Process current (last) segment
-        applyFixupsForSegment(home, result, labels,
-            adrOfFixups, adrArithFixups,
-            prLengthFixups, remainingLengthFixups,
-            deferredEvalFixups);
-
-        {
-            CompiledSegment seg;
-            seg.baseAddress = home.value_or(0);
-            seg.bytes = std::move(result);
-            seg.labels = std::move(labels);
-            seg.home = home;
-            seg.hx = hx;
-            output.push_back(std::move(seg));
-        }
-
-        return output;
     }
 
-    // ── Output with npress optimization ──────────────────────
+    void finish() {
+        resolveAdrArith();
+        resolvePrLength();
+        resolveRemaining();
+    }
 
-    void outputSegments(const vector<CompiledSegment>& segs, const string& target = "none") const {
-        if (!keypressTable) {
-            for (size_t i = 0; i < segs.size(); ++i) {
-                auto& seg = segs[i];
-                if (segs.size() > 1)
-                    cout << "\n___Page " << (i + 1) << "/" << segs.size() << " | org 0x" << hex << seg.hx << dec << "___\n";
-                for (size_t j = 0; j < seg.bytes.size(); ++j) {
-                    if (j > 0 && j % 16 == 0) cout << "\n";
-                    if (j % 16 == 0 && j > 0) cout << "\n";
-                    if (j % 16 != 0) cout << " ";
-                    cout << uppercase << hex << setw(2) << setfill('0') << (seg.bytes[j] & 0xFF);
+    void resolveAdrOf(int home) {
+        for (auto& f : st.adrOfFixups) {
+            if (!st.labels.count(f.label))
+                throw runtime_error("unknown label in adr_of: " + f.label);
+            int target = home + st.labels[f.label] + f.offset;
+            if (f.pos + 1 >= (int)st.result.size())
+                throw runtime_error("adr_of fixup out of range");
+            st.result[f.pos] = target & 0xff;
+            st.result[f.pos + 1] = (target >> 8) & 0xff;
+        }
+    }
+
+    void resolveDeferredEvals(int home) {
+        for (auto& f : st.deferredEvals) {
+            string expr = f.expr;
+            regex adrRegex(R"(adr\(\s*(\w+)\s*(?:,\s*(-?\d+|0x[0-9a-fA-F]+)\s*)?\))");
+            
+            string temp1;
+            sregex_iterator it1(expr.begin(), expr.end(), adrRegex);
+            sregex_iterator endIt;
+            size_t lastPos1 = 0;
+            for (; it1 != endIt; ++it1) {
+                const smatch& m = *it1;
+                temp1.append(expr, lastPos1, m.position() - lastPos1);
+                string label = lower(m[1].str());
+                if (!st.labels.count(label)) throw runtime_error("unknown label in deferred eval: " + label);
+                int offset = 0;
+                if (m.size() > 2 && m[2].matched) {
+                    offset = (int)parseInteger(m[2].str(), 0);
                 }
-                cout << dec << "\n";
+                int target = home + st.labels[label] + offset;
+                temp1 += to_string(target);
+                lastPos1 = m.position() + m.length();
             }
+            temp1.append(expr, lastPos1, string::npos);
+
+            regex adrOfRegex(R"(adr_of\s*(?:\[\s*([^\]]+)\s*\]\s*)?(\w+))");
+            string resolved;
+            sregex_iterator it2(temp1.begin(), temp1.end(), adrOfRegex);
+            size_t lastPos2 = 0;
+            for (; it2 != endIt; ++it2) {
+                const smatch& m = *it2;
+                resolved.append(temp1, lastPos2, m.position() - lastPos2);
+                string label = lower(m[2].str());
+                if (!st.labels.count(label)) throw runtime_error("unknown label in deferred eval: " + label);
+                int offset = 0;
+                if (m.size() > 1 && m[1].matched) {
+                    offset = (int)parseInteger(trim(m[1].str()), 0);
+                }
+                int target = home + st.labels[label] + offset;
+                resolved += to_string(target);
+                lastPos2 = m.position() + m.length();
+            }
+            resolved.append(temp1, lastPos2, string::npos);
+
+            string normalized;
+            for (char ch : resolved) {
+                if (ch == '+' || ch == '-') {
+                    if (!normalized.empty() && normalized.back() != ' ') normalized.push_back(' ');
+                    normalized.push_back(ch);
+                    normalized.push_back(' ');
+                } else {
+                    normalized.push_back(ch);
+                }
+            }
+
+            try {
+                long long val = evaluateSimpleMath(normalized);
+                st.result[f.pos] = val & 0xff;
+                st.result[f.pos + 1] = (val >> 8) & 0xff;
+            } catch (...) {
+                throw runtime_error("Failed to evaluate deferred eval expression: " + resolved);
+            }
+        }
+    }
+
+private:
+    void emit(const EmptyStmt&) {}
+
+    void emit(const LabelStmt& x) {
+        if (st.labels.count(x.name))
+            throw runtime_error("duplicated label: " + x.name);
+        st.labels[x.name] = (int)st.result.size();
+    }
+
+    void emit(const HexLiteralStmt& x) { emitHexLiteral(x.text); }
+
+    void emit(const RawHexStmt& x) {
+        string s = x.hex;
+        s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
+        if (s.size() % 2) throw runtime_error("invalid hex byte length");
+        for (size_t i = 0; i < s.size(); i += 2)
+            st.result.push_back(stoi(s.substr(i, 2), nullptr, 16));
+    }
+
+    void emit(const CallStmt& x) {
+        int adr = 0;
+        try {
+            adr = stoi(x.target, nullptr, 16);
+        } catch (...) {
+            const auto& cmd = db.getCommand(x.target);
+            adr = cmd.address;
+            for (auto& tag : cmd.tags)
+                if (startsWith(tag, "warning")) cerr << tag << "\n";
+        }
+        if (adr < 0 || adr > maxCallAdr)
+            throw runtime_error("invalid call address");
+        adr = keypressTable_->optimizeAdrForNpress(adr);
+        emitHexLiteral(hexWord(adr + 0x30300000, 8));
+    }
+
+    void emit(const GotoStmt& x) {
+        compileLine("er14 = eval(adr(" + x.label + ") - 0x02)");
+        compileLine("call sp=er14,pop er14");
+    }
+
+    void emit(const NextStmt& x) {
+        compileLine("er6 = adr_of [-2] " + x.label);
+        compileLine("call sp=er6,pop er8");
+    }
+
+    void emit(const AdrOfStmt& x) {
+        st.adrOfFixups.push_back(AdrOfFixup{(int)st.result.size(), x.offset, x.label});
+        st.result.push_back(0);
+        st.result.push_back(0);
+    }
+
+    void emit(const AdrStmt& x) {
+        st.adrOfFixups.push_back(AdrOfFixup{(int)st.result.size(), x.offset, x.label});
+        st.result.push_back(0);
+        st.result.push_back(0);
+    }
+
+    void emit(const JumpStmt& x) {
+        st.adrOfFixups.push_back(AdrOfFixup{(int)st.result.size(), x.offset, x.label});
+        st.result.push_back(0);
+        st.result.push_back(0);
+    }
+
+    void emit(const AdrArithStmt& x) {
+        st.adrArithFixups.push_back(AdrArithFixup{(int)st.result.size(), x.leftOffset, x.leftLabel, x.rightOffset, x.rightLabel});
+        st.result.push_back(0);
+    }
+
+    void emit(const SizeLengthStmt& x) {
+        st.adrArithFixups.push_back(AdrArithFixup{(int)st.result.size(), x.leftOffset, x.leftLabel, x.rightOffset, x.rightLabel});
+        st.result.push_back(0);
+    }
+
+    bool isRegister(const string& r) const {
+        if (r.empty()) return false;
+        if (r.size() >= 2 && (startsWith(r, "er") || startsWith(r, "xr") || startsWith(r, "qr"))) return true;
+        if (r.size() >= 2 && r[0] == 'r' && isdigit(r[1])) return true;
+        return false;
+    }
+
+    void emit(const AssignmentStmt& x) {
+        string target = x.target;
+        if (startsWith(target, "reg ")) target = trim(target.substr(4));
+
+        if (isRegister(target)) {
+            compileLine("call pop " + target);
+            size_t old = st.result.size();
+            string value = x.valueText;
+            replace(value.begin(), value.end(), ',', ';');
+            if (value.find(';') != string::npos) {
+                for (auto& p : split(value, ';')) compileLine(p);
+            } else {
+                compileLine(value);
+            }
+            int got = (int)(st.result.size() - old);
+            int need = sizeofRegister(target);
+            if (got != need)
+                throw runtime_error("register assignment size mismatch: " + target + ", need " + to_string(need) + ", got " + to_string(got));
+        } else {
+            st.vars[target] = x.valueText;
+        }
+    }
+
+    void emit(const OrgStmt& x) {
+        int hx = (int)parseInteger(x.expr, 0);
+        st.orgAddress = hx;
+        int home = hx - (int)st.result.size();
+        if (st.home.has_value() && st.home.value() != home)
+            throw runtime_error("inconsistent org/home");
+        st.home = home;
+    }
+
+    void emit(const PrLengthStmt&) {
+        st.prLengthFixups.push_back((int)st.result.size());
+        st.result.push_back(0);
+        st.result.push_back(0);
+    }
+
+    void emit(const RemainingLengthStmt&) {
+        st.remainingBase = (int)st.result.size();
+        st.remainingFixups.push_back((int)st.result.size());
+        st.result.push_back(0);
+        st.result.push_back(0);
+    }
+
+    void emit(const LBytesStmt&) {
+        int n = st.previousSectionLength;
+        st.result.push_back(n & 0xff);
+        st.result.push_back((n >> 8) & 0xff);
+    }
+
+    void emit(const BackupIsStmt& x) { st.backup = x.value; }
+    void emit(const AddrCopyIsStmt& x) { st.addrCopy = x.value; }
+    void emit(const MacroStmt& x) { expandMacro(x.name); }
+
+    void emit(const StrStoreStmt& x) { st.stringVars[x.name] = x.text; }
+
+    void emit(const StrEmitStmt& x) {
+        auto bytes = fontTable_->encodeString(x.text);
+        st.result.insert(st.result.end(), bytes.begin(), bytes.end());
+    }
+
+    void emit(const StrUseStmt& x) {
+        auto it = st.stringVars.find(x.name);
+        if (it == st.stringVars.end())
+            throw runtime_error("unknown string variable: " + x.name);
+        auto bytes = fontTable_->encodeString(it->second);
+        st.result.insert(st.result.end(), bytes.begin(), bytes.end());
+    }
+
+    void emit(const TokenLiteralStmt& x) {
+        auto bytes = fontTable_->encodeTokens(x.content);
+        st.result.insert(st.result.end(), bytes.begin(), bytes.end());
+    }
+
+    void emit(const CalcStmt& x) {
+        string content = x.content;
+        if (content.size() >= 2 && content.front() == '"' && content.back() == '"')
+            content = content.substr(1, content.size() - 2);
+        vector<int> hexs;
+        size_t i = 0;
+        while (i < content.size()) {
+            if (isspace(content[i])) { ++i; continue; }
+            bool found = false;
+            for (const auto& key : calcTable_->keys) {
+                if (content.compare(i, key.size(), key) == 0) {
+                    hexs.push_back(calcTable_->tokens.at(key));
+                    i += key.size();
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                if (isalpha(content[i])) {
+                    string var(1, content[i]);
+                    if (calcTable_->tokens.count(var)) {
+                        hexs.push_back(calcTable_->tokens.at(var));
+                        ++i; continue;
+                    }
+                }
+                throw runtime_error("Unknown calc token at " + to_string(i) + ": " + content.substr(i, 10));
+            }
+        }
+        string hexStr = "hex ";
+        for (int h : hexs) {
+            char buf[4]; snprintf(buf, sizeof(buf), "%02x", h & 0xff);
+            hexStr += buf;
+        }
+        compileLine(hexStr);
+    }
+
+    void emit(const EvalStmt& x) {
+        string expr = x.expr;
+        for (auto& [k, v] : st.vars) {
+            regex varRegex("\\b" + k + "\\b");
+            expr = regex_replace(expr, varRegex, v);
+        }
+        if (expr.find("adr(") != string::npos || expr.find("adr_of") != string::npos) {
+            st.deferredEvals.push_back(DeferredEvalFixup{(int)st.result.size(), expr});
+            st.result.push_back(0);
+            st.result.push_back(0);
+        } else {
+            try {
+                long long val = evaluateSimpleMath(expr);
+                compileLine(hexWord((int)val, 4));
+            } catch (...) {
+                throw runtime_error("Failed to evaluate eval expression: " + expr);
+            }
+        }
+    }
+
+    void emit(const VarAssignStmt& x) { st.vars[x.name] = x.value; }
+
+    void emit(const DataLabelStmt& x) {
+        int adr = db.getDataLabel(x.name) + x.offset;
+        emitHexLiteral(hexWord(adr, 4));
+    }
+
+    void emit(const RepeatStmt& x) {
+        string countExpr = x.count;
+        if (startsWith(countExpr, "repeat ")) countExpr = countExpr.substr(7);
+        else if (startsWith(countExpr, "loop ")) countExpr = countExpr.substr(5);
+        countExpr = trim(countExpr);
+        if (endsWith(countExpr, "{")) countExpr = countExpr.substr(0, countExpr.size() - 1);
+        countExpr = trim(countExpr);
+
+        for (auto& [k, v] : st.vars) {
+            regex varRegex("\\b" + k + "\\b");
+            countExpr = regex_replace(countExpr, varRegex, v);
+        }
+
+        int count = (int)parseInteger(countExpr, 0);
+        for (int i = 0; i < count; ++i) {
+            for (const string& bodyLine : x.body)
+                compileLine(bodyLine);
+        }
+    }
+
+    void emit(const FuncDefStmt& x) {}
+    void emit(const UserFuncDefStmt& x) {}
+
+    void emit(const DefAliasStmt& x) {
+        if (db.hasCommand(x.oldName)) {
+            auto& cmd = db.getCommand(x.oldName);
+            db.addCommand(cmd.address, x.newName, cmd.tags);
+        } else if (db.hasDataLabel(x.oldName)) {
+            db.addDataLabel(x.newName, db.getDataLabel(x.oldName));
+        } else {
+            throw runtime_error("def alias: unknown command/label " + x.oldName);
+        }
+    }
+
+    void emit(const FreeformStmt& x) {
+        string line = lower(trim(x.text));
+        if (db.hasDataLabel(line)) {
+            emitHexLiteral(hexWord(db.getDataLabel(line), 4));
             return;
         }
-
-        for (size_t i = 0; i < segs.size(); ++i) {
-            auto seg = segs[i]; // copy so we can modify
-
-            if (target == "none" || target == "overflow") {
-                if (target == "overflow" && seg.bytes.size() > 100)
-                    throw runtime_error("Segment " + to_string(i + 1) + ": Program too long for overflow");
-
-                int curHome = seg.home.value_or(0);
-
-                if (curHome == 0 && seg.labels.count("home")) {
-                    // Need to find optimal home
-                    // ... npress optimization logic ...
-                }
-
-                // Apply adr_of fixups with the final home value
-                int homeVal = seg.home.value_or(0);
-                // (Already applied in compile step, but if home changed we'd re-apply)
+        size_t plus = line.find('+');
+        if (plus != string::npos) {
+            string name = trim(line.substr(0, plus));
+            string off = trim(line.substr(plus + 1));
+            if (db.hasDataLabel(name)) {
+                int adr = db.getDataLabel(name) + (int)parseInteger(off, 0);
+                emitHexLiteral(hexWord(adr, 4));
+                return;
             }
-
-            if (segs.size() > 1)
-                cout << "\n___Page " << (i + 1) << "/" << segs.size() << " | org 0x" << hex << seg.hx << dec << "___\n";
-
-            // Print labels
-            for (auto& [name, offset] : seg.labels) {
-                int addr = seg.home.value_or(0) + offset;
-                cerr << name << " = 0x" << uppercase << hex << addr << dec << "\n";
-            }
-
-            // Print hex lines
-            keypressTable->printHexLines(seg.bytes);
         }
+        if (db.hasCommand(line)) {
+            emit(CallStmt{line});
+            return;
+        }
+        throw runtime_error("wrong syntax or unknown command: " + line);
+    }
+
+    int sizeofRegister(const string& r) const {
+        if (r.empty()) throw runtime_error("empty register");
+        switch (r[0]) {
+            case 'r': return 1;
+            case 'e': return 2;
+            case 'x': return 4;
+            case 'q': return 8;
+            default: throw runtime_error("Unknown register size or invalid assignment target (must be r,e,x,q): " + r);
+        }
+    }
+
+    void emitHexLiteral(string line) {
+        line = lower(trim(line));
+        if (line.find('+') != string::npos) {
+            auto p = split(line, '+');
+            if (p.size() != 2) throw runtime_error("bad hex + syntax");
+            long long v = parseInteger(p[0], 16) + parseInteger(p[1], 10);
+            int n = (int)p[0].size() / 2 - 1;
+            for (int i = 0; i < n; ++i) { st.result.push_back(v & 0xff); v >>= 8; }
+            return;
+        }
+        size_t minus = line.find('-', 2);
+        if (minus != string::npos) {
+            string a = line.substr(0, minus);
+            string b = line.substr(minus + 1);
+            long long v = parseInteger(a, 16) - parseInteger(b, 10);
+            int n = (int)a.size() / 2 - 1;
+            for (int i = 0; i < n; ++i) { st.result.push_back(v & 0xff); v >>= 8; }
+            return;
+        }
+        long long v = parseInteger(line, 16);
+        int n = (int)line.size() / 2 - 1;
+        for (int i = 0; i < n; ++i) { st.result.push_back(v & 0xff); v >>= 8; }
+    }
+
+    void expandMacro(const string& name) {
+        vector<string> lines;
+        if (startsWith(name, "loop880")) {
+            lines = {"set_segment:", "setlr", "di,rt", "call pop xr0", "adr_of length", "0x0001",
+                "[er0]=er2,rt", "loop:", "call pop qr0", "adr_of " + st.addrCopy, st.backup,
+                "pr_length", "adr_of [-2] " + st.addrCopy, "hex e6 4d", "length:",
+                "remaining_length", "0x0000", "call sp=er6,pop er8"};
+        } else if (startsWith(name, "loop580")) {
+            lines = {"set_segment:", "setlr", "di,rt", "call pop xr0", "adr_of length", "0x0001",
+                "[er0]=er2,rt", "call pop qr0", "pr_length", st.backup, "adr_of " + st.addrCopy,
+                "adr_of [-2] " + st.addrCopy, "0x8932", "length:", "remaining_length", "0x0000", "sp=er6,pop er8"};
+        } else if (startsWith(name, "backup580")) {
+            lines = {"backup:", "call pop xr0", st.backup, "adr_of " + st.addrCopy, "call 0x09450", "pr_length"};
+        } else if (startsWith(name, "backup880")) {
+            lines = {"backup:", "call pop xr0", st.backup, "adr_of " + st.addrCopy, "call 0x14de8", "pr_length", "0x0000"};
+        } else {
+            throw runtime_error("unknown macro: " + name);
+        }
+        compileLines(lines);
+    }
+
+    void resolveAdrArith() {
+        for (auto& f : st.adrArithFixups) {
+            if (!st.labels.count(f.leftLabel)) throw runtime_error("unknown label: " + f.leftLabel);
+            if (!st.labels.count(f.rightLabel)) throw runtime_error("unknown label: " + f.rightLabel);
+            int l = st.labels[f.leftLabel] + f.leftOffset;
+            int r = st.labels[f.rightLabel] + f.rightOffset;
+            st.result[f.pos] = (l - r) & 0xff;
+        }
+    }
+
+    void resolvePrLength() {
+        int len = (int)st.result.size();
+        for (int pos : st.prLengthFixups) {
+            st.result[pos] = len & 0xff;
+            st.result[pos + 1] = (len >> 8) & 0xff;
+        }
+    }
+
+    void resolveRemaining() {
+        int len = (int)st.result.size();
+        for (int pos : st.remainingFixups) {
+            int rem = len - st.remainingBase;
+            st.result[pos] = rem & 0xff;
+            st.result[pos + 1] = (rem >> 8) & 0xff;
+        }
+    }
+
+    long long evaluateSimpleMath(const string& expr) {
+        long long result = 0;
+        char op = '+';
+        stringstream ss(expr);
+        string token;
+        while (ss >> token) {
+            if (token == "+" || token == "-") { op = token[0]; continue; }
+            long long val = parseInteger(token, 0);
+            if (op == '+') result += val;
+            else if (op == '-') result -= val;
+        }
+        return result;
+    }
+};
+
+// ==========================
+// Source preprocessing
+// ==========================
+
+class SourcePreprocessor {
+public:
+    static vector<vector<string>> splitSections(const vector<string>& src) {
+        vector<vector<string>> sections;
+        vector<string> cur;
+        for (auto line : src) {
+            if (trim(line) == "!===") {
+                if (!cur.empty()) { sections.push_back(cur); cur.clear(); }
+            } else cur.push_back(line);
+        }
+        if (!cur.empty()) sections.push_back(cur);
+        if (sections.empty()) sections.push_back(src);
+        return sections;
+    }
+
+    static vector<string> processSetupLoop(const vector<string>& program) {
+        vector<string> modified;
+        bool setup_loop_detected = false;
+        for (string line : program) {
+            string cleanLine = removeInlineComment(line);
+            string lowerLine = lower(trim(cleanLine));
+            if (startsWith(lowerLine, "setup_loop")) {
+                setup_loop_detected = true;
+                auto parts = split(cleanLine, ',');
+                if (parts.size() < 2 || parts.size() > 3)
+                    throw runtime_error("Invalid setup_loop directive: " + line);
+                auto firstPartWords = split(trim(parts[0]), ' ');
+                string src = firstPartWords.size() > 1 ? firstPartWords[1] : "";
+                string src_backup = trim(parts[1]);
+                string label = (parts.size() == 3 && trim(parts[2]) != "none") ? trim(parts[2]) : "home";
+                modified.push_back("restore:");
+                modified.push_back("    setlr");
+                modified.push_back("    DI,RT");
+                modified.push_back("    xr0 = adr_of length, 0x01, 0x00");
+                modified.push_back("    [er0] = er2,rt");
+                modified.push_back("    qr0 = pr_length, " + src_backup + ", " + src + ", 0x0000");
+                modified.push_back("    0x8932");
+                modified.push_back("length:");
+                modified.push_back("    0x0800");
+                modified.push_back("    0x0000");
+                modified.push_back("set_sp:");
+                modified.push_back("    er6 = adr_of [-2] " + label);
+                modified.push_back("    sp = er6,pop er8");
+            } else modified.push_back(line);
+        }
+        return setup_loop_detected ? modified : program;
+    }
+};
+
+// ==========================
+// Output emitter
+// ==========================
+
+class OutputEmitter {
+public:
+    static void emitHex(const vector<int>& bytes) {
+        for (size_t i = 0; i < bytes.size(); ++i) {
+            if (i) cout << ' ';
+            cout << uppercase << hex << setw(2) << setfill('0') << (bytes[i] & 0xff);
+        }
+        cout << dec << "\n";
+    }
+
+    static void emitKey(const vector<int>& bytes, const KeypressTable& kt) {
+        for (size_t i = 0; i < bytes.size(); ++i) {
+            if (i) cout << ' ';
+            cout << kt.byteToKey(bytes[i] & 0xff);
+        }
+        cout << dec << "\n";
+    }
+};
+
+// ==========================
+// Multi-section driver
+// ==========================
+
+struct CompileOptions {
+    string target = "none";
+    string format = "hex";
+    int overflowInitialSp = 0x8154;
+};
+
+class Driver {
+    CommandDatabase& db;
+    FontTable& fontTable;
+    CalcTable& calcTable;
+    KeypressTable& keypressTable;
+    DefinitionDatabase& defs;
+
+public:
+    explicit Driver(CommandDatabase& db, FontTable& ft, CalcTable& ct, 
+                    KeypressTable& kt, DefinitionDatabase& defs)
+        : db(db), fontTable(ft), calcTable(ct), keypressTable(kt), defs(defs) {}
+
+    vector<CompiledSegment> compileProgram(const vector<string>& source, const CompileOptions& opt) {
+        auto sections = SourcePreprocessor::splitSections(source);
+        int previousLen = 0;
+        vector<CompiledSegment> outputSegments;
+
+        for (size_t i = 0; i < sections.size(); ++i) {
+            vector<string> modified_program = SourcePreprocessor::processSetupLoop(sections[i]);
+            Compiler cc(db, fontTable, calcTable, keypressTable, defs);
+            cc.setPreviousSectionLength(previousLen);
+            cc.compileLines(modified_program);
+            cc.finish();
+
+            auto& st = cc.state();
+            int home = 0, home2 = 0;
+
+            if (opt.target == "none" || opt.target == "overflow") {
+                if (opt.target == "overflow" && st.result.size() > 100)
+                    throw runtime_error("Program too long for overflow (max 100 bytes)");
+
+                if (st.home.has_value()) {
+                    home = *st.home;
+                } else {
+                    home = opt.overflowInitialSp;
+                    if (st.labels.count("home")) home -= st.labels["home"];
+                    if (home + (int)st.result.size() > 0x8E00)
+                        cerr << "Warning: Program length after home > available space\n";
+
+                    int min_home = home;
+                    while (min_home >= 0x8154 + 200) min_home -= 100;
+                    while (home + (int)st.result.size() <= 0x8E00) home += 100;
+
+                    int best_home = min_home;
+                    int best_score = 9999999;
+                    int best_home_val = -min_home; // mimic Python's tie-breaker: higher 'home' is preferred when scores match
+
+                    for (int h = min_home; h < home; h += 100) {
+                        int score = 0;
+                        for (auto& fixup : st.adrOfFixups) {
+                            int target_adr = h + st.labels[fixup.label] + fixup.offset;
+                            if (keypressTable.getNpressAdr(target_adr) >= 100) score += 1;
+                        }
+                        if (score < best_score || (score == best_score && h > best_home_val)) {
+                            best_score = score;
+                            best_home_val = h;
+                            best_home = h;
+                        }
+                    }
+                    home = best_home;
+                }
+            } else if (opt.target == "loader") {
+                if (st.home.has_value()) {
+                    home = *st.home;
+                } else {
+                    home = 0x85b0 - (int)st.result.size();
+                    int entry = home + (st.labels.count("home") ? st.labels["home"] : 0) - 2;
+                    vector<int> loader_tail = {0x6a, 0x4f, 0, 0, entry & 255, (entry >> 8) & 255, 0x68, 0x4f, 0, 0};
+                    st.result.insert(st.result.end(), loader_tail.begin(), loader_tail.end());
+                    while (home + (int)st.result.size() < 0x85d7) st.result.push_back(0);
+                    st.result.insert(st.result.end(), {0xff, 0xae, 0x85});
+                    home2 = 0;
+                    if (home - home2 < 0x8501) throw runtime_error("Program too long for loader mode");
+                    while (keypressTable.getNpressAdr(home - home2) >= 100) home2 += 1;
+                }
+            } else throw runtime_error("Internal error: Unknown target");
+
+            cc.resolveAdrOf(home);
+            cc.resolveDeferredEvals(home);
+
+            cout << "\n=== Section " << (i + 1) << "/" << sections.size() << " ===\n";
+            if (i > 0) cout << "Previous section length: 0x" << hex << uppercase << previousLen << dec << " (" << previousLen << " bytes)\n";
+
+            for (auto const& [label, offset] : st.labels)
+                cout << "The " << label << " code is being redirected to address 0x" << hex << uppercase << (home + offset) << dec << ".\n";
+
+            cout << "Length (HEX): 0x" << hex << uppercase << st.result.size() << dec << " bytes | (DEC): " << st.result.size() << " bytes\n";
+
+            CompiledSegment seg;
+            if (opt.target == "loader") {
+                seg.baseAddress = home2;
+                seg.bytes = vector<int>(home2, 0);
+                seg.bytes.insert(seg.bytes.end(), st.result.begin(), st.result.end());
+            } else if (opt.target == "overflow") {
+                vector<int> hackstring(100);
+                string pattern = "1234567890";
+                for (int k = 0; k < 100; ++k) hackstring[k] = pattern[k % 10];
+                for (size_t k = 0; k < st.result.size(); ++k)
+                    hackstring[(home + k - 0x8154) % 100] = st.result[k];
+                seg.baseAddress = home;
+                seg.bytes = std::move(hackstring);
+            } else {
+                seg.baseAddress = home;
+                seg.bytes = st.result;
+            }
+            
+            if (opt.format == "hex") OutputEmitter::emitHex(seg.bytes);
+            else if (opt.format == "key") OutputEmitter::emitKey(seg.bytes, keypressTable);
+
+            outputSegments.push_back(std::move(seg));
+            previousLen = (int)st.result.size();
+            if (i < sections.size() - 1) cout << "\n============================================================\n";
+        }
+        return outputSegments;
     }
 };
 
