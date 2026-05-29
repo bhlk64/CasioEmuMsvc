@@ -147,7 +147,6 @@ static string regexEscape(const string& s) {
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>; // Deduction guide
 
-// C++ std::regex_replace doesn't support lambdas directly. We implement a helper:
 static string regexReplaceLambda(const string& input, const regex& r, function<string(const smatch&)> fmt) {
     string out;
     auto it = sregex_iterator(input.begin(), input.end(), r);
@@ -1040,9 +1039,9 @@ struct RawHexStmt { string hex; };
 struct CallStmt { string target; };
 struct GotoStmt { string label; };
 struct NextStmt { string label; };
-struct AdrOfStmt { string offsetExpr; string label; string bracketSpec; };
-struct AdrStmt { string label; string offsetExpr; };
-struct JumpStmt { string offsetExpr; string label; };
+struct AdrOfStmt { string offsetExpr; string baseAddrExpr; string label; string bracketSpec; };
+struct AdrStmt { string label; string offsetExpr; string baseAddrExpr; };
+struct JumpStmt { string offsetExpr; string baseAddrExpr; string label; };
 struct AdrArithStmt { string leftOffsetExpr; string leftLabel; string rightOffsetExpr; string rightLabel; };
 struct SizeLengthStmt { string leftLabel; string rightLabel; string leftOffsetExpr; string rightOffsetExpr; };
 struct AssignmentStmt { string target; string valueText; };
@@ -1196,10 +1195,10 @@ public:
     }
 
 private:
-    pair<string, string> parseAdrOfBracketSyntax(const string& spec, optional<int> /*currentHome*/) const {
+    tuple<string, string, string> parseAdrOfBracketSyntax(const string& spec, optional<int> /*currentHome*/) const {
         string s = trim(spec);
         if (s.empty()) diag_.error("adr_of/jump requires label or bracket arguments");
-        if (s[0] != '[') return {"0", lower(trim(s))};
+        if (s[0] != '[') return {"0", "", lower(trim(s))};
 
         vector<string> parts;
         regex bracketRegex(R"(\[([^\]]+)\])");
@@ -1218,9 +1217,11 @@ private:
                 diag_.error("adr_of: label in brackets and trailing");
             string label = lower(trim(parts[0]));
             string offsetExpr = "0";
+            string baseAddrExpr = "";
             if (parts.size() >= 2) offsetExpr = trim(parts[1]);
+            if (parts.size() >= 3) baseAddrExpr = trim(parts[2]);
             if (parts.size() > 3) diag_.error("adr_of: too many brackets");
-            return {offsetExpr, label};
+            return {offsetExpr, baseAddrExpr, label};
         }
 
         if (!trailingLabel.empty()) {
@@ -1228,28 +1229,32 @@ private:
                 trailingLabel = trailingLabel.substr(1, trailingLabel.size() - 2);
             string label = lower(trim(trailingLabel));
             string offsetExpr = "0";
+            string baseAddrExpr = "";
             if (parts.size() >= 1) offsetExpr = trim(parts[0]);
+            if (parts.size() >= 2) baseAddrExpr = trim(parts[1]);
             if (parts.size() > 2) diag_.error("adr_of trailing-label: too many brackets");
-            return {offsetExpr, label};
+            return {offsetExpr, baseAddrExpr, label};
         }
 
         string label = lower(trim(parts[0]));
         string offsetExpr = "0";
+        string baseAddrExpr = "";
         if (parts.size() >= 2) offsetExpr = trim(parts[1]);
+        if (parts.size() >= 3) baseAddrExpr = trim(parts[2]);
         if (parts.size() > 3) diag_.error("adr_of: too many brackets");
-        return {offsetExpr, label};
+        return {offsetExpr, baseAddrExpr, label};
     }
 
     Stmt parseAdrOf(const string& body) {
-        auto [offsetExpr, label] = parseAdrOfBracketSyntax(body, nullopt);
+        auto [offsetExpr, baseAddrExpr, label] = parseAdrOfBracketSyntax(body, nullopt);
         if (label.empty()) diag_.error("adr_of requires a label");
-        return AdrOfStmt{offsetExpr, label, body};
+        return AdrOfStmt{offsetExpr, baseAddrExpr, label, body};
     }
 
     Stmt parseJump(const string& body) {
-        auto [offsetExpr, label] = parseAdrOfBracketSyntax(body, nullopt);
+        auto [offsetExpr, baseAddrExpr, label] = parseAdrOfBracketSyntax(body, nullopt);
         if (label.empty()) diag_.error("jump requires a label");
-        return JumpStmt{offsetExpr, label};
+        return JumpStmt{offsetExpr, baseAddrExpr, label};
     }
 
     Stmt parseAdrStmt(const string& line) {
@@ -1258,11 +1263,12 @@ private:
         string inner = trim(line.substr(openParen + 1, closeParen - openParen - 1));
         string remainder = trim(line.substr(closeParen + 1));
 
-        string label; string offsetExpr = "0";
+        string label; string offsetExpr = "0"; string baseAddrExpr = "";
         if (inner.find(',') != string::npos) {
             auto parts = split(inner, ',');
             label = lower(trim(parts[0]));
             if (parts.size() >= 2) offsetExpr = trim(parts[1]);
+            if (parts.size() >= 3) baseAddrExpr = trim(parts[2]);
         } else if (!remainder.empty()) {
             label = lower(trim(inner));
             vector<string> bracketParts;
@@ -1271,10 +1277,11 @@ private:
             auto me = sregex_iterator();
             for (auto it = mb; it != me; ++it) bracketParts.push_back((*it)[1].str());
             if (bracketParts.size() >= 1) offsetExpr = trim(bracketParts[0]);
+            if (bracketParts.size() >= 2) baseAddrExpr = trim(bracketParts[1]);
         } else {
             label = lower(trim(inner));
         }
-        return AdrStmt{label, offsetExpr};
+        return AdrStmt{label, offsetExpr, baseAddrExpr};
     }
 
     static pair<string, string> parseAdrPart(string part) {
@@ -1364,6 +1371,7 @@ private:
 struct AdrOfFixup {
     int pos;
     string offsetExpr;
+    string baseAddrExpr;
     string label;
 };
 
@@ -1682,23 +1690,25 @@ public:
             },
 
             [&](const NextStmt& s) {
-                state_.adrOfFixups.push_back({(int)state_.result.size(), "-2", s.label});
+                state_.adrOfFixups.push_back({(int)state_.result.size(), "-2", "", s.label});
                 state_.result.push_back(0);
                 state_.result.push_back(0);
             },
 
             [&](const AdrOfStmt& s) {
-                state_.adrOfFixups.push_back({(int)state_.result.size(), s.offsetExpr, s.label});
+                state_.adrOfFixups.push_back({(int)state_.result.size(), s.offsetExpr, s.baseAddrExpr, s.label});
                 state_.result.push_back(0);
                 state_.result.push_back(0);
             },
 
             [&](const AdrStmt& s) {
-                if (s.offsetExpr == "0" || trim(s.offsetExpr).empty()) {
+                if ((s.offsetExpr == "0" || trim(s.offsetExpr).empty()) && (s.baseAddrExpr.empty() || trim(s.baseAddrExpr).empty())) {
                     string expr = "adr(" + s.label + ")";
                     state_.deferredEvalFixups.push_back({(int)state_.result.size(), expr});
                 } else {
-                    string expr = "adr(" + s.label + "," + s.offsetExpr + ")";
+                    string expr = "adr(" + s.label + "," + s.offsetExpr;
+                    if (!s.baseAddrExpr.empty()) expr += "," + s.baseAddrExpr;
+                    expr += ")";
                     state_.deferredEvalFixups.push_back({(int)state_.result.size(), expr});
                 }
                 state_.result.push_back(0);
@@ -1706,7 +1716,7 @@ public:
             },
 
             [&](const JumpStmt& s) {
-                state_.adrOfFixups.push_back({(int)state_.result.size(), s.offsetExpr, s.label});
+                state_.adrOfFixups.push_back({(int)state_.result.size(), s.offsetExpr, s.baseAddrExpr, s.label});
                 state_.result.push_back(0);
                 state_.result.push_back(0);
             },
@@ -2018,7 +2028,20 @@ public:
             auto it = state_.labels.find(fix.label);
             if (it == state_.labels.end())
                 throw runtime_error("Undefined label in adr_of: " + fix.label);
-            int offset = resolveOffset(fix.offsetExpr);
+            
+            int offset = 0;
+            if (!fix.offsetExpr.empty() && trim(fix.offsetExpr) != "0") {
+                try { offset = (int)evalSimpleExpr(fix.offsetExpr); }
+                catch (...) { offset = resolveOffset(fix.offsetExpr); }
+            }
+            
+            if (!fix.baseAddrExpr.empty()) {
+                int base_offset = 0;
+                try { base_offset = (int)evalSimpleExpr(fix.baseAddrExpr); }
+                catch (...) { base_offset = state_.vars.resolveIntOrVar(fix.baseAddrExpr); }
+                offset += (base_offset - homeVal);
+            }
+            
             int targetAdr = homeVal + it->second + offset;
             state_.result[fix.pos] = targetAdr & 0xFF;
             state_.result[fix.pos + 1] = (targetAdr >> 8) & 0xFF;
@@ -2059,11 +2082,19 @@ public:
                 int offset = 0;
                 if (m.size() > 2 && m[2].matched) {
                     string offStr = trim(m[2].str());
-                    if (!offStr.empty()) offset = resolveOffset(offStr);
+                    if (!offStr.empty()) {
+                        try { offset = (int)evalSimpleExpr(offStr); }
+                        catch (...) { offset = resolveOffset(offStr); }
+                    }
                 }
                 if (m.size() > 3 && m[3].matched) {
-                    int baseOffset = resolveOffset(trim(m[3].str())) - homeVal;
-                    offset += baseOffset;
+                    string baseStr = trim(m[3].str());
+                    if (!baseStr.empty()) {
+                        int base_offset = 0;
+                        try { base_offset = (int)evalSimpleExpr(baseStr); }
+                        catch (...) { base_offset = state_.vars.resolveIntOrVar(baseStr); }
+                        offset += (base_offset - homeVal);
+                    }
                 }
                 return to_string(homeVal + it->second + offset);
             });
