@@ -153,6 +153,8 @@ int main(int argc, char* argv[]) {
 #endif
 #ifdef __ANDROID__
 	chdir(SDL_AndroidGetExternalStoragePath());
+#elif defined(__APPLE__) && defined(__MACH__)
+	chhdir(getenv("HOME")); // hoặc folder riêng của app
 #endif
 	g_local.Load();
 
