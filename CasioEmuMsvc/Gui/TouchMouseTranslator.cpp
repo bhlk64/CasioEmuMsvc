@@ -113,7 +113,7 @@ bool TouchMouseTranslator::HandleFingerUp(
 			const float thresholdSq =
 				dragThresholdPixels_ * dragThresholdPixels_;
 
-			if (!primary_.suppressTap && distSq <= thresholdSq) {
+			if (primary_.isTapCandidate && distSq <= thresholdSq) {
 				if (now - primary_.startTime < longPressDelayMs_) {
 					// 短按 → 左键点击
 					EmitMouseClick(primary_.target,
@@ -211,19 +211,23 @@ void TouchMouseTranslator::HandleSingleFingerMove(
 	const float dx = x - state.startX;
 	const float dy = y - state.startY;
 	const float distSq = dx * dx + dy * dy;
-	const float thresholdSq =
-		dragThresholdPixels_ * dragThresholdPixels_;
-
-	if (!state.dragging && distSq > thresholdSq) {
-		// 超过阈值 → 开始拖拽
-		// 从起始点按下，再移到当前位置，防止 ImGui 窗口漂移
-		EmitMouseMotion(state.target, state.startX, state.startY);
-		EmitMouseButton(state.target, SDL_BUTTON_LEFT, SDL_PRESSED,
-			state.startX, state.startY);
-		EmitMouseMotion(state.target, x, y);
-		state.dragging = true;
-		state.suppressTap = true;
+	const float thresholdSq = dragThresholdPixels_ * dragThresholdPixels_;
+	
+	if (std::abs(dx) > 3.0f || std::abs(dy) > 3.0f)
+		state.isTapCandidate = false;
+	
+	if (distSq > thresholdSq)
+	{
+		state.movedBeyondThreshold = true;
 	}
+
+	if (!state.dragging && distSq > thresholdSq){
+	state.dragging = true;
+	state.suppressTap = true;
+
+	EmitMouseMotion(state.target, x, y);
+	EmitMouseButton(state.target, SDL_BUTTON_LEFT, SDL_PRESSED, x, y);
+}
 
 	if (state.dragging) {
 		EmitMouseMotion(state.target, x, y);
@@ -232,13 +236,26 @@ void TouchMouseTranslator::HandleSingleFingerMove(
 
 void TouchMouseTranslator::HandleTwoFingerMove(
 	TouchState& state, float x, float y,
-	float anchorX, float anchorY) {
+	float anchorX, float anchorY)
+{
+	float moveY = y - state.currentY;
 
-	const float moveY = y - state.currentY;
-	if (std::abs(moveY) <= 1.0f) {
+	Uint32 now = SDL_GetTicks();
+
+	if (now - state.lastScrollTime < 16)
 		return;
-	}
-	EmitMouseWheel(state.target, moveY, anchorX, anchorY);
+	
+	state.scrollAccum += moveY;
+	
+	if (std::abs(state.scrollAccum) < 2.0f)
+		return;
+
+	EmitMouseWheel(state.target,
+				   state.scrollAccum,
+				   anchorX, anchorY);
+
+	state.scrollAccum = 0;
+	state.lastScrollTime = now;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -252,6 +269,10 @@ void TouchMouseTranslator::StartFinger(
 	state.active = true;
 	state.dragging = false;
 	state.suppressTap = false;
+	state.isTapCandidate = true;
+	state.movedBeyondThreshold = false;
+	state.scrollAccum = 0;
+	state.lastScrollTime = 0;
 	state.fingerId = fingerId;
 	state.startX = x;
 	state.startY = y;
