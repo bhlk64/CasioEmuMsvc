@@ -168,7 +168,7 @@ jobs:
         name: CasioEmuMsvc-macOS
         path: |
           build/CasioEmuMsvc.dmg
-          build/CasioEmuMsvc.app
+          *
         compression-level: 0
         retention-days: 1
     
