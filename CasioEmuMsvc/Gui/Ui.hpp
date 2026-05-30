@@ -18,6 +18,7 @@ extern casioemu::Emulator* m_emu;
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 extern std::vector<Label> g_labels;
+void SaveUIState();
 
 void SetDebugbreak(void); 
 class UIWindow {

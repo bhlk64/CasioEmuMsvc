@@ -223,7 +223,7 @@ void gui_loop() {
 
     ImGuiIO& io = ImGui::GetIO();
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || (defined(__APPLE__) && defined(__MACH__))
     ThemeManager::Instance().UpdateUIScale();
 #endif
 
@@ -375,8 +375,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         1600, 1080,
-        SDL_WINDOW_RESIZABLE |
-        SDL_WINDOW_ALLOW_HIGHDPI);
+        SDL_WINDOW_RESIZABLE);
 #endif
 #ifdef _WIN32
     EnableDarkTitleBar(GetSDLWindowHandle(window));
