@@ -88,6 +88,7 @@ struct MemoryEditor {
 	};
 
 	// Settings
+	bool is_scrolling = false;
 	bool Open;										   // = true   // set to false when DrawWindow() was closed. ignore if not using DrawWindow().
 	bool ReadOnly;									   // = false  // disable any editing.
 	int Cols;										   // = 16     // number of columns to display.
@@ -214,6 +215,15 @@ struct MemoryEditor {
 			footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1;
 		if (OptShowDataPreview)
 			footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 3;
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+		{
+		    is_scrolling = true;
+		    ImGui::SetScrollY(ImGui::GetScrollY() - ImGui::GetIO().MouseDelta.y);
+		}
+		else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+		{
+		    is_scrolling = false;
+		}
 		ImGui::BeginChild("##scrolling", ImVec2(0, -footer_height), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoScrollbar);
 		if (ImGui::IsWindowHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 		{
@@ -258,7 +268,7 @@ struct MemoryEditor {
 		// Draw vertical separator
 		ImVec2 window_pos = ImGui::GetWindowPos();
 		if (OptShowAscii)
-			draw_list->AddLine(ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y), ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y + 9999), ImGui::GetColorU32(ImGuiCol_Border));
+			list->AddLine(ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y), ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y + 9999), ImGui::GetColorU32(ImGuiCol_Border));
 
 		const ImU32 color_text = ImGui::GetColorU32(ImGuiCol_Text);
 		const ImU32 color_disabled = OptGreyOutZeroes ? ImGui::GetColorU32(ImGuiCol_TextDisabled) : color_text;
@@ -731,9 +741,10 @@ struct MemoryEditor {
 								ImGui::Text(format_byte_space, b);
 						}
 						if (ImGui::IsItemHovered()) {
-							if (ImGui::IsMouseClicked(0)) {
-								DataEditingTakeFocus = !ReadOnly;
-								data_editing_addr_next = addr;
+							if (!is_scrolling && ImGui::IsMouseClicked(0))
+							{
+							    DataEditingTakeFocus = !ReadOnly;
+							    data_editing_addr_next = addr;
 							}
 							if (ImGui::IsItemClicked(1)) {
 								if (ContextMenuFn)
