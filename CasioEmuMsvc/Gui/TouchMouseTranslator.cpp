@@ -240,6 +240,8 @@ void TouchMouseTranslator::HandleTwoFingerMove(
 {
 	float moveY = y - state.currentY;
 
+	Uint32 now = SDL_GetTicks();
+
 	state.scrollAccum += moveY;
 	
 	if (std::abs(state.scrollAccum) < 2.0f)
