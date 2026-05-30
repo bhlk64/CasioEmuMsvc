@@ -34,7 +34,7 @@
 #include "sdl_win32_extra.h"
 #endif
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || (defined(__APPLE__) && defined(__MACH__))
 #include <unistd.h>
 #endif
 #ifdef ENABLE_SENTRY
