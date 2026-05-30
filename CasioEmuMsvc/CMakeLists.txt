@@ -214,32 +214,29 @@ endif()
 file(GLOB LOCALE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/locales/*.lc")
 
 if(ANDROID)
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/app/src/main/assets/locales)
-    foreach(FILE_PATH ${LOCALE_FILES})
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${FILE_PATH}
-            ${CMAKE_SOURCE_DIR}/app/src/main/assets/locales/)
-    endforeach()
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/roms.db
-        ${CMAKE_SOURCE_DIR}/app/src/main/assets/roms.db || ${CMAKE_COMMAND} -E true)
-elseif(BUILD_EXECUTABLE)
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${TARGET_NAME}>/locales)
-    foreach(FILE_PATH ${LOCALE_FILES})
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${FILE_PATH}
-            $<TARGET_FILE_DIR:${TARGET_NAME}>/locales/)
-    endforeach()
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/roms.db
-        $<TARGET_FILE_DIR:${TARGET_NAME}>/roms.db || ${CMAKE_COMMAND} -E true)
+    set(ASSET_DIR ${CMAKE_SOURCE_DIR}/app/src/main/assets)
+elseif(APPLE AND BUILD_EXECUTABLE)
+    set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources)
+else()
+    set(ASSET_DIR $<TARGET_FILE_DIR:${TARGET_NAME}>)
 endif()
+
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+    ${ASSET_DIR}/locales
+)
+
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/locales
+    ${ASSET_DIR}/locales
+)
+
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/roms.db
+    ${ASSET_DIR}/roms.db
+)
 
 
 if(NOT WIN32 AND NOT ANDROID AND NOT IOS AND NOT APPLE)
@@ -260,9 +257,14 @@ endif()
 
 if(APPLE AND BUILD_EXECUTABLE)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND}
-            -DAPP="$<TARGET_BUNDLE_DIR:${TARGET_NAME}>"
-            -P ${CMAKE_SOURCE_DIR}/MacResources/BundleFix.cmake
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
+    )
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/locales
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
     )
 endif()
 
