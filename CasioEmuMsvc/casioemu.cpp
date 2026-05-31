@@ -171,7 +171,8 @@ int main(int argc, char* argv[]) {
                 std::filesystem::copy(
                     entry.path(),
                     dst,
-                    std::filesystem::copy_options::recursive
+                    std::filesystem::copy_options::recursive |
+                    std::filesystem::copy_options::overwrite_existing
                 );
                 
             }
