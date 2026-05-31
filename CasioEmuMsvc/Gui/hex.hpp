@@ -217,7 +217,7 @@ struct MemoryEditor {
         if (OptShowDataPreview)
             footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 3;
 
-        ImGui::BeginChild("##scrolling", ImVec2(0, -footer_height), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoScrollbar);
+        ImGui::BeginChild("##scrolling", ImVec2(0, -footer_height), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
 
         // ── Momentum scrolling (applied when not actively dragging) ──
         if (!is_scrolling && std::abs(scrollVelocityY_) > 1.0f) {
@@ -234,14 +234,22 @@ struct MemoryEditor {
             }
         }
 
-        // ── Touch drag → scroll ──
-        if (ImGui::IsWindowHovered()) {
+    // ── Touch drag → scroll (skip when touching the scrollbar) ──
+        float sbWidth = style.ScrollbarSize;
+        ImVec2 winPos = ImGui::GetWindowPos();
+        ImVec2 winSize = ImGui::GetWindowSize();
+        float sbLeft = winPos.x + winSize.x - sbWidth;
+        float sbTop = winPos.y;
+        float sbBottom = winPos.y + winSize.y;
+        ImVec2 mp = ImGui::GetIO().MousePos;
+        bool mouseOverScrollbar = (mp.x >= sbLeft && mp.y >= sbTop && mp.y <= sbBottom);
+    
+        if (ImGui::IsWindowHovered() && !mouseOverScrollbar) {
             if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f)) {
                 if (!is_scrolling) {
                     is_scrolling = true;
                     prevFrameMousePos_ = ImGui::GetIO().MousePos;
                     scrollVelocityY_ = 0.0f;
-                    // Cancel any edit that was just started
                     DataEditingAddr = (size_t)-1;
                     DataEditingTakeFocus = false;
                 }
@@ -257,7 +265,6 @@ struct MemoryEditor {
             }
             if (is_scrolling && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
                 is_scrolling = false;
-                // scrollVelocityY_ kept for momentum
             }
         }
 
@@ -569,14 +576,22 @@ struct MemoryEditor {
             }
         }
 
-        // ── Touch drag → scroll ──
-        if (ImGui::IsWindowHovered()) {
+// ── Touch drag → scroll (skip when touching the scrollbar) ──
+        float sbWidth = style.ScrollbarSize;
+        ImVec2 winPos = ImGui::GetWindowPos();
+        ImVec2 winSize = ImGui::GetWindowSize();
+        float sbLeft = winPos.x + winSize.x - sbWidth;
+        float sbTop = winPos.y;
+        float sbBottom = winPos.y + winSize.y;
+        ImVec2 mp = ImGui::GetIO().MousePos;
+        bool mouseOverScrollbar = (mp.x >= sbLeft && mp.y >= sbTop && mp.y <= sbBottom);
+    
+        if (ImGui::IsWindowHovered() && !mouseOverScrollbar) {
             if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f)) {
                 if (!is_scrolling) {
                     is_scrolling = true;
                     prevFrameMousePos_ = ImGui::GetIO().MousePos;
                     scrollVelocityY_ = 0.0f;
-                    // Cancel any edit that was just started
                     DataEditingAddr = (size_t)-1;
                     DataEditingTakeFocus = false;
                 }
@@ -592,7 +607,6 @@ struct MemoryEditor {
             }
             if (is_scrolling && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
                 is_scrolling = false;
-                // scrollVelocityY_ kept for momentum
             }
         }
 
