@@ -1,3 +1,4 @@
+#include "FPSManager.h"
 #include "Ui.hpp"
 #include "5800FileSystem.h"
 #include "AddressWindow.h"
@@ -31,6 +32,7 @@
 #include <sentry.h>
 #endif
 #include <sdl_win32_extra.h>
+static FPSManager fps(30);
 bool show_sentry_feedback = false;
 char sentry_user_comments[1024] = "";
 char sentry_user_email[128] = "";
