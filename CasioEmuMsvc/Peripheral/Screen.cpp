@@ -1515,3 +1515,10 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		std::abort();
 	}
 } // namespace casioemu
+// Ép trình biên dịch tạo symbol đầy đủ cho Linker Android nhận diện
+template class Screen<HW_FX_5800P>;
+template class Screen<HW_ES_PLUS>;
+template class Screen<HW_CLASSWIZ>;
+template class Screen<HW_CLASSWIZ_II>;
+template class Screen<HW_TI>;
+template class Screen<HW_EPS6800>;
