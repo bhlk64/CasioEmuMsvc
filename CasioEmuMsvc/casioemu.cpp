@@ -164,17 +164,23 @@ int main(int argc, char* argv[]) {
             std::filesystem::path src =
                 "/Applications/CasioEmuMsvc.app/Contents/Resources";
     
-            for (auto& entry : std::filesystem::directory_iterator(src)) {
-                if (entry.path().filename().string() == "AppIcons.icns") {continue;}
-                auto dst = std::filesystem::path(path) / entry.path().filename();
-    
-                std::filesystem::copy(
-                    entry.path(),
-                    dst,
-                    std::filesystem::copy_options::recursive |
-                    std::filesystem::copy_options::overwrite_existing
-                );
-                
+            try {
+                for (auto& entry : std::filesystem::directory_iterator(src)) {
+                    if (entry.path().filename() == "AppIcons.icns")
+                        continue;
+            
+                    auto dst = std::filesystem::path(path) / entry.path().filename();
+            
+                    std::filesystem::copy(
+                        entry.path(),
+                        dst,
+                        std::filesystem::copy_options::recursive |
+                        std::filesystem::copy_options::overwrite_existing
+                    );
+                }
+            }
+            catch (const std::exception& e) {
+                fprintf(stderr, "Resource copy failed: %s\n", e.what());
             }
         }
     }
