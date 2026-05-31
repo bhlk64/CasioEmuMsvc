@@ -180,12 +180,28 @@ void gui_loop() {
 	ImGui::End();
 #endif
 	ImGui::Render();
+ImDrawData* drawData = ImGui::GetDrawData();
+    
+    // Tiến hành lọc khung hình: Nếu giao diện không có thay đổi (màn hình tĩnh)
+    if (fps.filterFrame(drawData, sizeof(ImDrawData))) {
+        
+        // Nếu có thay đổi (bấm nút, màn hình Casio nhảy số), tiến hành vẽ thật lên màn hình
 #ifdef SINGLE_WINDOW
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+        ImGui_ImplSDLRenderer2_RenderDrawData(drawData);
 #else
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-	SDL_RenderPresent(renderer);
+        ImGui_ImplSDLRenderer2_RenderDrawData(drawData);
+        SDL_RenderPresent(renderer);
 #endif
+
+    } else {
+        // Nếu màn hình giống hệt khung hình trước (không bấm gì cả)
+        // Ép CPU ngủ sâu 16ms để hạ nhiệt máy ngay lập tức và cứu Pin
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
+
+    // ---- KHÓA CỨNG TỐC ĐỘ 30 FPS ----
+    // Ép luồng đồ họa nghỉ ngơi nốt khoảng thời gian thừa để đảm bảo không vượt quá 30 FPS
+    fps.limit();
 }
 
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
