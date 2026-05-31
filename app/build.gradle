@@ -1,6 +1,6 @@
-plugins {
+/*plugins {
     id 'io.sentry.android.gradle' version '6.4.0'
-}
+}*/
 
 def buildAsLibrary = project.hasProperty('BUILD_AS_LIBRARY');
 def buildAsApplication = !buildAsLibrary
@@ -121,11 +121,11 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 }
 
-sentry {
+/*sentry {
     org = "t5-j7"
     projectName = "android"
 
     // this will upload your source code to Sentry to show it as part of the stack traces
     // disable if you don't want to expose your sources
     includeSourceContext = false
-}
+}*/
