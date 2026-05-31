@@ -87,8 +87,6 @@ public:                       \
 
 #define DISABLE_SENTRY
 
-#define TEST_BUILD
-
 #if !defined(__ANDROID__) && !defined(DISABLE_SENTRY)
 #define ENABLE_SENTRY
 #define SENTRY_BUILD_STATIC 1
