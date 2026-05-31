@@ -160,8 +160,23 @@ int main(int argc, char* argv[]) {
 			std::string path = std::string(home) + "/CasioEmuMsvc";
 			std::filesystem::create_directories(path);
 			chdir(path.c_str());
-		}
-	}
+    
+            std::filesystem::path src =
+                "/Applications/CasioEmuMsvc.app/Contents/Resources";
+    
+            for (auto& entry : std::filesystem::directory_iterator(src)) {
+                if (entry.path().filename().string() == "AppIcons.icns") {continue;}
+                auto dst = std::filesystem::path(path) / entry.path().filename();
+    
+                std::filesystem::copy(
+                    entry.path(),
+                    dst,
+                    std::filesystem::copy_options::recursive
+                );
+                
+            }
+        }
+    }
 #endif
 	g_local.Load();
 
