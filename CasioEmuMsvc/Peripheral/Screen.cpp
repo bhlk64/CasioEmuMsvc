@@ -1514,12 +1514,31 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 		std::abort();
 	}
-    // Ép trình biên dịch tạo symbol đầy đủ cho Linker Android nhận diện
-    template class Screen<HW_FX_5800P>;
-    template class Screen<HW_ES_PLUS>;
-    template class Screen<HW_CLASSWIZ>;
-    template class Screen<HW_CLASSWIZ_II>;
-    template class Screen<HW_TI>;
-    template class Screen<HW_EPS6800>;
+    // Ép sinh các hàm thành viên cho các dòng phần cứng
+	template class Screen<HW_FX_5800P>;
+	template class Screen<HW_ES_PLUS>;
+	template class Screen<HW_CLASSWIZ>;
+	template class Screen<HW_CLASSWIZ_II>;
+	template class Screen<HW_TI>;
+	template class Screen<HW_EPS6800>;
+
+	// Ép định nghĩa các biến tĩnh cho TẤT CẢ các dòng máy để chặn lỗi Linker
+	template const int Screen<HW_FX_5800P>::N_ROW;
+	template const int Screen<HW_FX_5800P>::ROW_SIZE;
+
+	template const int Screen<HW_ES_PLUS>::N_ROW;
+	template const int Screen<HW_ES_PLUS>::ROW_SIZE;
+
+	template const int Screen<HW_CLASSWIZ>::N_ROW;
+	template const int Screen<HW_CLASSWIZ>::ROW_SIZE;
+
+	template const int Screen<HW_CLASSWIZ_II>::N_ROW;
+	template const int Screen<HW_CLASSWIZ_II>::ROW_SIZE;
+
+	template const int Screen<HW_TI>::N_ROW;
+	template const int Screen<HW_TI>::ROW_SIZE;
+
+	template const int Screen<HW_EPS6800>::N_ROW;
+	template const int Screen<HW_EPS6800>::ROW_SIZE;
 
 } // namespace casioemu
