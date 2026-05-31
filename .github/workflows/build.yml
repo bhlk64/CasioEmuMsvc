@@ -136,7 +136,7 @@ jobs:
         -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
         -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"
         
-        cmake --build build --parallel 8
+        cmake --build build --parallel 6
     
     - name: Show build tree
       if: matrix.platform == 'mac'
@@ -168,7 +168,7 @@ jobs:
         name: CasioEmuMsvc-macOS
         path: |
           build/CasioEmuMsvc.dmg
-          # build/*
+          build/CasioEmuMsvc/*
         compression-level: 6
         retention-days: 1
     
