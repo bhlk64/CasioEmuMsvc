@@ -178,30 +178,31 @@ void gui_loop() {
 	// Let's record where we are.
 	top_bar_size = ImGui::GetCursorPosY();
 	ImGui::End();
-#endif
-	ImGui::Render();
-ImDrawData* drawData = ImGui::GetDrawData();
-    
-    // Tiến hành lọc khung hình: Nếu giao diện không có thay đổi (màn hình tĩnh)
-    if (fps.filterFrame(drawData, sizeof(ImDrawData))) {
-        
-        // Nếu có thay đổi (bấm nút, màn hình Casio nhảy số), tiến hành vẽ thật lên màn hình
+    ImGui::Render();
+
+	// Lấy dữ liệu vẽ khung hình hiện tại của ImGui
+	ImDrawData* drawData = ImGui::GetDrawData();
+	struct FrameStats {
+		int cmdListsCount;
+		float displaySizeX;
+		float displaySizeY;
+	} stats = { drawData->CmdListsCount, drawData->DisplaySize.x, drawData->DisplaySize.y };
+
+	// Bộ lọc khung hình trùng để sửa lỗi nóng máy của tác giả
+	if (fps.filterFrame(&stats, sizeof(FrameStats))) {
 #ifdef SINGLE_WINDOW
-        ImGui_ImplSDLRenderer2_RenderDrawData(drawData);
+		ImGui_ImplSDLRenderer2_RenderDrawData(drawData);
 #else
-        ImGui_ImplSDLRenderer2_RenderDrawData(drawData);
-        SDL_RenderPresent(renderer);
+		ImGui_ImplSDLRenderer2_RenderDrawData(drawData);
+		SDL_RenderPresent(renderer);
 #endif
+	} else {
+		// Màn hình tĩnh không đổi -> Ép CPU ngủ sâu 16ms để làm mát máy
+		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+	}
 
-    } else {
-        // Nếu màn hình giống hệt khung hình trước (không bấm gì cả)
-        // Ép CPU ngủ sâu 16ms để hạ nhiệt máy ngay lập tức và cứu Pin
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-    }
-
-    // ---- KHÓA CỨNG TỐC ĐỘ 30 FPS ----
-    // Ép luồng đồ họa nghỉ ngơi nốt khoảng thời gian thừa để đảm bảo không vượt quá 30 FPS
-    fps.limit();
+	// Khóa cứng tốc độ ở 30 FPS
+	fps.limit();
 }
 
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
