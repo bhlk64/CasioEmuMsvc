@@ -220,31 +220,32 @@ struct MemoryEditor {
         char id[64];
         sprintf(id, "##scrolling_%p", this);
         
-        ImGui::BeginChild(id,
+        ImGui::BeginChild(
+            id,
             ImVec2(0, -footer_height),
             false,
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav
+        );
         
         // =======================
-        // Smooth scroll (SAFE VERSION)
+        // Smooth scroll (FIXED PER INSTANCE)
         // =======================
         
         ImGuiIO& io = ImGui::GetIO();
         
-        // IMPORTANT: don't fight ImGui scroll engine
-        // => remove manual prevFrameMousePos scroll system
-        
-        static float scrollVelocityY = 0.0f;
-        static bool dragging = false;
-        
-        // start drag anchor
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+        // 👇 move state vào instance (KHÔNG static)
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
+            ImGui::IsWindowHovered())
         {
             dragging = true;
         }
         
-        // drag scroll (stable version)
-        if (dragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        {
+            dragging = false;
+        }
+        
+        if (dragging && ImGui::IsWindowHovered())
         {
             float delta = io.MouseDelta.y;
             ImGui::SetScrollY(ImGui::GetScrollY() - delta);
@@ -254,14 +255,8 @@ struct MemoryEditor {
                 scrollVelocityY = (-delta) / dt;
         }
         
-        // release drag
-        if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-        {
-            dragging = false;
-        }
-        
-        // inertia ONLY when not dragging and not interacting with ImGui scroll
-        if (!dragging && !ImGui::IsAnyItemActive())
+        // inertia
+        if (!dragging && !ImGui::IsAnyItemActive() && ImGui::IsWindowHovered())
         {
             float dt = io.DeltaTime;
         
@@ -291,7 +286,7 @@ struct MemoryEditor {
         // CONTENT START
         // =======================
         
-        ImDrawList* draw_list = ImGui::GetWindowDrawList();;
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -587,31 +582,32 @@ struct MemoryEditor {
         char id[64];
         sprintf(id, "##scrolling_%p", this);
         
-        ImGui::BeginChild(id,
+        ImGui::BeginChild(
+            id,
             ImVec2(0, -footer_height),
             false,
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav
+        );
         
         // =======================
-        // Smooth scroll (SAFE VERSION)
+        // Smooth scroll (FIXED PER INSTANCE)
         // =======================
         
         ImGuiIO& io = ImGui::GetIO();
         
-        // IMPORTANT: don't fight ImGui scroll engine
-        // => remove manual prevFrameMousePos scroll system
-        
-        static float scrollVelocityY = 0.0f;
-        static bool dragging = false;
-        
-        // start drag anchor
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+        // 👇 move state vào instance (KHÔNG static)
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
+            ImGui::IsWindowHovered())
         {
             dragging = true;
         }
         
-        // drag scroll (stable version)
-        if (dragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        {
+            dragging = false;
+        }
+        
+        if (dragging && ImGui::IsWindowHovered())
         {
             float delta = io.MouseDelta.y;
             ImGui::SetScrollY(ImGui::GetScrollY() - delta);
@@ -621,14 +617,8 @@ struct MemoryEditor {
                 scrollVelocityY = (-delta) / dt;
         }
         
-        // release drag
-        if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-        {
-            dragging = false;
-        }
-        
-        // inertia ONLY when not dragging and not interacting with ImGui scroll
-        if (!dragging && !ImGui::IsAnyItemActive())
+        // inertia
+        if (!dragging && !ImGui::IsAnyItemActive() && ImGui::IsWindowHovered())
         {
             float dt = io.DeltaTime;
         
