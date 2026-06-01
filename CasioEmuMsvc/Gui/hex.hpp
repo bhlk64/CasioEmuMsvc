@@ -230,11 +230,12 @@ struct MemoryEditor {
         
         ImGuiIO& io = ImGui::GetIO();
         
-        // --- detect scrollbar area (optional safety) ---
+        // Mouse / window info
         ImVec2 winPos  = ImGui::GetWindowPos();
         ImVec2 winSize = ImGui::GetWindowSize();
         float sbWidth  = ImGui::GetStyle().ScrollbarSize;
         
+        // scrollbar bounds (optional)
         float sbLeft   = winPos.x + winSize.x - sbWidth;
         float sbTop    = winPos.y;
         float sbBottom = winPos.y + winSize.y;
@@ -245,22 +246,20 @@ struct MemoryEditor {
              mp.y >= sbTop  && mp.y <= sbBottom);
         
         // =======================
-        // DRAG SCROLL (user input)
+        // DRAG SCROLL
         // =======================
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f))
         {
             is_dragging_scroll = true;
         
-            ImVec2 mousePos = io.MousePos;
-            float deltaY = prevFrameMousePos_.y - mousePos.y;
-        
+            float deltaY = prevFrameMousePos_.y - mp.y;
             ImGui::SetScrollY(ImGui::GetScrollY() + deltaY);
         
             float dt = io.DeltaTime;
             if (dt > 0.0001f)
                 scrollVelocityY_ = deltaY / dt;
         
-            prevFrameMousePos_ = mousePos;
+            prevFrameMousePos_ = mp;
         }
         
         // =======================
@@ -272,17 +271,15 @@ struct MemoryEditor {
         }
         
         // =======================
-        // INERTIA SCROLL (momentum)
+        // INERTIA SCROLL
         // =======================
         if (!is_dragging_scroll && std::abs(scrollVelocityY_) > 1.0f)
         {
             float dt = io.DeltaTime;
         
             float newScrollY = ImGui::GetScrollY() + scrollVelocityY_ * dt;
-        
             float maxScrollY = ImGui::GetScrollMaxY();
         
-            // clamp + bounce kill
             if (newScrollY < 0.0f)
             {
                 newScrollY = 0.0f;
@@ -296,7 +293,6 @@ struct MemoryEditor {
         
             ImGui::SetScrollY(newScrollY);
         
-            // friction
             scrollVelocityY_ *= std::max(0.0f, 1.0f - 6.0f * dt);
         
             if (std::abs(scrollVelocityY_) < 1.0f)
@@ -611,11 +607,12 @@ struct MemoryEditor {
         
         ImGuiIO& io = ImGui::GetIO();
         
-        // --- detect scrollbar area (optional safety) ---
+        // Mouse / window info
         ImVec2 winPos  = ImGui::GetWindowPos();
         ImVec2 winSize = ImGui::GetWindowSize();
         float sbWidth  = ImGui::GetStyle().ScrollbarSize;
         
+        // scrollbar bounds (optional)
         float sbLeft   = winPos.x + winSize.x - sbWidth;
         float sbTop    = winPos.y;
         float sbBottom = winPos.y + winSize.y;
@@ -626,22 +623,20 @@ struct MemoryEditor {
              mp.y >= sbTop  && mp.y <= sbBottom);
         
         // =======================
-        // DRAG SCROLL (user input)
+        // DRAG SCROLL
         // =======================
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f))
         {
             is_dragging_scroll = true;
         
-            ImVec2 mousePos = io.MousePos;
-            float deltaY = prevFrameMousePos_.y - mousePos.y;
-        
+            float deltaY = prevFrameMousePos_.y - mp.y;
             ImGui::SetScrollY(ImGui::GetScrollY() + deltaY);
         
             float dt = io.DeltaTime;
             if (dt > 0.0001f)
                 scrollVelocityY_ = deltaY / dt;
         
-            prevFrameMousePos_ = mousePos;
+            prevFrameMousePos_ = mp;
         }
         
         // =======================
@@ -653,17 +648,15 @@ struct MemoryEditor {
         }
         
         // =======================
-        // INERTIA SCROLL (momentum)
+        // INERTIA SCROLL
         // =======================
         if (!is_dragging_scroll && std::abs(scrollVelocityY_) > 1.0f)
         {
             float dt = io.DeltaTime;
         
             float newScrollY = ImGui::GetScrollY() + scrollVelocityY_ * dt;
-        
             float maxScrollY = ImGui::GetScrollMaxY();
         
-            // clamp + bounce kill
             if (newScrollY < 0.0f)
             {
                 newScrollY = 0.0f;
@@ -677,7 +670,6 @@ struct MemoryEditor {
         
             ImGui::SetScrollY(newScrollY);
         
-            // friction
             scrollVelocityY_ *= std::max(0.0f, 1.0f - 6.0f * dt);
         
             if (std::abs(scrollVelocityY_) < 1.0f)
