@@ -90,8 +90,7 @@ struct MemoryEditor {
 	// Settings
 	// [Internal State]
 	bool is_scrolling = false;
-	float scrollVelocityY_ = 0.0f;
-	ImVec2 prevFrameMousePos_ = ImVec2(0, 0);
+	float scrollVelocityY = 0.0f;
 	bool Open;										   // = true   // set to false when DrawWindow() was closed. ignore if not using DrawWindow().
 	bool ReadOnly;									   // = false  // disable any editing.
 	int Cols;										   // = 16     // number of columns to display.
