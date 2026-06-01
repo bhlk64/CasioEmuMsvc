@@ -217,7 +217,10 @@ struct MemoryEditor {
         if (OptShowDataPreview)
             footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 3;
 
-        ImGui::BeginChild("##scrolling",
+        char id[64];
+        sprintf(id, "##scrolling_%p", this);
+        
+        ImGui::BeginChild(id,
             ImVec2(0, -footer_height),
             false,
             ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
@@ -579,7 +582,12 @@ struct MemoryEditor {
         if (SpanDescription.has_value())
             footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 1;
 
-                ImGui::BeginChild("##scrolling",
+
+
+        char id[64];
+        sprintf(id, "##scrolling_%p", this);
+        
+        ImGui::BeginChild(id,
             ImVec2(0, -footer_height),
             false,
             ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
