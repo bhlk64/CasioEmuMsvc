@@ -220,6 +220,8 @@ struct MemoryEditor {
         char id[64];
         sprintf(id, "##scrolling_%p", this);
         
+        ImGuiIO& io = ImGui::GetIO();
+
         ImGui::BeginChild(
             id,
             ImVec2(0, -footer_height),
@@ -228,24 +230,34 @@ struct MemoryEditor {
         );
         
         // =======================
-        // Smooth scroll (FIXED PER INSTANCE)
+        // SINGLE WINDOW DRAG LOCK (FIX OVERLAP BUG)
         // =======================
         
-        ImGuiIO& io = ImGui::GetIO();
+        static ImGuiID active_scroll_id = 0;
+        ImGuiID my_id = ImGui::GetID(id);
         
-        // 👇 move state vào instance (KHÔNG static)
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
-            ImGui::IsWindowHovered())
+        // chỉ window đang active mới được scroll
+        bool is_active = (active_scroll_id == 0 || active_scroll_id == my_id);
+        
+        // bắt đầu drag
+        if (ImGui::IsWindowHovered() &&
+            ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
-            dragging = true;
+            active_scroll_id = my_id;
         }
         
+        // thả chuột → release lock
         if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
         {
-            dragging = false;
+            if (active_scroll_id == my_id)
+                active_scroll_id = 0;
         }
         
-        if (dragging && ImGui::IsWindowHovered())
+        // =======================
+        // SCROLL LOGIC (ONLY OWNER WINDOW)
+        // =======================
+        
+        if (active_scroll_id == my_id && ImGui::IsWindowHovered())
         {
             float delta = io.MouseDelta.y;
             ImGui::SetScrollY(ImGui::GetScrollY() - delta);
@@ -253,10 +265,19 @@ struct MemoryEditor {
             float dt = io.DeltaTime;
             if (dt > 0.0001f)
                 scrollVelocityY = (-delta) / dt;
+        
+            dragging = true;
+        }
+        else
+        {
+            dragging = false;
         }
         
-        // inertia
-        if (!dragging && !ImGui::IsAnyItemActive() && ImGui::IsWindowHovered())
+        // inertia (ONLY FOR OWNER WINDOW)
+        if (active_scroll_id == my_id &&
+            !ImGui::IsMouseDown(ImGuiMouseButton_Left) &&
+            !ImGui::IsAnyItemActive() &&
+            ImGui::IsWindowHovered())
         {
             float dt = io.DeltaTime;
         
@@ -283,7 +304,7 @@ struct MemoryEditor {
         }
         
         // =======================
-        // CONTENT START
+        // DRAW LIST
         // =======================
         
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -582,6 +603,8 @@ struct MemoryEditor {
         char id[64];
         sprintf(id, "##scrolling_%p", this);
         
+        ImGuiIO& io = ImGui::GetIO();
+
         ImGui::BeginChild(
             id,
             ImVec2(0, -footer_height),
@@ -590,24 +613,34 @@ struct MemoryEditor {
         );
         
         // =======================
-        // Smooth scroll (FIXED PER INSTANCE)
+        // SINGLE WINDOW DRAG LOCK (FIX OVERLAP BUG)
         // =======================
         
-        ImGuiIO& io = ImGui::GetIO();
+        static ImGuiID active_scroll_id = 0;
+        ImGuiID my_id = ImGui::GetID(id);
         
-        // 👇 move state vào instance (KHÔNG static)
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
-            ImGui::IsWindowHovered())
+        // chỉ window đang active mới được scroll
+        bool is_active = (active_scroll_id == 0 || active_scroll_id == my_id);
+        
+        // bắt đầu drag
+        if (ImGui::IsWindowHovered() &&
+            ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
-            dragging = true;
+            active_scroll_id = my_id;
         }
         
+        // thả chuột → release lock
         if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
         {
-            dragging = false;
+            if (active_scroll_id == my_id)
+                active_scroll_id = 0;
         }
         
-        if (dragging && ImGui::IsWindowHovered())
+        // =======================
+        // SCROLL LOGIC (ONLY OWNER WINDOW)
+        // =======================
+        
+        if (active_scroll_id == my_id && ImGui::IsWindowHovered())
         {
             float delta = io.MouseDelta.y;
             ImGui::SetScrollY(ImGui::GetScrollY() - delta);
@@ -615,10 +648,19 @@ struct MemoryEditor {
             float dt = io.DeltaTime;
             if (dt > 0.0001f)
                 scrollVelocityY = (-delta) / dt;
+        
+            dragging = true;
+        }
+        else
+        {
+            dragging = false;
         }
         
-        // inertia
-        if (!dragging && !ImGui::IsAnyItemActive() && ImGui::IsWindowHovered())
+        // inertia (ONLY FOR OWNER WINDOW)
+        if (active_scroll_id == my_id &&
+            !ImGui::IsMouseDown(ImGuiMouseButton_Left) &&
+            !ImGui::IsAnyItemActive() &&
+            ImGui::IsWindowHovered())
         {
             float dt = io.DeltaTime;
         
@@ -645,7 +687,7 @@ struct MemoryEditor {
         }
         
         // =======================
-        // CONTENT START
+        // DRAW LIST
         // =======================
         
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
