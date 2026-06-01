@@ -217,57 +217,96 @@ struct MemoryEditor {
         if (OptShowDataPreview)
             footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 3;
 
-        ImGui::BeginChild("##scrolling", ImVec2(0, -footer_height), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
-
-        // ── Momentum scrolling (applied when not actively dragging) ──
-        if (!is_scrolling && std::abs(scrollVelocityY_) > 1.0f) {
-            float dt = ImGui::GetIO().DeltaTime;
-            if (dt > 0.001f) {
-                float newScrollY = ImGui::GetScrollY() + scrollVelocityY_ * dt;
-                float maxScrollY = ImGui::GetScrollMaxY();
-                if (newScrollY < 0.0f) { newScrollY = 0.0f; scrollVelocityY_ = 0.0f; }
-                if (newScrollY > maxScrollY) { newScrollY = maxScrollY; scrollVelocityY_ = 0.0f; }
-                ImGui::SetScrollY(newScrollY);
-                scrollVelocityY_ *= std::max(0.0f, 1.0f - 6.0f * dt);
-                if (std::abs(scrollVelocityY_) < 1.0f)
-                    scrollVelocityY_ = 0.0f;
-            }
-        }
-
-    // ── Touch drag → scroll (skip when touching the scrollbar) ──
-        float sbWidth = style.ScrollbarSize;
-        ImVec2 winPos = ImGui::GetWindowPos();
+        ImGui::BeginChild("##scrolling",
+            ImVec2(0, -footer_height),
+            false,
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
+        
+        // =======================
+        // Smooth scroll system FIXED
+        // =======================
+        
+        static bool is_dragging_scroll = false;
+        
+        ImGuiIO& io = ImGui::GetIO();
+        
+        // --- detect scrollbar area (optional safety) ---
+        ImVec2 winPos  = ImGui::GetWindowPos();
         ImVec2 winSize = ImGui::GetWindowSize();
-        float sbLeft = winPos.x + winSize.x - sbWidth;
-        float sbTop = winPos.y;
+        float sbWidth  = ImGui::GetStyle().ScrollbarSize;
+        
+        float sbLeft   = winPos.x + winSize.x - sbWidth;
+        float sbTop    = winPos.y;
         float sbBottom = winPos.y + winSize.y;
-        ImVec2 mp = ImGui::GetIO().MousePos;
-        bool mouseOverScrollbar = (mp.x >= sbLeft && mp.y >= sbTop && mp.y <= sbBottom);
-    
-        if (ImGui::IsWindowHovered() && !mouseOverScrollbar) {
-            if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f)) {
-                if (!is_scrolling) {
-                    is_scrolling = true;
-                    prevFrameMousePos_ = ImGui::GetIO().MousePos;
-                    scrollVelocityY_ = 0.0f;
-                    DataEditingAddr = (size_t)-1;
-                    DataEditingTakeFocus = false;
-                }
-                if (is_scrolling) {
-                    ImVec2 mousePos = ImGui::GetIO().MousePos;
-                    float deltaY = prevFrameMousePos_.y - mousePos.y;
-                    ImGui::SetScrollY(ImGui::GetScrollY() + deltaY);
-                    float dt = ImGui::GetIO().DeltaTime;
-                    if (dt > 0.001f)
-                        scrollVelocityY_ = deltaY / dt;
-                    prevFrameMousePos_ = mousePos;
-                }
-            }
-            if (is_scrolling && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-                is_scrolling = false;
-            }
+        
+        ImVec2 mp = io.MousePos;
+        bool mouseOverScrollbar =
+            (mp.x >= sbLeft && mp.x <= winPos.x + winSize.x &&
+             mp.y >= sbTop  && mp.y <= sbBottom);
+        
+        // =======================
+        // DRAG SCROLL (user input)
+        // =======================
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f))
+        {
+            is_dragging_scroll = true;
+        
+            ImVec2 mousePos = io.MousePos;
+            float deltaY = prevFrameMousePos_.y - mousePos.y;
+        
+            ImGui::SetScrollY(ImGui::GetScrollY() + deltaY);
+        
+            float dt = io.DeltaTime;
+            if (dt > 0.0001f)
+                scrollVelocityY_ = deltaY / dt;
+        
+            prevFrameMousePos_ = mousePos;
         }
-
+        
+        // =======================
+        // END DRAG
+        // =======================
+        if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+        {
+            is_dragging_scroll = false;
+        }
+        
+        // =======================
+        // INERTIA SCROLL (momentum)
+        // =======================
+        if (!is_dragging_scroll && std::abs(scrollVelocityY_) > 1.0f)
+        {
+            float dt = io.DeltaTime;
+        
+            float newScrollY = ImGui::GetScrollY() + scrollVelocityY_ * dt;
+        
+            float maxScrollY = ImGui::GetScrollMaxY();
+        
+            // clamp + bounce kill
+            if (newScrollY < 0.0f)
+            {
+                newScrollY = 0.0f;
+                scrollVelocityY_ = 0.0f;
+            }
+            else if (newScrollY > maxScrollY)
+            {
+                newScrollY = maxScrollY;
+                scrollVelocityY_ = 0.0f;
+            }
+        
+            ImGui::SetScrollY(newScrollY);
+        
+            // friction
+            scrollVelocityY_ *= std::max(0.0f, 1.0f - 6.0f * dt);
+        
+            if (std::abs(scrollVelocityY_) < 1.0f)
+                scrollVelocityY_ = 0.0f;
+        }
+        
+        // =======================
+        // CONTENT RENDER START
+        // =======================
+        
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
@@ -559,57 +598,96 @@ struct MemoryEditor {
         if (SpanDescription.has_value())
             footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 1;
 
-        ImGui::BeginChild("##scrolling", ImVec2(0, -footer_height), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
-
-        // ── Momentum scrolling (applied when not actively dragging) ──
-        if (!is_scrolling && std::abs(scrollVelocityY_) > 1.0f) {
-            float dt = ImGui::GetIO().DeltaTime;
-            if (dt > 0.001f) {
-                float newScrollY = ImGui::GetScrollY() + scrollVelocityY_ * dt;
-                float maxScrollY = ImGui::GetScrollMaxY();
-                if (newScrollY < 0.0f) { newScrollY = 0.0f; scrollVelocityY_ = 0.0f; }
-                if (newScrollY > maxScrollY) { newScrollY = maxScrollY; scrollVelocityY_ = 0.0f; }
-                ImGui::SetScrollY(newScrollY);
-                scrollVelocityY_ *= std::max(0.0f, 1.0f - 6.0f * dt);
-                if (std::abs(scrollVelocityY_) < 1.0f)
-                    scrollVelocityY_ = 0.0f;
-            }
-        }
-
-// ── Touch drag → scroll (skip when touching the scrollbar) ──
-        float sbWidth = style.ScrollbarSize;
-        ImVec2 winPos = ImGui::GetWindowPos();
+        ImGui::BeginChild("##scrolling",
+            ImVec2(0, -footer_height),
+            false,
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
+        
+        // =======================
+        // Smooth scroll system FIXED
+        // =======================
+        
+        static bool is_dragging_scroll = false;
+        
+        ImGuiIO& io = ImGui::GetIO();
+        
+        // --- detect scrollbar area (optional safety) ---
+        ImVec2 winPos  = ImGui::GetWindowPos();
         ImVec2 winSize = ImGui::GetWindowSize();
-        float sbLeft = winPos.x + winSize.x - sbWidth;
-        float sbTop = winPos.y;
+        float sbWidth  = ImGui::GetStyle().ScrollbarSize;
+        
+        float sbLeft   = winPos.x + winSize.x - sbWidth;
+        float sbTop    = winPos.y;
         float sbBottom = winPos.y + winSize.y;
-        ImVec2 mp = ImGui::GetIO().MousePos;
-        bool mouseOverScrollbar = (mp.x >= sbLeft && mp.y >= sbTop && mp.y <= sbBottom);
-    
-        if (ImGui::IsWindowHovered() && !mouseOverScrollbar) {
-            if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f)) {
-                if (!is_scrolling) {
-                    is_scrolling = true;
-                    prevFrameMousePos_ = ImGui::GetIO().MousePos;
-                    scrollVelocityY_ = 0.0f;
-                    DataEditingAddr = (size_t)-1;
-                    DataEditingTakeFocus = false;
-                }
-                if (is_scrolling) {
-                    ImVec2 mousePos = ImGui::GetIO().MousePos;
-                    float deltaY = prevFrameMousePos_.y - mousePos.y;
-                    ImGui::SetScrollY(ImGui::GetScrollY() + deltaY);
-                    float dt = ImGui::GetIO().DeltaTime;
-                    if (dt > 0.001f)
-                        scrollVelocityY_ = deltaY / dt;
-                    prevFrameMousePos_ = mousePos;
-                }
-            }
-            if (is_scrolling && ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-                is_scrolling = false;
-            }
+        
+        ImVec2 mp = io.MousePos;
+        bool mouseOverScrollbar =
+            (mp.x >= sbLeft && mp.x <= winPos.x + winSize.x &&
+             mp.y >= sbTop  && mp.y <= sbBottom);
+        
+        // =======================
+        // DRAG SCROLL (user input)
+        // =======================
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f))
+        {
+            is_dragging_scroll = true;
+        
+            ImVec2 mousePos = io.MousePos;
+            float deltaY = prevFrameMousePos_.y - mousePos.y;
+        
+            ImGui::SetScrollY(ImGui::GetScrollY() + deltaY);
+        
+            float dt = io.DeltaTime;
+            if (dt > 0.0001f)
+                scrollVelocityY_ = deltaY / dt;
+        
+            prevFrameMousePos_ = mousePos;
         }
-
+        
+        // =======================
+        // END DRAG
+        // =======================
+        if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+        {
+            is_dragging_scroll = false;
+        }
+        
+        // =======================
+        // INERTIA SCROLL (momentum)
+        // =======================
+        if (!is_dragging_scroll && std::abs(scrollVelocityY_) > 1.0f)
+        {
+            float dt = io.DeltaTime;
+        
+            float newScrollY = ImGui::GetScrollY() + scrollVelocityY_ * dt;
+        
+            float maxScrollY = ImGui::GetScrollMaxY();
+        
+            // clamp + bounce kill
+            if (newScrollY < 0.0f)
+            {
+                newScrollY = 0.0f;
+                scrollVelocityY_ = 0.0f;
+            }
+            else if (newScrollY > maxScrollY)
+            {
+                newScrollY = maxScrollY;
+                scrollVelocityY_ = 0.0f;
+            }
+        
+            ImGui::SetScrollY(newScrollY);
+        
+            // friction
+            scrollVelocityY_ *= std::max(0.0f, 1.0f - 6.0f * dt);
+        
+            if (std::abs(scrollVelocityY_) < 1.0f)
+                scrollVelocityY_ = 0.0f;
+        }
+        
+        // =======================
+        // CONTENT RENDER START
+        // =======================
+        
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
