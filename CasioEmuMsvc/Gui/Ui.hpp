@@ -81,12 +81,6 @@ public:
 	virtual void GotoMemoryAddress(uint32_t /*addr*/) {}
 	virtual ~UIWindow() {}
 
-    void BringToFront() {
-        bring_to_front_requested = true;
-    }
-    virtual void RenderCore() = 0;
-    virtual ~UIWindow() {}
-
 };
 
 // protected:
