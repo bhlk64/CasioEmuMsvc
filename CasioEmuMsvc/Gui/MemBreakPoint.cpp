@@ -1,4 +1,4 @@
-﻿#include "MemBreakPoint.hpp"
+#include "MemBreakPoint.hpp"
 #include "Chipset/CPU.hpp"
 #include "Chipset/Chipset.hpp"
 #include "Emulator.hpp"
@@ -63,6 +63,12 @@ static bool last_break_regs[16] = {0};
 static bool reg_first_run = true;
 
 void Breakpoints::DrawContent() {
+	if (break_point_hash.empty()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, UIHelpers::kColorMuted);
+		ImGui::TextWrapped("No memory breakpoints set. Enter an address in hex and click 'Add' below to monitor memory access.");
+		ImGui::PopStyleColor();
+		return;
+	}
 	ImGuiListClipper c;
 	static int selected = -1;
 	c.Begin(break_point_hash.size());
@@ -110,7 +116,7 @@ void Breakpoints::DrawContent() {
 
 void Breakpoints::DrawFindContent() {
 	if (target_addr == -1) {
-		ImGui::TextColored(~ImVec4(255, 255, 0, 255), "%s", "MemBP.NoBPHint"_lc);
+		ImGui::TextColored(~UIHelpers::kColorWarning, "%s", "MemBP.NoBPHint"_lc);
 		return;
 	}
 	int write = break_point_hash[target_addr].enableWrite;
@@ -124,29 +130,19 @@ void Breakpoints::DrawFindContent() {
 	}
 	if (ImGui::BeginTable("##outputtable", 2, flags)) {
 		ImGui::TableSetupScrollFreeze(0, 1);
-		ImGui::TableSetupColumn("PC: ");
-		ImGui::TableSetupColumn(
-#if LANGUAGE == 2
-			""
-#else
-			""
-#endif
-		);
+		ImGui::TableSetupColumn("MemBP.ColPC"_lc);
+		ImGui::TableSetupColumn("");
 		ImGui::TableHeadersRow();
 		int i = 0;
 		for (auto kv : break_point_hash[target_addr].records) {
+			uint32_t pc_addr = kv.first;
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::TextColored(~ImVec4(0, 200, 0, 200), "%01x:%04x", kv.first >> 16, kv.first & 0x0ffff);
+			// Clickable address → left-click navigates CodeViewer; right-click offers memory jump
+			UIHelpers::ClickableAddress(pc_addr, UIHelpers::JumpTarget::Code);
 			ImGui::TableSetColumnIndex(1);
 			ImGui::PushID(i++);
-			if (ImGui::Button(
-#if LANGUAGE == 2
-					"查看调用堆栈"
-#else
-					"View callstack"
-#endif
-					)) {
+			if (ImGui::Button("MemBP.ViewCallstack"_lc)) {
 				fx = kv.second.stacktrace.c_str();
 				SDL_ShowSimpleMessageBox(0, "", fx, 0);
 			}
@@ -155,6 +151,7 @@ void Breakpoints::DrawFindContent() {
 		ImGui::EndTable();
 	}
 }
+
 
 void Breakpoints::SetupHooks() {
 	SetupHook(on_memory_read, [&](casioemu::MMU& sender, MemoryEventArgs& mea) {

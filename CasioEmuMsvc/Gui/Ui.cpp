@@ -1,4 +1,5 @@
 #include "Ui.hpp"
+#include "hex.hpp"
 #include "5800FileSystem.h"
 #include "AddressWindow.h"
 #include "BitmapViewer.h"
@@ -63,105 +64,6 @@ Breakpoints* membp = 0;
 
 std::vector<UIWindow*> windows{};
 
-/*void RenderDebuggerToolbar() {
-    float padding = 10.0f;
-    float spacing = 10.0f;
-    float buttonWidth = 100.0f;
-
-    float totalWidth = ImGui::GetIO().DisplaySize.x - padding * 2;
-    float comboWidth = totalWidth - buttonWidth * 2 - spacing * 2;
-
-    ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
-    ImGui::SetCursorPosY(40); // đẩy UI xuống dưới toolbar
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 0), ImGuiCond_Always);
-    ImGui::SetNextWindowBgAlpha(0.0f);
-
-    ImGui::Begin("##toolbar", nullptr,
-        ImGuiWindowFlags_NoDecoration |
-        ImGuiWindowFlags_NoDocking |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoSavedSettings);
-
-    static UIWindow* current = nullptr;
-
-    ImGui::SetNextItemWidth(comboWidth);
-
-    if (ImGui::BeginCombo("##cb", current ? current->name : "Select Window")) {
-        for (auto* w : windows) {
-            if (!w) continue;
-
-            bool selected = (current == w);
-            if (ImGui::Selectable(w->name, selected))
-                current = w;
-
-            if (selected)
-                ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndCombo();
-    }
-
-    ImGui::SameLine(0, spacing);
-
-    if (ImGui::Button("Open", ImVec2(buttonWidth, 0))) {
-        if (current) current->open = true;
-    }
-
-    ImGui::SameLine(0, spacing);
-
-    if (ImGui::Button("Close all", ImVec2(buttonWidth, 0))) {
-        for (auto& w : windows) {
-            if (w) w->open = false;
-        }
-    }
-
-    ImGui::End();
-}*/
-
-/*
-void RenderDebuggerToolbar() {
-    if (ImGui::BeginMainMenuBar()) {
-        static UIWindow* current = nullptr;
-
-        // Dropdown chọn window
-        ImGui::Text("Window:");
-        ImGui::SameLine();
-
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.3f);
-        if (ImGui::BeginCombo("##cb", current ? current->name : "Select Window")) {
-            for (auto* w : windows) {
-                if (!w) continue;
-
-                bool selected = (current == w);
-                if (ImGui::Selectable(w->name, selected))
-                    current = w;
-
-                if (selected)
-                    ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-
-        ImGui::SameLine();
-
-        // Open
-        if (ImGui::Button("Open")) {
-            if (current) current->open = true;
-        }
-
-        ImGui::SameLine();
-
-        // Close all
-        if (ImGui::Button("Close all")) {
-            for (auto& w : windows) {
-                if (w) w->open = false;
-            }
-        }
-
-        ImGui::EndMainMenuBar();
-    }
-}*/
-
 std::string ui_state_fn = "ui_state.txt";
 
 void SaveUIState() {
@@ -216,6 +118,47 @@ void LoadUIState() {
             w->open = state[w->name];
     }
 } 
+
+void RenderStatusBar() {
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	float barHeight = ImGui::GetFrameHeight() + 4.0f;
+	
+	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - barHeight));
+	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, barHeight));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 2.0f));
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.08f, 0.12f, 1.0f));
+	
+	if (ImGui::Begin("##StatusBar", nullptr, 
+		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
+		ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoDocking)) {
+		
+		// Run/Pause state status indicator
+		if (m_emu->GetPaused()) {
+			ImGui::TextColored(UIHelpers::kColorWarning, "\xe2\x8f\xb8 %s", "StatusBar.Paused"_lc);  // ⏸
+		} else {
+			ImGui::TextColored(UIHelpers::kColorSuccess, "\xe2\x96\xb6 %s", "StatusBar.Running"_lc); // ▶
+		}
+		
+		ImGui::SameLine(0.0f, 20.0f);
+		ImGui::TextDisabled("|");
+		ImGui::SameLine(0.0f, 20.0f);
+		
+		// Current PC
+		ImGui::Text("PC: %05X", pc_cache);
+		
+		ImGui::SameLine(0.0f, 20.0f);
+		ImGui::TextDisabled("|");
+		ImGui::SameLine(0.0f, 20.0f);
+		
+		// Breakpoints count
+		int bpCount = code_viewer ? (int)code_viewer->GetBreakpointCount() : 0;
+		ImGui::Text("BP: %d", bpCount);
+	}
+	ImGui::End();
+	ImGui::PopStyleColor();
+	ImGui::PopStyleVar();
+}
 
 void gui_loop() {
     if (!m_emu->Running())
@@ -339,6 +282,62 @@ void gui_loop() {
     //    }
     // #endif
     top_bar_size = ImGui::GetCursorPosY();
+#ifndef __ANDROID__
+	RenderStatusBar();
+#endif
+
+	//	ImGui::Begin("Testing");
+	//	if (ImGui::Button("Crash"_lc)) {
+	//		throw 0;
+	//	}
+	//	// --- 新增：手动反馈选项 ---
+	// #ifdef ENABLE_SENTRY
+	//	ImGui::SameLine(); // 放在 Crash 按钮旁边
+	//	if (ImGui::Button("Send Feedback"_lc)) {
+	//		// 重置之前的输入内容
+	//		memset(sentry_user_comments, 0, sizeof(sentry_user_comments));
+	//		show_sentry_feedback = true;
+	//	}
+	// #endif
+	//	ImGui::End();
+	//	// --- Sentry 反馈对话框逻辑 ---
+	// #ifdef ENABLE_SENTRY
+	//	if (show_sentry_feedback) {
+	//		// 确保每一帧都调用 OpenPopup，直到它真正打开
+	//		ImGui::OpenPopup("User Feedback");
+	//	}
+	//
+	//	// 使用 Modal 窗口确保反馈过程不被打断
+	//	if (ImGui::BeginPopupModal("User Feedback", &show_sentry_feedback, ImGuiWindowFlags_AlwaysAutoResize)) {
+	//		ImGui::Text("Help us improve CasioEmuMsvc!");
+	//		ImGui::Separator();
+	//
+	//		ImGui::Text("Email (Optional):");
+	//		ImGui::InputText("##email", sentry_user_email, IM_ARRAYSIZE(sentry_user_email));
+	//
+	//		ImGui::Text("What happened?");
+	//		ImGui::InputTextMultiline("##comments", sentry_user_comments, IM_ARRAYSIZE(sentry_user_comments),
+	//			ImVec2(350, 120), ImGuiInputTextFlags_AllowTabInput);
+	//
+	//		if (ImGui::Button("Submit", ImVec2(120, 0))) {
+	//			auto uuid = Binary::LoadOrInit("uuid.bin", util::Random::getRandomObject<sentry_uuid_t>());
+	//			char buf[37]{};
+	//			sentry_uuid_as_string(&uuid, buf);
+	//			sentry_value_t feedback = sentry_value_new_feedback(sentry_user_comments, sentry_user_email, buf, 0);
+	//			sentry_capture_feedback(feedback);
+	//
+	//			show_sentry_feedback = false;
+	//			ImGui::CloseCurrentPopup();
+	//		}
+	//
+	//		ImGui::SameLine();
+	//		if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+	//			show_sentry_feedback = false;
+	//			ImGui::CloseCurrentPopup();
+	//		}
+	//		ImGui::EndPopup();
+	//	}
+	// #endif
 
     ImGui::Render();
     //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -471,6 +470,87 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     
     return nullptr;
 }
+
+namespace UIHelpers {
+
+	void JumpToMemory(uint32_t addr) {
+		// Prefer the "Ram" window; fall back to any window that overrides GotoMemoryAddress.
+		UIWindow* fallback = nullptr;
+		for (auto* win : windows) {
+			const char* n = win->name;
+			if (n && strcmp(n, "Ram") == 0) {
+				win->GotoMemoryAddress(addr);
+				return;
+			}
+			// Track first editor-like window as fallback
+			if (!fallback && n && (strcmp(n, "Rom") == 0 || strcmp(n, "All") == 0
+				|| strcmp(n, "PRam") == 0 || strcmp(n, "Flash") == 0)) {
+				fallback = win;
+			}
+		}
+		if (fallback) {
+			fallback->GotoMemoryAddress(addr);
+		}
+	}
+
+	void ClickableAddress(uint32_t addr, JumpTarget defaultTarget) {
+		// Render the colored address text
+		ImGui::PushStyleColor(ImGuiCol_Text, kColorInfo);
+		char addrLabel[16];
+		snprintf(addrLabel, sizeof(addrLabel), "%05X", addr);
+		ImGui::TextUnformatted(addrLabel);
+		ImGui::PopStyleColor();
+
+		if (ImGui::IsItemHovered()) {
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::BeginTooltip();
+			if (defaultTarget == JumpTarget::Code) {
+				ImGui::Text("ClickableAddress.CodeJumpTooltip"_lc, addr);
+				ImGui::TextDisabled("ClickableAddress.RightClickHint"_lc);
+			} else if (defaultTarget == JumpTarget::Memory) {
+				ImGui::Text("ClickableAddress.MemJumpTooltip"_lc, addr);
+				ImGui::TextDisabled("ClickableAddress.RightClickHint"_lc);
+			} else {
+				ImGui::Text("ClickableAddress.BothTooltip"_lc, addr);
+			}
+			ImGui::EndTooltip();
+		}
+
+		// Left-click: default action
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+			if (defaultTarget == JumpTarget::Code || defaultTarget == JumpTarget::Both) {
+				if (code_viewer) {
+					code_viewer->JumpTo(addr);
+					code_viewer->BringToFront();
+				}
+			} else {
+				JumpToMemory(addr);
+			}
+		}
+
+		// Right-click: context menu with both options
+		char popupId[32];
+		snprintf(popupId, sizeof(popupId), "##ca_popup_%05X", addr);
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+			ImGui::OpenPopup(popupId);
+		}
+		if (ImGui::BeginPopup(popupId)) {
+			ImGui::TextDisabled("0x%05X", addr);
+			ImGui::Separator();
+			if (ImGui::MenuItem("ClickableAddress.CodeJump"_lc)) {
+				if (code_viewer) {
+					code_viewer->JumpTo(addr);
+					code_viewer->BringToFront();
+				}
+			}
+			if (ImGui::MenuItem("ClickableAddress.MemJump"_lc)) {
+				JumpToMemory(addr);
+			}
+			ImGui::EndPopup();
+		}
+	}
+}
+
 
 void gui_cleanup() {
     ImGui_ImplSDLRenderer2_Shutdown();
