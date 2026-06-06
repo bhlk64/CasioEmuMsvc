@@ -88,10 +88,6 @@ struct MemoryEditor {
 	};
 
 	// Settings
-	// [Internal State]
-	bool is_scrolling = false;
-	float scrollVelocityY = 0.0f;
-	bool dragging;;
 	bool Open;										   // = true   // set to false when DrawWindow() was closed. ignore if not using DrawWindow().
 	bool ReadOnly;									   // = false  // disable any editing.
 	int Cols;										   // = 16     // number of columns to display.
@@ -201,317 +197,237 @@ struct MemoryEditor {
 		}
 		s.WindowWidth = s.PosAsciiEnd + style.ScrollbarSize + style.WindowPadding.x * 2 + s.GlyphWidth;
 	}
-    void DrawContents(void* mem_data_void, size_t mem_size, size_t base_display_addr = 0x0000) {
-        if (Cols < 1)
-            Cols = 1;
+	void DrawContents(void* mem_data_void, size_t mem_size, size_t base_display_addr = 0x0000) {
+		if (Cols < 1)
+			Cols = 1;
 
-        ImU8* mem_data = (ImU8*)mem_data_void;
-        Sizes s;
-        CalcSizes(s, mem_size, base_display_addr);
-        ImGuiStyle& style = ImGui::GetStyle();
+		ImU8* mem_data = (ImU8*)mem_data_void;
+		Sizes s;
+		CalcSizes(s, mem_size, base_display_addr);
+		ImGuiStyle& style = ImGui::GetStyle();
 
-        const float height_separator = style.ItemSpacing.y + style.ItemInnerSpacing.y;
-        float footer_height = OptFooterExtraHeight;
-        if (OptShowOptions)
-            footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1;
-        if (OptShowDataPreview)
-            footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 3;
+		// We begin into our scrolling region with the 'ImGuiWindowFlags_NoMove' in order to prevent click from moving the window.
+		// This is used as a facility since our main click detection code doesn't assign an ActiveId so the click would normally be caught as a window-move.
+		const float height_separator = style.ItemSpacing.y + style.ItemInnerSpacing.y;
+		float footer_height = OptFooterExtraHeight;
+		if (OptShowOptions)
+			footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1;
+		if (OptShowDataPreview)
+			footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 3;
+		ImGui::BeginChild("##scrolling", ImVec2(0, -footer_height), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-        char id[64];
-        sprintf(id, "##scrolling_%p", this);
-        
-        ImGuiIO& io = ImGui::GetIO();
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
-        ImGui::BeginChild(
-            id,
-            ImVec2(0, -footer_height),
-            false,
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav
-        );
-        
-        // =======================
-        // SINGLE WINDOW DRAG LOCK (FIX OVERLAP BUG)
-        // =======================
-        
-        static ImGuiID active_scroll_id = 0;
-        ImGuiID my_id = ImGui::GetID(id);
-        
-        // chỉ window đang active mới được scroll
-        bool is_active = (active_scroll_id == 0 || active_scroll_id == my_id);
-        
-        // bắt đầu drag
-        if (ImGui::IsWindowHovered() &&
-            ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-        {
-            active_scroll_id = my_id;
-        }
-        
-        // thả chuột → release lock
-        if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
-        {
-            if (active_scroll_id == my_id)
-                active_scroll_id = 0;
-        }
-        
-        // =======================
-        // SCROLL LOGIC (ONLY OWNER WINDOW)
-        // =======================
-        
-        if (active_scroll_id == my_id && ImGui::IsWindowHovered())
-        {
-            float delta = io.MouseDelta.y;
-            ImGui::SetScrollY(ImGui::GetScrollY() - delta);
-        
-            float dt = io.DeltaTime;
-            if (dt > 0.0001f)
-                scrollVelocityY = (-delta) / dt;
-        
-            dragging = true;
-        }
-        else
-        {
-            dragging = false;
-        }
-        
-        // inertia (ONLY FOR OWNER WINDOW)
-        if (active_scroll_id == my_id &&
-            !ImGui::IsMouseDown(ImGuiMouseButton_Left) &&
-            !ImGui::IsAnyItemActive() &&
-            ImGui::IsWindowHovered())
-        {
-            float dt = io.DeltaTime;
-        
-            float scroll = ImGui::GetScrollY() + scrollVelocityY * dt;
-            float maxScroll = ImGui::GetScrollMaxY();
-        
-            if (scroll < 0.0f)
-            {
-                scroll = 0.0f;
-                scrollVelocityY = 0.0f;
-            }
-            else if (scroll > maxScroll)
-            {
-                scroll = maxScroll;
-                scrollVelocityY = 0.0f;
-            }
-        
-            ImGui::SetScrollY(scroll);
-        
-            scrollVelocityY *= std::max(0.0f, 1.0f - 8.0f * dt);
-        
-            if (std::abs(scrollVelocityY) < 1.0f)
-                scrollVelocityY = 0.0f;
-        }
-        
-        // =======================
-        // DRAW LIST
-        // =======================
-        
-        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		// We are not really using the clipper API correctly here, because we rely on visible_start_addr/visible_end_addr for our scrolling function.
+		const int line_total_count = (int)((mem_size + Cols - 1) / Cols);
+		ImGuiListClipper clipper;
+		clipper.Begin(line_total_count, s.LineHeight);
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		bool data_next = false;
 
-        const int line_total_count = (int)((mem_size + Cols - 1) / Cols);
-        ImGuiListClipper clipper;
-        clipper.Begin(line_total_count, s.LineHeight);
+		if (ReadOnly || DataEditingAddr >= mem_size)
+			DataEditingAddr = (size_t)-1;
+		if (DataPreviewAddr >= mem_size)
+			DataPreviewAddr = (size_t)-1;
 
-        bool data_next = false;
+		size_t preview_data_type_size = OptShowDataPreview ? DataTypeGetSize(PreviewDataType) : 0;
 
-        if (ReadOnly || DataEditingAddr >= mem_size)
-            DataEditingAddr = (size_t)-1;
-        if (DataPreviewAddr >= mem_size)
-            DataPreviewAddr = (size_t)-1;
+		size_t data_editing_addr_next = (size_t)-1;
+		if (DataEditingAddr != (size_t)-1) {
+			// Move cursor but only apply on next frame so scrolling with be synchronized (because currently we can't change the scrolling while the window is being rendered)
+			if (ImGui::IsKeyPressed(ImGuiKey_UpArrow) && (ptrdiff_t)DataEditingAddr >= (ptrdiff_t)Cols) {
+				data_editing_addr_next = DataEditingAddr - Cols;
+			}
+			else if (ImGui::IsKeyPressed(ImGuiKey_DownArrow) && (ptrdiff_t)DataEditingAddr < (ptrdiff_t)mem_size - Cols) {
+				data_editing_addr_next = DataEditingAddr + Cols;
+			}
+			else if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow) && (ptrdiff_t)DataEditingAddr > (ptrdiff_t)0) {
+				data_editing_addr_next = DataEditingAddr - 1;
+			}
+			else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow) && (ptrdiff_t)DataEditingAddr < (ptrdiff_t)mem_size - 1) {
+				data_editing_addr_next = DataEditingAddr + 1;
+			}
+		}
 
-        size_t preview_data_type_size = OptShowDataPreview ? DataTypeGetSize(PreviewDataType) : 0;
+		// Draw vertical separator
+		ImVec2 window_pos = ImGui::GetWindowPos();
+		if (OptShowAscii)
+			draw_list->AddLine(ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y), ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y + 9999), ImGui::GetColorU32(ImGuiCol_Border));
 
-        size_t data_editing_addr_next = (size_t)-1;
-        if (DataEditingAddr != (size_t)-1) {
-            if (ImGui::IsKeyPressed(ImGuiKey_UpArrow) && (ptrdiff_t)DataEditingAddr >= (ptrdiff_t)Cols) {
-                data_editing_addr_next = DataEditingAddr - Cols;
-            }
-            else if (ImGui::IsKeyPressed(ImGuiKey_DownArrow) && (ptrdiff_t)DataEditingAddr < (ptrdiff_t)mem_size - Cols) {
-                data_editing_addr_next = DataEditingAddr + Cols;
-            }
-            else if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow) && (ptrdiff_t)DataEditingAddr > (ptrdiff_t)0) {
-                data_editing_addr_next = DataEditingAddr - 1;
-            }
-            else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow) && (ptrdiff_t)DataEditingAddr < (ptrdiff_t)mem_size - 1) {
-                data_editing_addr_next = DataEditingAddr + 1;
-            }
-        }
+		const ImU32 color_text = ImGui::GetColorU32(ImGuiCol_Text);
+		const ImU32 color_disabled = OptGreyOutZeroes ? ImGui::GetColorU32(ImGuiCol_TextDisabled) : color_text;
 
-        // Draw vertical separator
-        ImVec2 window_pos = ImGui::GetWindowPos();
-        if (OptShowAscii)
-            draw_list->AddLine(ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y), ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y + 9999), ImGui::GetColorU32(ImGuiCol_Border));
+		const char* format_address = OptUpperCaseHex ? "%0*" _PRISizeT "X: " : "%0*" _PRISizeT "x: ";
+		const char* format_data = OptUpperCaseHex ? "%0*" _PRISizeT "X" : "%0*" _PRISizeT "x";
+		const char* format_byte = OptUpperCaseHex ? "%02X" : "%02x";
+		const char* format_byte_space = OptUpperCaseHex ? "%02X " : "%02x ";
 
-        const ImU32 color_text = ImGui::GetColorU32(ImGuiCol_Text);
-        const ImU32 color_disabled = OptGreyOutZeroes ? ImGui::GetColorU32(ImGuiCol_TextDisabled) : color_text;
+		while (clipper.Step())
+			for (int line_i = clipper.DisplayStart; line_i < clipper.DisplayEnd; line_i++) // display only visible lines
+			{
+				size_t addr = (size_t)(line_i * Cols);
+				ImGui::Text(format_address, s.AddrDigitsCount, base_display_addr + addr);
 
-        const char* format_address = OptUpperCaseHex ? "%0*" _PRISizeT "X: " : "%0*" _PRISizeT "x: ";
-        const char* format_data = OptUpperCaseHex ? "%0*" _PRISizeT "X" : "%0*" _PRISizeT "x";
-        const char* format_byte = OptUpperCaseHex ? "%02X" : "%02x";
-        const char* format_byte_space = OptUpperCaseHex ? "%02X " : "%02x ";
+				// Draw Hexadecimal
+				for (int n = 0; n < Cols && addr < mem_size; n++, addr++) {
+					float byte_pos_x = s.PosHexStart + s.HexCellWidth * n;
+					if (OptMidColsCount > 0)
+						byte_pos_x += (float)(n / OptMidColsCount) * s.SpacingBetweenMidCols;
+					ImGui::SameLine(byte_pos_x);
 
-        while (clipper.Step())
-            for (int line_i = clipper.DisplayStart; line_i < clipper.DisplayEnd; line_i++)
-            {
-                size_t addr = (size_t)(line_i * Cols);
-                ImGui::Text(format_address, s.AddrDigitsCount, base_display_addr + addr);
+					// Draw highlight
+					bool is_highlight_from_user_range = (addr >= HighlightMin && addr < HighlightMax);
+					bool is_highlight_from_user_func = (HighlightFn && HighlightFn(mem_data, addr));
+					bool is_highlight_from_preview = (addr >= DataPreviewAddr && addr < DataPreviewAddr + preview_data_type_size);
+					if (is_highlight_from_user_range || is_highlight_from_user_func || is_highlight_from_preview) {
+						ImVec2 pos = ImGui::GetCursorScreenPos();
+						float highlight_width = s.GlyphWidth * 2;
+						bool is_next_byte_highlighted = (addr + 1 < mem_size) && ((HighlightMax != (size_t)-1 && addr + 1 < HighlightMax) || (HighlightFn && HighlightFn(mem_data, addr + 1)));
+						if (is_next_byte_highlighted || (n + 1 == Cols)) {
+							highlight_width = s.HexCellWidth;
+							if (OptMidColsCount > 0 && n > 0 && (n + 1) < Cols && ((n + 1) % OptMidColsCount) == 0)
+								highlight_width += s.SpacingBetweenMidCols;
+						}
+						draw_list->AddRectFilled(pos, ImVec2(pos.x + highlight_width, pos.y + s.LineHeight), HighlightColor);
+					}
+					if (DataEditingAddr == addr) {
+						// Display text input on current byte
+						bool data_write = false;
+						ImGui::PushID((void*)addr);
+						if (DataEditingTakeFocus) {
+							ImGui::SetKeyboardFocusHere(0);
+							sprintf(AddrInputBuf, format_data, s.AddrDigitsCount, base_display_addr + addr);
+							sprintf(DataInputBuf, format_byte, ReadFn ? ReadFn(mem_data, addr) : mem_data[addr]);
+						}
+						struct UserData {
+							// FIXME: We should have a way to retrieve the text edit cursor position more easily in the API, this is rather tedious. This is such a ugly mess we may be better off not using InputText() at all here.
+							static int Callback(ImGuiInputTextCallbackData* data) {
+								UserData* user_data = (UserData*)data->UserData;
+								if (!data->HasSelection())
+									user_data->CursorPos = data->CursorPos;
+								if (data->SelectionStart == 0 && data->SelectionEnd == data->BufTextLen) {
+									// When not editing a byte, always refresh its InputText content pulled from underlying memory data
+									// (this is a bit tricky, since InputText technically "owns" the master copy of the buffer we edit it in there)
+									data->DeleteChars(0, data->BufTextLen);
+									data->InsertChars(0, user_data->CurrentBufOverwrite);
+									data->SelectionStart = 0;
+									data->SelectionEnd = 2;
+									data->CursorPos = 0;
+								}
+								return 0;
+							}
+							char CurrentBufOverwrite[3]; // Input
+							int CursorPos;				 // Output
+						};
+						UserData user_data;
+						user_data.CursorPos = -1;
+						sprintf(user_data.CurrentBufOverwrite, format_byte, ReadFn ? ReadFn(mem_data, addr) : mem_data[addr]);
+						ImGuiInputTextFlags flags = ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_NoHorizontalScroll | ImGuiInputTextFlags_CallbackAlways;
+						flags |= ImGuiInputTextFlags_AlwaysOverwrite; // was ImGuiInputTextFlags_AlwaysInsertMode
+						ImGui::SetNextItemWidth(s.GlyphWidth * 2);
+						if (ImGui::InputText("##data", DataInputBuf, IM_ARRAYSIZE(DataInputBuf), flags, UserData::Callback, &user_data))
+							data_write = data_next = true;
+						else if (!DataEditingTakeFocus && !ImGui::IsItemActive())
+							DataEditingAddr = data_editing_addr_next = (size_t)-1;
+						DataEditingTakeFocus = false;
+						if (user_data.CursorPos >= 2)
+							data_write = data_next = true;
+						if (data_editing_addr_next != (size_t)-1)
+							data_write = data_next = false;
+						unsigned int data_input_value = 0;
+						if (data_write && sscanf(DataInputBuf, "%X", &data_input_value) == 1) {
+							if (WriteFn)
+								WriteFn(mem_data, addr, (ImU8)data_input_value);
+							else
+								mem_data[addr] = (ImU8)data_input_value;
+						}
+						ImGui::PopID();
+					}
+					else {
+						// NB: The trailing space is not visible but ensure there's no gap that the mouse cannot click on.
+						ImU8 b = ReadFn ? ReadFn(mem_data, addr) : mem_data[addr];
 
-                // Draw Hexadecimal
-                for (int n = 0; n < Cols && addr < mem_size; n++, addr++) {
-                    float byte_pos_x = s.PosHexStart + s.HexCellWidth * n;
-                    if (OptMidColsCount > 0)
-                        byte_pos_x += (float)(n / OptMidColsCount) * s.SpacingBetweenMidCols;
-                    ImGui::SameLine(byte_pos_x);
+						if (OptShowHexII) {
+							if ((b >= 32 && b < 128))
+								ImGui::Text(".%c ", b);
+							else if (b == 0xFF && OptGreyOutZeroes)
+								ImGui::TextDisabled("## ");
+							else if (b == 0x00)
+								ImGui::Text("   ");
+							else
+								ImGui::Text(format_byte_space, b);
+						}
+						else {
+							if (b == 0 && OptGreyOutZeroes)
+								ImGui::TextDisabled("00 ");
+							else
+								ImGui::Text(format_byte_space, b);
+						}
+						if (ImGui::IsItemHovered()) {
+							if (ImGui::IsMouseClicked(0)) {
+								DataEditingTakeFocus = !ReadOnly;
+								data_editing_addr_next = addr;
+							}
+							if (ImGui::IsItemClicked(1)) {
+								if (ContextMenuFn)
+									ContextMenuFn(contextmenuuserdata, addr + base_display_addr);
+							}
+						}
+					}
+				}
 
-                    // Draw highlight
-                    bool is_highlight_from_user_range = (addr >= HighlightMin && addr < HighlightMax);
-                    bool is_highlight_from_user_func = (HighlightFn && HighlightFn(mem_data, addr));
-                    bool is_highlight_from_preview = (addr >= DataPreviewAddr && addr < DataPreviewAddr + preview_data_type_size);
-                    if (is_highlight_from_user_range || is_highlight_from_user_func || is_highlight_from_preview) {
-                        ImVec2 pos = ImGui::GetCursorScreenPos();
-                        float highlight_width = s.GlyphWidth * 2;
-                        bool is_next_byte_highlighted = (addr + 1 < mem_size) && ((HighlightMax != (size_t)-1 && addr + 1 < HighlightMax) || (HighlightFn && HighlightFn(mem_data, addr + 1)));
-                        if (is_next_byte_highlighted || (n + 1 == Cols)) {
-                            highlight_width = s.HexCellWidth;
-                            if (OptMidColsCount > 0 && n > 0 && (n + 1) < Cols && ((n + 1) % OptMidColsCount) == 0)
-                                highlight_width += s.SpacingBetweenMidCols;
-                        }
-                        draw_list->AddRectFilled(pos, ImVec2(pos.x + highlight_width, pos.y + s.LineHeight), HighlightColor);
-                    }
-                    if (DataEditingAddr == addr) {
-                        bool data_write = false;
-                        ImGui::PushID((void*)addr);
-                        if (DataEditingTakeFocus) {
-                            ImGui::SetKeyboardFocusHere(0);
-                            sprintf(AddrInputBuf, format_data, s.AddrDigitsCount, base_display_addr + addr);
-                            sprintf(DataInputBuf, format_byte, ReadFn ? ReadFn(mem_data, addr) : mem_data[addr]);
-                        }
-                        struct UserData {
-                            static int Callback(ImGuiInputTextCallbackData* data) {
-                                UserData* user_data = (UserData*)data->UserData;
-                                if (!data->HasSelection())
-                                    user_data->CursorPos = data->CursorPos;
-                                if (data->SelectionStart == 0 && data->SelectionEnd == data->BufTextLen) {
-                                    data->DeleteChars(0, data->BufTextLen);
-                                    data->InsertChars(0, user_data->CurrentBufOverwrite);
-                                    data->SelectionStart = 0;
-                                    data->SelectionEnd = 2;
-                                    data->CursorPos = 0;
-                                }
-                                return 0;
-                            }
-                            char CurrentBufOverwrite[3];
-                            int CursorPos;
-                        };
-                        UserData user_data;
-                        user_data.CursorPos = -1;
-                        sprintf(user_data.CurrentBufOverwrite, format_byte, ReadFn ? ReadFn(mem_data, addr) : mem_data[addr]);
-                        ImGuiInputTextFlags flags = ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_NoHorizontalScroll | ImGuiInputTextFlags_CallbackAlways;
-                        flags |= ImGuiInputTextFlags_AlwaysOverwrite;
-                        ImGui::SetNextItemWidth(s.GlyphWidth * 2);
-                        if (ImGui::InputText("##data", DataInputBuf, IM_ARRAYSIZE(DataInputBuf), flags, UserData::Callback, &user_data))
-                            data_write = data_next = true;
-                        else if (!DataEditingTakeFocus && !ImGui::IsItemActive())
-                            DataEditingAddr = data_editing_addr_next = (size_t)-1;
-                        DataEditingTakeFocus = false;
-                        if (user_data.CursorPos >= 2)
-                            data_write = data_next = true;
-                        if (data_editing_addr_next != (size_t)-1)
-                            data_write = data_next = false;
-                        unsigned int data_input_value = 0;
-                        if (data_write && sscanf(DataInputBuf, "%X", &data_input_value) == 1) {
-                            if (WriteFn)
-                                WriteFn(mem_data, addr, (ImU8)data_input_value);
-                            else
-                                mem_data[addr] = (ImU8)data_input_value;
-                        }
-                        ImGui::PopID();
-                    }
-                    else {
-                        ImU8 b = ReadFn ? ReadFn(mem_data, addr) : mem_data[addr];
+				if (OptShowAscii) {
+					// Draw ASCII values
+					ImGui::SameLine(s.PosAsciiStart);
+					ImVec2 pos = ImGui::GetCursorScreenPos();
+					addr = line_i * Cols;
+					ImGui::PushID(line_i);
+					if (ImGui::InvisibleButton("ascii", ImVec2(s.PosAsciiEnd - s.PosAsciiStart, s.LineHeight))) {
+						DataEditingAddr = DataPreviewAddr = addr + (size_t)((ImGui::GetIO().MousePos.x - pos.x) / s.GlyphWidth);
+						DataEditingTakeFocus = true;
+					}
+					ImGui::PopID();
+					for (int n = 0; n < Cols && addr < mem_size; n++, addr++) {
+						if (addr == DataEditingAddr) {
+							draw_list->AddRectFilled(pos, ImVec2(pos.x + s.GlyphWidth, pos.y + s.LineHeight), ImGui::GetColorU32(ImGuiCol_FrameBg));
+							draw_list->AddRectFilled(pos, ImVec2(pos.x + s.GlyphWidth, pos.y + s.LineHeight), ImGui::GetColorU32(ImGuiCol_TextSelectedBg));
+						}
+						unsigned char c = ReadFn ? ReadFn(mem_data, addr) : mem_data[addr];
+						char display_c = (c < 32 || c >= 128) ? '.' : c;
+						draw_list->AddText(pos, (display_c == c) ? color_text : color_disabled, &display_c, &display_c + 1);
+						pos.x += s.GlyphWidth;
+					}
+				}
+			}
+		ImGui::PopStyleVar(2);
+		ImGui::EndChild();
 
-                        if (OptShowHexII) {
-                            if ((b >= 32 && b < 128))
-                                ImGui::Text(".%c ", b);
-                            else if (b == 0xFF && OptGreyOutZeroes)
-                                ImGui::TextDisabled("## ");
-                            else if (b == 0x00)
-                                ImGui::Text("   ");
-                            else
-                                ImGui::Text(format_byte_space, b);
-                        }
-                        else {
-                            if (b == 0 && OptGreyOutZeroes)
-                                ImGui::TextDisabled("00 ");
-                            else
-                                ImGui::Text(format_byte_space, b);
-                        }
-                        if (ImGui::IsItemHovered()) {
-                            // Guard: don't edit if scrolling or starting a drag
-                            if (ImGui::IsMouseClicked(0) && !is_scrolling && !ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f)) {
-                                DataEditingTakeFocus = !ReadOnly;
-                                data_editing_addr_next = addr;
-                            }
-                            if (ImGui::IsItemClicked(1)) {
-                                if (ContextMenuFn)
-                                    ContextMenuFn(contextmenuuserdata, addr + base_display_addr);
-                            }
-                        }
-                    }
-                }
+		// Notify the main window of our ideal child content size (FIXME: we are missing an API to get the contents size from the child)
+		ImGui::SetCursorPosX(s.WindowWidth);
+		ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
-                if (OptShowAscii) {
-                    ImGui::SameLine(s.PosAsciiStart);
-                    ImVec2 pos = ImGui::GetCursorScreenPos();
-                    addr = line_i * Cols;
-                    ImGui::PushID(line_i);
-                    if (ImGui::InvisibleButton("ascii", ImVec2(s.PosAsciiEnd - s.PosAsciiStart, s.LineHeight)) && !is_scrolling) {
-                        DataEditingAddr = DataPreviewAddr = addr + (size_t)((ImGui::GetIO().MousePos.x - pos.x) / s.GlyphWidth);
-                        DataEditingTakeFocus = true;
-                    }
-                    ImGui::PopID();
-                    for (int n = 0; n < Cols && addr < mem_size; n++, addr++) {
-                        if (addr == DataEditingAddr) {
-                            draw_list->AddRectFilled(pos, ImVec2(pos.x + s.GlyphWidth, pos.y + s.LineHeight), ImGui::GetColorU32(ImGuiCol_FrameBg));
-                            draw_list->AddRectFilled(pos, ImVec2(pos.x + s.GlyphWidth, pos.y + s.LineHeight), ImGui::GetColorU32(ImGuiCol_TextSelectedBg));
-                        }
-                        unsigned char c = ReadFn ? ReadFn(mem_data, addr) : mem_data[addr];
-                        char display_c = (c < 32 || c >= 128) ? '.' : c;
-                        draw_list->AddText(pos, (display_c == c) ? color_text : color_disabled, &display_c, &display_c + 1);
-                        pos.x += s.GlyphWidth;
-                    }
-                }
-            }
-        ImGui::PopStyleVar(2);
-        ImGui::EndChild();
+		if (data_next && DataEditingAddr + 1 < mem_size) {
+			DataEditingAddr = DataPreviewAddr = DataEditingAddr + 1;
+			DataEditingTakeFocus = true;
+		}
+		else if (data_editing_addr_next != (size_t)-1) {
+			DataEditingAddr = DataPreviewAddr = data_editing_addr_next;
+			DataEditingTakeFocus = true;
+		}
 
-        ImGui::SetCursorPosX(s.WindowWidth);
-        ImGui::Dummy(ImVec2(0.0f, 0.0f));
+		const bool lock_show_data_preview = OptShowDataPreview;
+		if (OptShowOptions) {
+			ImGui::Separator();
+			DrawOptionsLine(s, mem_data, mem_size, base_display_addr);
+		}
 
-        if (data_next && DataEditingAddr + 1 < mem_size) {
-            DataEditingAddr = DataPreviewAddr = DataEditingAddr + 1;
-            DataEditingTakeFocus = true;
-        }
-        else if (data_editing_addr_next != (size_t)-1) {
-            DataEditingAddr = DataPreviewAddr = data_editing_addr_next;
-            DataEditingTakeFocus = true;
-        }
-
-        const bool lock_show_data_preview = OptShowDataPreview;
-        if (OptShowOptions) {
-            ImGui::Separator();
-            DrawOptionsLine(s, mem_data, mem_size, base_display_addr);
-        }
-
-        if (lock_show_data_preview) {
-            ImGui::Separator();
-            DrawPreviewLine(s, mem_data, mem_size, base_display_addr);
-        }
-    }
+		if (lock_show_data_preview) {
+			ImGui::Separator();
+			DrawPreviewLine(s, mem_data, mem_size, base_display_addr);
+		}
+	}
 	struct MarkedSpan {
 		size_t start{};
 		size_t length{};
@@ -578,387 +494,306 @@ struct MemoryEditor {
 		ImGui::End();
 	}
 	// Memory Editor contents only
-    void DrawContents(void* mem_data_void, size_t mem_size, size_t base_display_addr, const OptionalMarkedSpans& marked_spans) {
-        if (Cols < 1)
-            Cols = 1;
+	void DrawContents(void* mem_data_void, size_t mem_size, size_t base_display_addr, const OptionalMarkedSpans& marked_spans) {
+		if (Cols < 1)
+			Cols = 1;
 
-        ImU8* mem_data = (ImU8*)mem_data_void;
-        Sizes s;
-        CalcSizes(s, mem_size, base_display_addr);
-        ImGuiStyle& style = ImGui::GetStyle();
+		ImU8* mem_data = (ImU8*)mem_data_void;
+		Sizes s;
+		CalcSizes(s, mem_size, base_display_addr);
+		ImGuiStyle& style = ImGui::GetStyle();
 
-        UpdateSpanDescriptions(marked_spans, base_display_addr);
+		UpdateSpanDescriptions(marked_spans, base_display_addr);
 
-        const float height_separator = style.ItemSpacing.y;
-        float footer_height = OptFooterExtraHeight;
-        if (OptShowOptions)
-            footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1;
-        if (OptShowDataPreview)
-            footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 3;
-        if (SpanDescription.has_value())
-            footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 1;
+		// We begin into our scrolling region with the 'ImGuiWindowFlags_NoMove' in order to prevent click from moving the window.
+		// This is used as a facility since our main click detection code doesn't assign an ActiveId so the click would normally be caught as a window-move.
+		const float height_separator = style.ItemSpacing.y;
+		float footer_height = OptFooterExtraHeight;
+		if (OptShowOptions)
+			footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1;
+		if (OptShowDataPreview)
+			footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 3;
+		if (SpanDescription.has_value())
+			footer_height += height_separator + ImGui::GetFrameHeightWithSpacing() * 1 + ImGui::GetTextLineHeightWithSpacing() * 1;
+		ImGui::BeginChild("##scrolling", ImVec2(0, -footer_height), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
+		// We are not really using the clipper API correctly here, because we rely on visible_start_addr/visible_end_addr for our scrolling function.
+		const int line_total_count = (int)((mem_size + Cols - 1) / Cols);
+		ImGuiListClipper clipper;
+		clipper.Begin(line_total_count, s.LineHeight);
 
-        char id[64];
-        sprintf(id, "##scrolling_%p", this);
-        
-        ImGuiIO& io = ImGui::GetIO();
+		bool data_next = false;
 
-        ImGui::BeginChild(
-            id,
-            ImVec2(0, -footer_height),
-            false,
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav
-        );
-        
-        // =======================
-        // SINGLE WINDOW DRAG LOCK (FIX OVERLAP BUG)
-        // =======================
-        
-        static ImGuiID active_scroll_id = 0;
-        ImGuiID my_id = ImGui::GetID(id);
-        
-        // chỉ window đang active mới được scroll
-        bool is_active = (active_scroll_id == 0 || active_scroll_id == my_id);
-        
-        // bắt đầu drag
-        if (ImGui::IsWindowHovered() &&
-            ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-        {
-            active_scroll_id = my_id;
-        }
-        
-        // thả chuột → release lock
-        if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
-        {
-            if (active_scroll_id == my_id)
-                active_scroll_id = 0;
-        }
-        
-        // =======================
-        // SCROLL LOGIC (ONLY OWNER WINDOW)
-        // =======================
-        
-        if (active_scroll_id == my_id && ImGui::IsWindowHovered())
-        {
-            float delta = io.MouseDelta.y;
-            ImGui::SetScrollY(ImGui::GetScrollY() - delta);
-        
-            float dt = io.DeltaTime;
-            if (dt > 0.0001f)
-                scrollVelocityY = (-delta) / dt;
-        
-            dragging = true;
-        }
-        else
-        {
-            dragging = false;
-        }
-        
-        // inertia (ONLY FOR OWNER WINDOW)
-        if (active_scroll_id == my_id &&
-            !ImGui::IsMouseDown(ImGuiMouseButton_Left) &&
-            !ImGui::IsAnyItemActive() &&
-            ImGui::IsWindowHovered())
-        {
-            float dt = io.DeltaTime;
-        
-            float scroll = ImGui::GetScrollY() + scrollVelocityY * dt;
-            float maxScroll = ImGui::GetScrollMaxY();
-        
-            if (scroll < 0.0f)
-            {
-                scroll = 0.0f;
-                scrollVelocityY = 0.0f;
-            }
-            else if (scroll > maxScroll)
-            {
-                scroll = maxScroll;
-                scrollVelocityY = 0.0f;
-            }
-        
-            ImGui::SetScrollY(scroll);
-        
-            scrollVelocityY *= std::max(0.0f, 1.0f - 8.0f * dt);
-        
-            if (std::abs(scrollVelocityY) < 1.0f)
-                scrollVelocityY = 0.0f;
-        }
-        
-        // =======================
-        // DRAW LIST
-        // =======================
-        
-        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		if (ReadOnly || DataEditingAddr >= mem_size)
+			DataEditingAddr = (size_t)-1;
+		if (DataPreviewAddr >= mem_size)
+			DataPreviewAddr = (size_t)-1;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		size_t preview_data_type_size = OptShowDataPreview ? DataTypeGetSize(PreviewDataType) : 0;
 
-        const int line_total_count = (int)((mem_size + Cols - 1) / Cols);
-        ImGuiListClipper clipper;
-        clipper.Begin(line_total_count, s.LineHeight);
+		size_t data_editing_addr_next = (size_t)-1;
+		if (DataEditingAddr != (size_t)-1) {
+			// Move cursor but only apply on next frame so scrolling with be synchronized (because currently we can't change the scrolling while the window is being rendered)
+			if (ImGui::IsKeyPressed(ImGuiKey_UpArrow) && (ptrdiff_t)DataEditingAddr >= (ptrdiff_t)Cols) {
+				data_editing_addr_next = DataEditingAddr - Cols;
+			}
+			else if (ImGui::IsKeyPressed(ImGuiKey_DownArrow) && (ptrdiff_t)DataEditingAddr < (ptrdiff_t)mem_size - Cols) {
+				data_editing_addr_next = DataEditingAddr + Cols;
+			}
+			else if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow) && (ptrdiff_t)DataEditingAddr > (ptrdiff_t)0) {
+				data_editing_addr_next = DataEditingAddr - 1;
+			}
+			else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow) && (ptrdiff_t)DataEditingAddr < (ptrdiff_t)mem_size - 1) {
+				data_editing_addr_next = DataEditingAddr + 1;
+			}
+		}
 
-        bool data_next = false;
+		// Draw vertical separator
+		ImVec2 window_pos = ImGui::GetWindowPos();
+		if (OptShowAscii)
+			draw_list->AddLine(ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y), ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y + 9999), ImGui::GetColorU32(ImGuiCol_Border));
 
-        if (ReadOnly || DataEditingAddr >= mem_size)
-            DataEditingAddr = (size_t)-1;
-        if (DataPreviewAddr >= mem_size)
-            DataPreviewAddr = (size_t)-1;
+		const ImU32 color_text = ImGui::GetColorU32(ImGuiCol_Text);
+		const ImU32 color_disabled = OptGreyOutZeroes ? ImGui::GetColorU32(ImGuiCol_TextDisabled) : color_text;
 
-        size_t preview_data_type_size = OptShowDataPreview ? DataTypeGetSize(PreviewDataType) : 0;
+		const char* format_address = OptUpperCaseHex ? "%0*" _PRISizeT "X: " : "%0*" _PRISizeT "x: ";
+		const char* format_data = OptUpperCaseHex ? "%0*" _PRISizeT "X" : "%0*" _PRISizeT "x";
+		const char* format_byte = OptUpperCaseHex ? "%02X" : "%02x";
+		const char* format_byte_space = OptUpperCaseHex ? "%02X " : "%02x ";
 
-        size_t data_editing_addr_next = (size_t)-1;
-        if (DataEditingAddr != (size_t)-1) {
-            if (ImGui::IsKeyPressed(ImGuiKey_UpArrow) && (ptrdiff_t)DataEditingAddr >= (ptrdiff_t)Cols) {
-                data_editing_addr_next = DataEditingAddr - Cols;
-            }
-            else if (ImGui::IsKeyPressed(ImGuiKey_DownArrow) && (ptrdiff_t)DataEditingAddr < (ptrdiff_t)mem_size - Cols) {
-                data_editing_addr_next = DataEditingAddr + Cols;
-            }
-            else if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow) && (ptrdiff_t)DataEditingAddr > (ptrdiff_t)0) {
-                data_editing_addr_next = DataEditingAddr - 1;
-            }
-            else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow) && (ptrdiff_t)DataEditingAddr < (ptrdiff_t)mem_size - 1) {
-                data_editing_addr_next = DataEditingAddr + 1;
-            }
-        }
+		while (clipper.Step())
+			for (int line_i = clipper.DisplayStart; line_i < clipper.DisplayEnd; line_i++) // display only visible lines
+			{
+				size_t addr = (size_t)(line_i * Cols);
+				ImGui::Text(format_address, s.AddrDigitsCount, base_display_addr + addr);
 
-        // Draw vertical separator
-        ImVec2 window_pos = ImGui::GetWindowPos();
-        if (OptShowAscii)
-            draw_list->AddLine(ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y), ImVec2(window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y + 9999), ImGui::GetColorU32(ImGuiCol_Border));
+				auto intersect_range = [](
+										   size_t range1_s, size_t range1_e, size_t range2_s, size_t range2_e) -> std::optional<std::pair<size_t, size_t>> {
+					if (range2_s > range1_e || range1_s > range2_e)
+						return {};
+					auto out_s = std::max(range1_s, range2_s);
+					auto out_e = std::min(range1_e, range2_e);
+					return std::pair(out_s, out_e);
+				};
 
-        const ImU32 color_text = ImGui::GetColorU32(ImGuiCol_Text);
-        const ImU32 color_disabled = OptGreyOutZeroes ? ImGui::GetColorU32(ImGuiCol_TextDisabled) : color_text;
+				auto line_start_n = line_i * Cols;
+				auto line_end_n = line_start_n + Cols - 1;
 
-        const char* format_address = OptUpperCaseHex ? "%0*" _PRISizeT "X: " : "%0*" _PRISizeT "x: ";
-        const char* format_data = OptUpperCaseHex ? "%0*" _PRISizeT "X" : "%0*" _PRISizeT "x";
-        const char* format_byte = OptUpperCaseHex ? "%02X" : "%02x";
-        const char* format_byte_space = OptUpperCaseHex ? "%02X " : "%02x ";
+				if (marked_spans.has_value()) {
+					auto& spans = marked_spans.value();
+					for (auto& span : spans) {
+						auto intersection = intersect_range(
+							span.start - base_display_addr,
+							span.start - base_display_addr + span.length - 1,
+							line_start_n, line_end_n);
+						if (!intersection.has_value()) {
+							// no intersection; this line has no marked span to draw
+							continue;
+						}
 
-        while (clipper.Step())
-            for (int line_i = clipper.DisplayStart; line_i < clipper.DisplayEnd; line_i++)
-            {
-                size_t addr = (size_t)(line_i * Cols);
-                ImGui::Text(format_address, s.AddrDigitsCount, base_display_addr + addr);
+						size_t intxn_start = intersection->first;
+						size_t intxn_end = intersection->second;
+						assert(intxn_start >= line_start_n && intxn_end <= line_end_n);
 
-                auto intersect_range = [](
-                                           size_t range1_s, size_t range1_e, size_t range2_s, size_t range2_e) -> std::optional<std::pair<size_t, size_t>> {
-                    if (range2_s > range1_e || range1_s > range2_e)
-                        return {};
-                    auto out_s = std::max(range1_s, range2_s);
-                    auto out_e = std::min(range1_e, range2_e);
-                    return std::pair(out_s, out_e);
-                };
+						auto pos_tmp = ImGui::GetCursorScreenPos();
+						auto line_first_hex_pos = ImVec2(pos_tmp.x + s.GlyphWidth * 6, pos_tmp.y - s.LineHeight);
+						auto start_pos = ImVec2(line_first_hex_pos.x + s.HexCellWidth * (float)(intxn_start % Cols), line_first_hex_pos.y);
+						auto end_pos = ImVec2(line_first_hex_pos.x + s.HexCellWidth * (float)(intxn_end % Cols + 1), line_first_hex_pos.y + s.LineHeight);
+						draw_list->AddRectFilled(start_pos, end_pos, ~span.color);
+					}
+				}
 
-                auto line_start_n = line_i * Cols;
-                auto line_end_n = line_start_n + Cols - 1;
+				// Draw Hexadecimal
+				for (int n = 0; n < Cols && addr < mem_size; n++, addr++) {
+					float byte_pos_x = s.PosHexStart + s.HexCellWidth * n;
+					if (OptMidColsCount > 0)
+						byte_pos_x += (float)(n / OptMidColsCount) * s.SpacingBetweenMidCols;
+					ImGui::SameLine(byte_pos_x);
 
-                if (marked_spans.has_value()) {
-                    auto& spans = marked_spans.value();
-                    for (auto& span : spans) {
-                        auto intersection = intersect_range(
-                            span.start - base_display_addr,
-                            span.start - base_display_addr + span.length - 1,
-                            line_start_n, line_end_n);
-                        if (!intersection.has_value()) {
-                            continue;
-                        }
+					// Draw highlight
+					bool is_highlight_from_user_range = (addr >= HighlightMin && addr < HighlightMax);
+					bool is_highlight_from_user_func = (HighlightFn && HighlightFn(mem_data, addr));
+					bool is_highlight_from_preview = (addr >= DataPreviewAddr && addr < DataPreviewAddr + preview_data_type_size);
+					if (is_highlight_from_user_range || is_highlight_from_user_func || is_highlight_from_preview) {
+						ImVec2 pos = ImGui::GetCursorScreenPos();
+						float highlight_width = s.GlyphWidth * 2;
+						bool is_next_byte_highlighted = (addr + 1 < mem_size) && ((HighlightMax != (size_t)-1 && addr + 1 < HighlightMax) || (HighlightFn && HighlightFn(mem_data, addr + 1)));
+						if (is_next_byte_highlighted || (n + 1 == Cols)) {
+							highlight_width = s.HexCellWidth;
+							if (OptMidColsCount > 0 && n > 0 && (n + 1) < Cols && ((n + 1) % OptMidColsCount) == 0)
+								highlight_width += s.SpacingBetweenMidCols;
+						}
+						draw_list->AddRectFilled(pos, ImVec2(pos.x + highlight_width, pos.y + s.LineHeight), HighlightColor);
+					}
+					if (ram_edit_ov && ram_edit_ov[(size_t)mem_data + addr] > 0) {
+						ImVec2 pos = ImGui::GetCursorScreenPos();
+						float highlight_width = s.GlyphWidth * 2;
+						bool is_next_byte_highlighted = (addr + 1 < mem_size) && ((HighlightMax != (size_t)-1 && addr + 1 < HighlightMax) || (HighlightFn && HighlightFn(mem_data, addr + 1)));
+						if (is_next_byte_highlighted || (n + 1 == Cols)) {
+							highlight_width = s.HexCellWidth;
+							if (OptMidColsCount > 0 && n > 0 && (n + 1) < Cols && ((n + 1) % OptMidColsCount) == 0)
+								highlight_width += s.SpacingBetweenMidCols;
+						}
+						draw_list->AddRectFilled(pos, ImVec2(pos.x + highlight_width, pos.y + s.LineHeight), ~ImColor{255, 0, 0, int(ram_edit_ov[(size_t)mem_data + addr])});
+						ram_edit_ov[(size_t)mem_data + addr] -= 10;
+					}
 
-                        size_t intxn_start = intersection->first;
-                        size_t intxn_end = intersection->second;
-                        assert(intxn_start >= line_start_n && intxn_end <= line_end_n);
+					if (DataEditingAddr == addr) {
+						// Display text input on current byte
+						bool data_write = false;
+						ImGui::PushID((void*)addr);
+						if (DataEditingTakeFocus) {
+							ImGui::SetKeyboardFocusHere(0);
+							sprintf(AddrInputBuf, format_data, s.AddrDigitsCount, base_display_addr + addr);
+							sprintf(DataInputBuf, format_byte, ReadFn ? ReadFn(mem_data, addr) : mem_data[addr]);
+						}
+						struct UserData {
+							// FIXME: We should have a way to retrieve the text edit cursor position more easily in the API, this is rather tedious. This is such a ugly mess we may be better off not using InputText() at all here.
+							static int Callback(ImGuiInputTextCallbackData* data) {
+								UserData* user_data = (UserData*)data->UserData;
+								if (!data->HasSelection())
+									user_data->CursorPos = data->CursorPos;
+								if (data->SelectionStart == 0 && data->SelectionEnd == data->BufTextLen) {
+									// When not editing a byte, always refresh its InputText content pulled from underlying memory data
+									// (this is a bit tricky, since InputText technically "owns" the master copy of the buffer we edit it in there)
+									data->DeleteChars(0, data->BufTextLen);
+									data->InsertChars(0, user_data->CurrentBufOverwrite);
+									data->SelectionStart = 0;
+									data->SelectionEnd = 2;
+									data->CursorPos = 0;
+								}
+								return 0;
+							}
+							char CurrentBufOverwrite[3]; // Input
+							int CursorPos;				 // Output
+						};
+						UserData user_data;
+						user_data.CursorPos = -1;
+						sprintf(user_data.CurrentBufOverwrite, format_byte, ReadFn ? ReadFn(mem_data, addr) : mem_data[addr]);
+						ImGuiInputTextFlags flags = ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_NoHorizontalScroll | ImGuiInputTextFlags_CallbackAlways;
+						flags |= ImGuiInputTextFlags_AlwaysOverwrite; // was ImGuiInputTextFlags_AlwaysInsertMode
+						ImGui::SetNextItemWidth(s.GlyphWidth * 2);
+						if (ImGui::InputText("##data", DataInputBuf, IM_ARRAYSIZE(DataInputBuf), flags, UserData::Callback, &user_data))
+							data_write = data_next = true;
+						else if (!DataEditingTakeFocus && !ImGui::IsItemActive())
+							DataEditingAddr = data_editing_addr_next = (size_t)-1;
+						if (DataEditingTakeFocus)
+							ImGui::SetKeyboardFocusHere(-1);
+						DataEditingTakeFocus = false;
+						if (user_data.CursorPos >= 2)
+							data_write = data_next = true;
+						if (data_editing_addr_next != (size_t)-1)
+							data_write = data_next = false;
 
-                        auto pos_tmp = ImGui::GetCursorScreenPos();
-                        auto line_first_hex_pos = ImVec2(pos_tmp.x + s.GlyphWidth * 6, pos_tmp.y - s.LineHeight);
-                        auto start_pos = ImVec2(line_first_hex_pos.x + s.HexCellWidth * (float)(intxn_start % Cols), line_first_hex_pos.y);
-                        auto end_pos = ImVec2(line_first_hex_pos.x + s.HexCellWidth * (float)(intxn_end % Cols + 1), line_first_hex_pos.y + s.LineHeight);
-                        draw_list->AddRectFilled(start_pos, end_pos, ~span.color);
-                    }
-                }
+						if (data_write) {
+							for (size_t i = 0;; ++i) {
+								auto buf = DataInputBuf;
+								if (buf[i * 2] == '\0' || buf[i * 2 + 1] == '\0')
+									break;
+								char byte_buf[3] = {buf[i * 2], buf[i * 2 + 1]};
+								uint8_t input_value = static_cast<uint8_t>(strtoul(byte_buf, nullptr, 16));
+								if (WriteFn) {
+									WriteFn(mem_data, addr + i, input_value);
+								}
+								else {
+									mem_data[addr + i] = (uint8_t)input_value;
+								}
+							}
+						}
+						ImGui::PopID();
+					}
+					else {
+						// NB: The trailing space is not visible but ensure there's no gap that the mouse cannot click on.
+						ImU8 b = ReadFn ? ReadFn(mem_data, addr) : mem_data[addr];
 
-                // Draw Hexadecimal
-                for (int n = 0; n < Cols && addr < mem_size; n++, addr++) {
-                    float byte_pos_x = s.PosHexStart + s.HexCellWidth * n;
-                    if (OptMidColsCount > 0)
-                        byte_pos_x += (float)(n / OptMidColsCount) * s.SpacingBetweenMidCols;
-                    ImGui::SameLine(byte_pos_x);
+						if (OptShowHexII) {
+							if ((b >= 32 && b < 128))
+								ImGui::Text(".%c ", b);
+							else if (b == 0xFF && OptGreyOutZeroes)
+								ImGui::TextDisabled("## ");
+							else if (b == 0x00)
+								ImGui::Text("   ");
+							else
+								ImGui::Text(format_byte_space, b);
+						}
+						else {
+							if (b == 0 && OptGreyOutZeroes)
+								ImGui::TextDisabled("00 ");
+							else
+								ImGui::Text(format_byte_space, b);
+						}
+						if (ImGui::IsItemHovered()) {
+							if (ImGui::IsMouseClicked(0)) {
+								DataEditingTakeFocus = !ReadOnly;
+								data_editing_addr_next = addr;
+							}
+							if (ImGui::IsItemClicked(1)) {
+								if (ContextMenuFn)
+									ContextMenuFn(contextmenuuserdata, addr + base_display_addr);
+							}
+						}
+					}
+				}
 
-                    // Draw highlight
-                    bool is_highlight_from_user_range = (addr >= HighlightMin && addr < HighlightMax);
-                    bool is_highlight_from_user_func = (HighlightFn && HighlightFn(mem_data, addr));
-                    bool is_highlight_from_preview = (addr >= DataPreviewAddr && addr < DataPreviewAddr + preview_data_type_size);
-                    if (is_highlight_from_user_range || is_highlight_from_user_func || is_highlight_from_preview) {
-                        ImVec2 pos = ImGui::GetCursorScreenPos();
-                        float highlight_width = s.GlyphWidth * 2;
-                        bool is_next_byte_highlighted = (addr + 1 < mem_size) && ((HighlightMax != (size_t)-1 && addr + 1 < HighlightMax) || (HighlightFn && HighlightFn(mem_data, addr + 1)));
-                        if (is_next_byte_highlighted || (n + 1 == Cols)) {
-                            highlight_width = s.HexCellWidth;
-                            if (OptMidColsCount > 0 && n > 0 && (n + 1) < Cols && ((n + 1) % OptMidColsCount) == 0)
-                                highlight_width += s.SpacingBetweenMidCols;
-                        }
-                        draw_list->AddRectFilled(pos, ImVec2(pos.x + highlight_width, pos.y + s.LineHeight), HighlightColor);
-                    }
-                    if (ram_edit_ov && ram_edit_ov[(size_t)mem_data + addr] > 0) {
-                        ImVec2 pos = ImGui::GetCursorScreenPos();
-                        float highlight_width = s.GlyphWidth * 2;
-                        bool is_next_byte_highlighted = (addr + 1 < mem_size) && ((HighlightMax != (size_t)-1 && addr + 1 < HighlightMax) || (HighlightFn && HighlightFn(mem_data, addr + 1)));
-                        if (is_next_byte_highlighted || (n + 1 == Cols)) {
-                            highlight_width = s.HexCellWidth;
-                            if (OptMidColsCount > 0 && n > 0 && (n + 1) < Cols && ((n + 1) % OptMidColsCount) == 0)
-                                highlight_width += s.SpacingBetweenMidCols;
-                        }
-                        draw_list->AddRectFilled(pos, ImVec2(pos.x + highlight_width, pos.y + s.LineHeight), ~ImColor{255, 0, 0, int(ram_edit_ov[(size_t)mem_data + addr])});
-                        ram_edit_ov[(size_t)mem_data + addr] -= 10;
-                    }
+				if (OptShowAscii) {
+					// Draw ASCII values
+					ImGui::SameLine(s.PosAsciiStart);
+					ImVec2 pos = ImGui::GetCursorScreenPos();
+					addr = line_i * Cols;
+					ImGui::PushID(line_i);
+					if (ImGui::InvisibleButton("ascii", ImVec2(s.PosAsciiEnd - s.PosAsciiStart, s.LineHeight))) {
+						DataEditingAddr = DataPreviewAddr = addr + (size_t)((ImGui::GetIO().MousePos.x - pos.x) / s.GlyphWidth);
+						DataEditingTakeFocus = true;
+					}
+					ImGui::PopID();
+					for (int n = 0; n < Cols && addr < mem_size; n++, addr++) {
+						if (addr == DataEditingAddr) {
+							draw_list->AddRectFilled(pos, ImVec2(pos.x + s.GlyphWidth, pos.y + s.LineHeight), ImGui::GetColorU32(ImGuiCol_FrameBg));
+							draw_list->AddRectFilled(pos, ImVec2(pos.x + s.GlyphWidth, pos.y + s.LineHeight), ImGui::GetColorU32(ImGuiCol_TextSelectedBg));
+						}
+						unsigned char c = ReadFn ? ReadFn(mem_data, addr) : mem_data[addr];
+						char display_c = (c < 32 || c >= 128) ? '.' : c;
+						draw_list->AddText(pos, (display_c == c) ? color_text : color_disabled, &display_c, &display_c + 1);
+						pos.x += s.GlyphWidth;
+					}
+				}
+			}
+		ImGui::PopStyleVar(2);
+		ImGui::EndChild();
 
-                    if (DataEditingAddr == addr) {
-                        bool data_write = false;
-                        ImGui::PushID((void*)addr);
-                        if (DataEditingTakeFocus) {
-                            ImGui::SetKeyboardFocusHere(0);
-                            sprintf(AddrInputBuf, format_data, s.AddrDigitsCount, base_display_addr + addr);
-                            sprintf(DataInputBuf, format_byte, ReadFn ? ReadFn(mem_data, addr) : mem_data[addr]);
-                        }
-                        struct UserData {
-                            static int Callback(ImGuiInputTextCallbackData* data) {
-                                UserData* user_data = (UserData*)data->UserData;
-                                if (!data->HasSelection())
-                                    user_data->CursorPos = data->CursorPos;
-                                if (data->SelectionStart == 0 && data->SelectionEnd == data->BufTextLen) {
-                                    data->DeleteChars(0, data->BufTextLen);
-                                    data->InsertChars(0, user_data->CurrentBufOverwrite);
-                                    data->SelectionStart = 0;
-                                    data->SelectionEnd = 2;
-                                    data->CursorPos = 0;
-                                }
-                                return 0;
-                            }
-                            char CurrentBufOverwrite[3];
-                            int CursorPos;
-                        };
-                        UserData user_data;
-                        user_data.CursorPos = -1;
-                        sprintf(user_data.CurrentBufOverwrite, format_byte, ReadFn ? ReadFn(mem_data, addr) : mem_data[addr]);
-                        ImGuiInputTextFlags flags = ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_NoHorizontalScroll | ImGuiInputTextFlags_CallbackAlways;
-                        flags |= ImGuiInputTextFlags_AlwaysOverwrite;
-                        ImGui::SetNextItemWidth(s.GlyphWidth * 2);
-                        if (ImGui::InputText("##data", DataInputBuf, IM_ARRAYSIZE(DataInputBuf), flags, UserData::Callback, &user_data))
-                            data_write = data_next = true;
-                        else if (!DataEditingTakeFocus && !ImGui::IsItemActive())
-                            DataEditingAddr = data_editing_addr_next = (size_t)-1;
-                        if (DataEditingTakeFocus)
-                            ImGui::SetKeyboardFocusHere(-1);
-                        DataEditingTakeFocus = false;
-                        if (user_data.CursorPos >= 2)
-                            data_write = data_next = true;
-                        if (data_editing_addr_next != (size_t)-1)
-                            data_write = data_next = false;
+		// Notify the main window of our ideal child content size (FIXME: we are missing an API to get the contents size from the child)
+		ImGui::SetCursorPosX(s.WindowWidth);
+		ImGui::Dummy(ImVec2(0.0f, 0.0f));
 
-                        if (data_write) {
-                            for (size_t i = 0;; ++i) {
-                                auto buf = DataInputBuf;
-                                if (buf[i * 2] == '\0' || buf[i * 2 + 1] == '\0')
-                                    break;
-                                char byte_buf[3] = {buf[i * 2], buf[i * 2 + 1]};
-                                uint8_t input_value = static_cast<uint8_t>(strtoul(byte_buf, nullptr, 16));
-                                if (WriteFn) {
-                                    WriteFn(mem_data, addr + i, input_value);
-                                }
-                                else {
-                                    mem_data[addr + i] = (uint8_t)input_value;
-                                }
-                            }
-                        }
-                        ImGui::PopID();
-                    }
-                    else {
-                        ImU8 b = ReadFn ? ReadFn(mem_data, addr) : mem_data[addr];
+		if (data_next && DataEditingAddr + 1 < mem_size) {
+			DataEditingAddr = DataPreviewAddr = DataEditingAddr + 1;
+			DataEditingTakeFocus = true;
+		}
+		else if (data_editing_addr_next != (size_t)-1) {
+			DataEditingAddr = DataPreviewAddr = data_editing_addr_next;
+			DataEditingTakeFocus = true;
+		}
 
-                        if (OptShowHexII) {
-                            if ((b >= 32 && b < 128))
-                                ImGui::Text(".%c ", b);
-                            else if (b == 0xFF && OptGreyOutZeroes)
-                                ImGui::TextDisabled("## ");
-                            else if (b == 0x00)
-                                ImGui::Text("   ");
-                            else
-                                ImGui::Text(format_byte_space, b);
-                        }
-                        else {
-                            if (b == 0 && OptGreyOutZeroes)
-                                ImGui::TextDisabled("00 ");
-                            else
-                                ImGui::Text(format_byte_space, b);
-                        }
-                        if (ImGui::IsItemHovered()) {
-                            if (!is_scrolling && !ImGui::IsMouseDragging(ImGuiMouseButton_Left, 10.0f) && ImGui::IsMouseClicked(0))
-                            {
-                                DataEditingTakeFocus = !ReadOnly;
-                                data_editing_addr_next = addr;
-                            }
-                            if (ImGui::IsItemClicked(1)) {
-                                if (ContextMenuFn)
-                                    ContextMenuFn(contextmenuuserdata, addr + base_display_addr);
-                            }
-                        }
-                    }
-                }
+		const bool lock_show_data_preview = OptShowDataPreview;
+		if (OptShowOptions) {
+			ImGui::Separator();
+			DrawOptionsLine(s, mem_data, mem_size, base_display_addr);
+		}
 
-                if (OptShowAscii) {
-                    ImGui::SameLine(s.PosAsciiStart);
-                    ImVec2 pos = ImGui::GetCursorScreenPos();
-                    addr = line_i * Cols;
-                    ImGui::PushID(line_i);
-                    if (ImGui::InvisibleButton("ascii", ImVec2(s.PosAsciiEnd - s.PosAsciiStart, s.LineHeight)) && !is_scrolling) {
-                        DataEditingAddr = DataPreviewAddr = addr + (size_t)((ImGui::GetIO().MousePos.x - pos.x) / s.GlyphWidth);
-                        DataEditingTakeFocus = true;
-                    }
-                    ImGui::PopID();
-                    for (int n = 0; n < Cols && addr < mem_size; n++, addr++) {
-                        if (addr == DataEditingAddr) {
-                            draw_list->AddRectFilled(pos, ImVec2(pos.x + s.GlyphWidth, pos.y + s.LineHeight), ImGui::GetColorU32(ImGuiCol_FrameBg));
-                            draw_list->AddRectFilled(pos, ImVec2(pos.x + s.GlyphWidth, pos.y + s.LineHeight), ImGui::GetColorU32(ImGuiCol_TextSelectedBg));
-                        }
-                        unsigned char c = ReadFn ? ReadFn(mem_data, addr) : mem_data[addr];
-                        char display_c = (c < 32 || c >= 128) ? '.' : c;
-                        draw_list->AddText(pos, (display_c == c) ? color_text : color_disabled, &display_c, &display_c + 1);
-                        pos.x += s.GlyphWidth;
-                    }
-                }
-            }
-        ImGui::PopStyleVar(2);
-        ImGui::EndChild();
+		if (lock_show_data_preview) {
+			ImGui::Separator();
+			DrawPreviewLine(s, mem_data, mem_size, base_display_addr);
+		}
 
-        ImGui::SetCursorPosX(s.WindowWidth);
-        ImGui::Dummy(ImVec2(0.0f, 0.0f));
-
-        if (data_next && DataEditingAddr + 1 < mem_size) {
-            DataEditingAddr = DataPreviewAddr = DataEditingAddr + 1;
-            DataEditingTakeFocus = true;
-        }
-        else if (data_editing_addr_next != (size_t)-1) {
-            DataEditingAddr = DataPreviewAddr = data_editing_addr_next;
-            DataEditingTakeFocus = true;
-        }
-
-        const bool lock_show_data_preview = OptShowDataPreview;
-        if (OptShowOptions) {
-            ImGui::Separator();
-            DrawOptionsLine(s, mem_data, mem_size, base_display_addr);
-        }
-
-        if (lock_show_data_preview) {
-            ImGui::Separator();
-            DrawPreviewLine(s, mem_data, mem_size, base_display_addr);
-        }
-
-        if (SpanDescription.has_value()) {
-            ImGui::Separator();
-            DrawSpanDescriptionsLine(SpanDescription.value());
-        }
-    }
+		if (SpanDescription.has_value()) {
+			ImGui::Separator();
+			DrawSpanDescriptionsLine(SpanDescription.value());
+		}
+	}
 	static void DrawSpanDescriptionsLine(const std::string& desc_string) {
 		ImGui::Text("Spans");
 		ImGui::Text("%s", desc_string.c_str());
