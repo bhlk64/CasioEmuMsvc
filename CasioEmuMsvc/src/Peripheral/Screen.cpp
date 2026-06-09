@@ -33,13 +33,25 @@
 #include "Ui.hpp"
 #include <algorithm> // for std::min, std::max
 #include <array>
+#include <climits>
+#include <cstdio>
 #include <ctime> // for std::time
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
+#include <system_error>
 #include <vector>
 
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) && !defined(__EMSCRIPTEN__)
 #include "Theme.h"
+#elif defined(__ANDROID__)
+#include <android/api-level.h>
+#include <fcntl.h>
+#include <media/NdkMediaCodec.h>
+#include <media/NdkMediaFormat.h>
+#include <media/NdkMediaMuxer.h>
+#include <unistd.h>
 #endif
 
 #ifdef _WIN32
@@ -192,12 +204,13 @@ namespace casioemu {
 	public:
 		Screen(Emulator& emu)
 			: Peripheral(emu) {
+#if !defined(TEST_BUILD) && !defined(__EMSCRIPTEN__)
 			std::thread thd([&]() {
 				while (1) {
 					tick();
 #ifdef __ANDROID__
 					SDL_Delay(10);
-#else
+#elif !defined(__EMSCRIPTEN__)
 					if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
 						SDL_Delay(10);
 					}
@@ -254,20 +267,24 @@ namespace casioemu {
 				ratio = 1 - 1e-4;
 			else
 				ratio = 1 - 5e-4;
-#ifdef __ANDROID__
-			ratio = 0.80;
+#ifdef __EMSCRIPTEN__
+			ratio = 0.0f;
+#elif defined(__ANDROID__)
+			ratio = 0.80f;
 #else
 			if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
-				ratio = 0.80;
+				ratio = 0.80f;
 			}
 #endif
 			if constexpr (hardware_id == HW_TI) {
 				ratio = 1 - 1e-4;
-#ifdef __ANDROID__
-				ratio = 0.80;
+#ifdef __EMSCRIPTEN__
+				ratio = 0.0f;
+#elif defined(__ANDROID__)
+				ratio = 0.80f;
 #else
 				if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
-					ratio = 0.80;
+					ratio = 0.80f;
 				}
 #endif
 				if (!ti_enabled) {
@@ -312,11 +329,13 @@ namespace casioemu {
 			}
 			else if (hardware_id == HW_EPS6800) {
 				ratio = 1 - 1e-4;
-#ifdef __ANDROID__
-				ratio = 0.80;
+#ifdef __EMSCRIPTEN__
+				ratio = 0.0f;
+#elif defined(__ANDROID__)
+				ratio = 0.80f;
 #else
 				if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
-					ratio = 0.80;
+					ratio = 0.80f;
 				}
 #endif
 				float ink_alpha_on = 255;
@@ -1164,56 +1183,656 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 		enabled_2 = false;
 	}
-	// Function to capture the current screen, save as PNG file and copy to clipboard
-	void CaptureScreenshot(SDL_Renderer* renderer, const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects) {
-		// Get current time to generate a unique filename
+
+#ifndef __EMSCRIPTEN__
+	bool GetCaptureRect(const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects, SDL_Rect& captureRect) {
+		if (spriteRects.empty() && pixelRects.empty()) {
+			return false;
+		}
+
+		int minX = INT_MAX, minY = INT_MAX, maxX = INT_MIN, maxY = INT_MIN;
+		auto extendBounds = [&](const SDL_Rect& rect) {
+			minX = std::min(minX, rect.x);
+			minY = std::min(minY, rect.y);
+			maxX = std::max(maxX, rect.x + rect.w);
+			maxY = std::max(maxY, rect.y + rect.h);
+		};
+
+		for (const auto& rect : spriteRects) {
+			extendBounds(rect);
+		}
+		for (const auto& rect : pixelRects) {
+			extendBounds(rect);
+		}
+
+		if (maxX <= minX || maxY <= minY) {
+			return false;
+		}
+
+		captureRect = { minX, minY, maxX - minX, maxY - minY };
+		return true;
+	}
+
+	std::string MakeTimestampedName(const char* prefix, const char* suffix) {
 		std::time_t t = std::time(nullptr);
 		std::tm tm = *std::localtime(&t);
 		std::ostringstream filename;
-
-		filename << "screenshot-"
+		filename << prefix
 			<< std::put_time(&tm, "%Y-%m-%d-%H-%M-%S-")
 			<< util::Random::uniform_uint32(0, 999)
-			<< ".png";
+			<< suffix;
+		return filename.str();
+	}
 
-		// Calculate the bounding box of the rendering area from both sprite and pixel rectangles
-		int minX = INT_MAX, minY = INT_MAX, maxX = INT_MIN, maxY = INT_MIN;
+	std::filesystem::path GetRecordingOutputPath(const std::string& name) {
+#ifdef __ANDROID__
+		const char* externalPath = SDL_AndroidGetExternalStoragePath();
+		if (externalPath && *externalPath) {
+			return std::filesystem::path(externalPath) / "recordings" / name;
+		}
+#endif
+		return std::filesystem::path(name);
+	}
 
-		// Traverse all sprite rectangles
-		for (const auto& rect : spriteRects) {
-			minX = std::min(minX, rect.x);
-			minY = std::min(minY, rect.y);
-			maxX = std::max(maxX, rect.x + rect.w);
-			maxY = std::max(maxY, rect.y + rect.h);
+	bool EnsureParentDirectory(const std::filesystem::path& path) {
+		const auto parent = path.parent_path();
+		if (parent.empty()) {
+			return true;
 		}
 
-		// Traverse all pixel rectangles (representing the screen pixels)
-		for (const auto& rect : pixelRects) {
-			minX = std::min(minX, rect.x);
-			minY = std::min(minY, rect.y);
-			maxX = std::max(maxX, rect.x + rect.w);
-			maxY = std::max(maxY, rect.y + rect.h);
+		std::error_code ec;
+		std::filesystem::create_directories(parent, ec);
+		if (ec) {
+			SDL_Log("Could not create recording directory %s: %s",
+				parent.string().c_str(), ec.message().c_str());
+			return false;
+		}
+		return true;
+	}
+
+#ifdef __ANDROID__
+	inline uint8_t ClampByte(int value) {
+		return static_cast<uint8_t>(std::clamp(value, 0, 255));
+	}
+
+	class AndroidVideoEncoder {
+	public:
+		~AndroidVideoEncoder() {
+			Stop();
 		}
 
-		// Calculate the width and height of the capture area
-		int captureWidth = maxX - minX;
-		int captureHeight = maxY - minY;
+		bool Start(const std::filesystem::path& path, int videoWidth, int videoHeight, int videoFps) {
+			Stop();
+			if (android_get_device_api_level() < 21) {
+				SDL_Log("Android recording requires API level 21 or newer.");
+				return false;
+			}
+			if (!EnsureParentDirectory(path)) {
+				return false;
+			}
+
+			width = videoWidth;
+			height = videoHeight;
+			fps = std::max(1, videoFps);
+			frameIndex = 0;
+
+			const std::string pathString = path.string();
+			fd = open(pathString.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0666);
+			if (fd < 0) {
+				SDL_Log("Could not open recording output %s", pathString.c_str());
+				return false;
+			}
+
+			muxer = AMediaMuxer_new(fd, AMEDIAMUXER_OUTPUT_FORMAT_MPEG_4);
+			codec = AMediaCodec_createEncoderByType("video/avc");
+			if (!muxer || !codec) {
+				SDL_Log("Could not create Android media encoder.");
+				Stop();
+				return false;
+			}
+
+			AMediaFormat* format = AMediaFormat_new();
+			AMediaFormat_setString(format, AMEDIAFORMAT_KEY_MIME, "video/avc");
+			AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_WIDTH, width);
+			AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_HEIGHT, height);
+			AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_FORMAT, kColorFormatYuv420SemiPlanar);
+			AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_BIT_RATE, std::max(256000, width * height * fps / 2));
+			AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_FRAME_RATE, fps);
+			AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_I_FRAME_INTERVAL, 2);
+
+			media_status_t status = AMediaCodec_configure(codec, format, nullptr, nullptr, AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
+			AMediaFormat_delete(format);
+			if (status != AMEDIA_OK) {
+				SDL_Log("Could not configure Android media encoder: %d", status);
+				Stop();
+				return false;
+			}
+
+			status = AMediaCodec_start(codec);
+			if (status != AMEDIA_OK) {
+				SDL_Log("Could not start Android media encoder: %d", status);
+				Stop();
+				return false;
+			}
+
+			started = true;
+			return true;
+		}
+
+		bool WriteRgbaFrame(const uint8_t* rgba, int pitch) {
+			if (!started) {
+				return false;
+			}
+
+			if (!Drain(false)) {
+				return false;
+			}
+
+			ssize_t inputIndex = AMediaCodec_dequeueInputBuffer(codec, 10000);
+			if (inputIndex < 0) {
+				SDL_Log("Android media encoder input buffer was not available.");
+				return false;
+			}
+
+			size_t inputSize = 0;
+			uint8_t* input = AMediaCodec_getInputBuffer(codec, inputIndex, &inputSize);
+			const size_t needed = static_cast<size_t>(width) * height * 3 / 2;
+			if (!input || inputSize < needed) {
+				SDL_Log("Android media encoder input buffer is too small.");
+				return false;
+			}
+
+			ConvertRgbaToNv12(rgba, pitch, input);
+			const int64_t ptsUs = static_cast<int64_t>(frameIndex) * 1000000 / fps;
+			media_status_t status = AMediaCodec_queueInputBuffer(codec, inputIndex, 0, needed, ptsUs, 0);
+			if (status != AMEDIA_OK) {
+				SDL_Log("Could not queue Android media encoder input: %d", status);
+				return false;
+			}
+
+			++frameIndex;
+			return Drain(false);
+		}
+
+		void Stop() {
+			if (started && codec) {
+				ssize_t inputIndex = AMediaCodec_dequeueInputBuffer(codec, 10000);
+				if (inputIndex >= 0) {
+					const int64_t ptsUs = static_cast<int64_t>(frameIndex) * 1000000 / std::max(1, fps);
+					AMediaCodec_queueInputBuffer(codec, inputIndex, 0, 0, ptsUs, AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM);
+					Drain(true);
+				}
+				AMediaCodec_stop(codec);
+			}
+			if (codec) {
+				AMediaCodec_delete(codec);
+				codec = nullptr;
+			}
+			if (muxer) {
+				if (muxerStarted) {
+					AMediaMuxer_stop(muxer);
+				}
+				AMediaMuxer_delete(muxer);
+				muxer = nullptr;
+			}
+			if (fd >= 0) {
+				close(fd);
+				fd = -1;
+			}
+
+			started = false;
+			muxerStarted = false;
+			trackIndex = -1;
+			frameIndex = 0;
+		}
+
+		bool IsOpen() const {
+			return started;
+		}
+
+	private:
+		void ConvertRgbaToNv12(const uint8_t* rgba, int pitch, uint8_t* yuv) const {
+			uint8_t* yPlane = yuv;
+			uint8_t* uvPlane = yuv + static_cast<size_t>(width) * height;
+
+			for (int y = 0; y < height; ++y) {
+				const uint8_t* row = rgba + static_cast<size_t>(y) * pitch;
+				for (int x = 0; x < width; ++x) {
+					const uint8_t* px = row + x * 4;
+					const int r = px[0];
+					const int g = px[1];
+					const int b = px[2];
+					yPlane[y * width + x] = ClampByte(((66 * r + 129 * g + 25 * b + 128) >> 8) + 16);
+				}
+			}
+
+			for (int y = 0; y < height; y += 2) {
+				for (int x = 0; x < width; x += 2) {
+					int uSum = 0;
+					int vSum = 0;
+					for (int yy = 0; yy < 2; ++yy) {
+						const uint8_t* row = rgba + static_cast<size_t>(y + yy) * pitch;
+						for (int xx = 0; xx < 2; ++xx) {
+							const uint8_t* px = row + (x + xx) * 4;
+							const int r = px[0];
+							const int g = px[1];
+							const int b = px[2];
+							uSum += ((-38 * r - 74 * g + 112 * b + 128) >> 8) + 128;
+							vSum += ((112 * r - 94 * g - 18 * b + 128) >> 8) + 128;
+						}
+					}
+
+					const size_t uvIndex = static_cast<size_t>(y / 2) * width + x;
+					uvPlane[uvIndex] = ClampByte(uSum / 4);
+					uvPlane[uvIndex + 1] = ClampByte(vSum / 4);
+				}
+			}
+		}
+
+		bool Drain(bool endOfStream) {
+			while (true) {
+				AMediaCodecBufferInfo info{};
+				ssize_t outputIndex = AMediaCodec_dequeueOutputBuffer(codec, &info, endOfStream ? 10000 : 0);
+				if (outputIndex >= 0) {
+					if ((info.flags & AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG) != 0) {
+						info.size = 0;
+					}
+
+					if (info.size > 0) {
+						if (!muxerStarted) {
+							SDL_Log("Android media encoder produced data before muxer was ready.");
+							return false;
+						}
+
+						size_t outputSize = 0;
+						uint8_t* output = AMediaCodec_getOutputBuffer(codec, outputIndex, &outputSize);
+						if (!output || static_cast<size_t>(info.offset + info.size) > outputSize) {
+							SDL_Log("Android media encoder output buffer is invalid.");
+							AMediaCodec_releaseOutputBuffer(codec, outputIndex, false);
+							return false;
+						}
+						AMediaCodecBufferInfo sampleInfo = info;
+						sampleInfo.offset = 0;
+						media_status_t status = AMediaMuxer_writeSampleData(muxer, trackIndex, output + info.offset, &sampleInfo);
+						if (status != AMEDIA_OK) {
+							SDL_Log("Could not write Android media sample: %d", status);
+							AMediaCodec_releaseOutputBuffer(codec, outputIndex, false);
+							return false;
+						}
+					}
+
+					AMediaCodec_releaseOutputBuffer(codec, outputIndex, false);
+					if ((info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) != 0) {
+						return true;
+					}
+				}
+				else if (outputIndex == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
+					AMediaFormat* outputFormat = AMediaCodec_getOutputFormat(codec);
+					trackIndex = AMediaMuxer_addTrack(muxer, outputFormat);
+					AMediaFormat_delete(outputFormat);
+					if (trackIndex < 0 || AMediaMuxer_start(muxer) != AMEDIA_OK) {
+						SDL_Log("Could not start Android media muxer.");
+						return false;
+					}
+					muxerStarted = true;
+				}
+				else if (outputIndex == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
+					if (endOfStream) {
+						continue;
+					}
+					return true;
+				}
+				else {
+					return true;
+				}
+			}
+		}
+
+		static constexpr int32_t kColorFormatYuv420SemiPlanar = 21;
+
+		AMediaCodec* codec = nullptr;
+		AMediaMuxer* muxer = nullptr;
+		int fd = -1;
+		int trackIndex = -1;
+		bool started = false;
+		bool muxerStarted = false;
+		int width = 0;
+		int height = 0;
+		int fps = 30;
+		int64_t frameIndex = 0;
+	};
+#endif
+
+#ifndef __ANDROID__
+	class RawVideoPipe {
+	public:
+		~RawVideoPipe() {
+			Stop();
+		}
+
+		bool Start(const std::string& command) {
+			Stop();
+#ifdef _WIN32
+			SECURITY_ATTRIBUTES securityAttrs{};
+			securityAttrs.nLength = sizeof(securityAttrs);
+			securityAttrs.bInheritHandle = TRUE;
+
+			HANDLE stdinRead = nullptr;
+			if (!CreatePipe(&stdinRead, &stdinWrite, &securityAttrs, 0)) {
+				return false;
+			}
+			if (!SetHandleInformation(stdinWrite, HANDLE_FLAG_INHERIT, 0)) {
+				CloseHandle(stdinRead);
+				CloseHandle(stdinWrite);
+				stdinWrite = nullptr;
+				return false;
+			}
+
+			HANDLE nullOutput = CreateFileA("NUL", GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
+				&securityAttrs, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+			STARTUPINFOA startupInfo{};
+			startupInfo.cb = sizeof(startupInfo);
+			startupInfo.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+			startupInfo.wShowWindow = SW_HIDE;
+			startupInfo.hStdInput = stdinRead;
+			startupInfo.hStdOutput = nullOutput != INVALID_HANDLE_VALUE ? nullOutput : GetStdHandle(STD_OUTPUT_HANDLE);
+			startupInfo.hStdError = nullOutput != INVALID_HANDLE_VALUE ? nullOutput : GetStdHandle(STD_ERROR_HANDLE);
+
+			PROCESS_INFORMATION processInfo{};
+			std::string mutableCommand = command;
+			BOOL created = CreateProcessA(nullptr, mutableCommand.data(), nullptr, nullptr, TRUE,
+				CREATE_NO_WINDOW, nullptr, nullptr, &startupInfo, &processInfo);
+
+			CloseHandle(stdinRead);
+			if (nullOutput != INVALID_HANDLE_VALUE) {
+				CloseHandle(nullOutput);
+			}
+
+			if (!created) {
+				CloseHandle(stdinWrite);
+				stdinWrite = nullptr;
+				return false;
+			}
+
+			processHandle = processInfo.hProcess;
+			CloseHandle(processInfo.hThread);
+			return true;
+#else
+			pipe = ::popen(command.c_str(), "w");
+			return pipe != nullptr;
+#endif
+		}
+
+		bool Write(const uint8_t* data, size_t size) {
+#ifdef _WIN32
+			if (!stdinWrite) {
+				return false;
+			}
+
+			size_t offset = 0;
+			while (offset < size) {
+				DWORD chunk = static_cast<DWORD>(std::min<size_t>(size - offset, 1 << 20));
+				DWORD written = 0;
+				if (!WriteFile(stdinWrite, data + offset, chunk, &written, nullptr) || written == 0) {
+					return false;
+				}
+				offset += written;
+			}
+			return true;
+#else
+			if (!pipe) {
+				return false;
+			}
+			return std::fwrite(data, 1, size, pipe) == size;
+#endif
+		}
+
+		void Stop() {
+#ifdef _WIN32
+			if (stdinWrite) {
+				CloseHandle(stdinWrite);
+				stdinWrite = nullptr;
+			}
+			if (processHandle) {
+				DWORD waitResult = WaitForSingleObject(processHandle, 5000);
+				if (waitResult == WAIT_TIMEOUT) {
+					SDL_Log("Timed out while finalizing recording; terminating ffmpeg.");
+					TerminateProcess(processHandle, 1);
+				}
+				CloseHandle(processHandle);
+				processHandle = nullptr;
+			}
+#else
+			if (pipe) {
+				::pclose(pipe);
+				pipe = nullptr;
+			}
+#endif
+		}
+
+		bool IsOpen() const {
+#ifdef _WIN32
+			return stdinWrite != nullptr;
+#else
+			return pipe != nullptr;
+#endif
+		}
+
+	private:
+#ifdef _WIN32
+		HANDLE stdinWrite = nullptr;
+		HANDLE processHandle = nullptr;
+#else
+		FILE* pipe = nullptr;
+#endif
+	};
+#endif
+
+	class ScreenRecorder {
+	public:
+		~ScreenRecorder() {
+			Stop();
+		}
+
+		bool Start(const SDL_Rect& rect, int requestedFps = 30) {
+			Stop();
+			if (rect.w <= 0 || rect.h <= 0) {
+				SDL_Log("Recording failed: invalid capture region.");
+				return false;
+			}
+
+			captureRect = rect;
+			fps = std::max(1, requestedFps);
+			outputWidth = (captureRect.w + 1) & ~1;
+			outputHeight = (captureRect.h + 1) & ~1;
+			frameCount = 0;
+			nextCaptureTick = 0;
+
+			const std::string stem = MakeTimestampedName("recording-", "");
+			outputPath = GetRecordingOutputPath(stem + ".mp4");
+#ifdef __ANDROID__
+			if (encoder.Start(outputPath, outputWidth, outputHeight, fps)) {
+				frameSequence = false;
+				recording = true;
+				SDL_Log("Recording started: %s", outputPath.string().c_str());
+				return true;
+			}
+#else
+			const std::string command = BuildFfmpegCommand(outputPath);
+			if (encoder.Start(command)) {
+				frameSequence = false;
+				recording = true;
+				SDL_Log("Recording started: %s", outputPath.string().c_str());
+				return true;
+			}
+#endif
+
+			frameSequence = true;
+			frameDirectory = GetRecordingOutputPath(stem + "-frames");
+			std::error_code ec;
+			std::filesystem::create_directories(frameDirectory, ec);
+			if (ec) {
+				SDL_Log("Recording failed: cannot create frame directory %s (%s)",
+					frameDirectory.string().c_str(), ec.message().c_str());
+				return false;
+			}
+
+			recording = true;
+#ifdef __ANDROID__
+			SDL_Log("Android video encoder was not available; recording PNG frames to %s", frameDirectory.string().c_str());
+#else
+			SDL_Log("ffmpeg was not available; recording PNG frames to %s", frameDirectory.string().c_str());
+#endif
+			return true;
+		}
+
+		void Stop() {
+			if (!recording && !encoder.IsOpen()) {
+				return;
+			}
+			encoder.Stop();
+			if (recording) {
+				if (frameSequence) {
+					SDL_Log("Recording stopped: %u frames saved to %s",
+						frameCount, frameDirectory.string().c_str());
+				}
+				else {
+					SDL_Log("Recording stopped: %u frames saved to %s",
+						frameCount, outputPath.string().c_str());
+				}
+			}
+			recording = false;
+		}
+
+		bool CaptureFrame(SDL_Renderer* renderer) {
+			if (!recording) {
+				return false;
+			}
+
+			Uint64 now = SDL_GetTicks64();
+			if (nextCaptureTick != 0 && now < nextCaptureTick) {
+				return true;
+			}
+			nextCaptureTick = now + static_cast<Uint64>(1000 / fps);
+
+			const int frameWidth = frameSequence ? captureRect.w : outputWidth;
+			const int frameHeight = frameSequence ? captureRect.h : outputHeight;
+			const int pitch = frameWidth * 4;
+			std::vector<uint8_t> pixels(static_cast<size_t>(pitch) * frameHeight, 255);
+
+			if (SDL_RenderReadPixels(renderer, &captureRect, SDL_PIXELFORMAT_RGBA32, pixels.data(), pitch) != 0) {
+				SDL_Log("Error capturing recording frame: %s", SDL_GetError());
+				Stop();
+				return false;
+			}
+
+			bool success = frameSequence
+				? SaveFrameAsPng(pixels, pitch)
+#ifdef __ANDROID__
+				: encoder.WriteRgbaFrame(pixels.data(), pitch);
+#else
+				: encoder.Write(pixels.data(), pixels.size());
+#endif
+			if (!success) {
+				SDL_Log("Recording stopped because frame writing failed.");
+				Stop();
+				return false;
+			}
+
+			++frameCount;
+			return true;
+		}
+
+		bool IsRecording() const {
+			return recording;
+		}
+
+		unsigned int FrameCount() const {
+			return frameCount;
+		}
+
+	private:
+		std::string BuildFfmpegCommand(const std::filesystem::path& path) const {
+			std::ostringstream command;
+			command << "ffmpeg -y -hide_banner -loglevel error"
+				<< " -f rawvideo -vcodec rawvideo"
+				<< " -pixel_format rgba"
+				<< " -video_size " << outputWidth << "x" << outputHeight
+				<< " -framerate " << fps
+				<< " -i - -an -c:v mpeg4 -q:v 3 -pix_fmt yuv420p "
+				<< "\"" << path.string() << "\"";
+			return command.str();
+		}
+
+		bool SaveFrameAsPng(const std::vector<uint8_t>& pixels, int pitch) const {
+			std::ostringstream filename;
+			filename << "frame-" << std::setw(6) << std::setfill('0') << frameCount << ".png";
+			std::filesystem::path framePath = frameDirectory / filename.str();
+
+			SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormatFrom(
+				const_cast<uint8_t*>(pixels.data()),
+				captureRect.w,
+				captureRect.h,
+				32,
+				pitch,
+				SDL_PIXELFORMAT_RGBA32);
+			if (!surface) {
+				SDL_Log("Error creating recording frame surface: %s", SDL_GetError());
+				return false;
+			}
+
+			const std::string pathString = framePath.string();
+			int result = IMG_SavePNG(surface, pathString.c_str());
+			SDL_FreeSurface(surface);
+			if (result != 0) {
+				SDL_Log("Error saving recording frame: %s", IMG_GetError());
+				return false;
+			}
+			return true;
+		}
+
+#ifdef __ANDROID__
+		AndroidVideoEncoder encoder;
+#else
+		RawVideoPipe encoder;
+#endif
+		SDL_Rect captureRect{};
+		int fps = 30;
+		int outputWidth = 0;
+		int outputHeight = 0;
+		Uint64 nextCaptureTick = 0;
+		unsigned int frameCount = 0;
+		bool recording = false;
+		bool frameSequence = false;
+		std::filesystem::path outputPath;
+		std::filesystem::path frameDirectory;
+	};
+
+	// Function to capture the current screen, save as PNG file and copy to clipboard
+	void CaptureScreenshot(SDL_Renderer* renderer, const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects) {
+		std::string filename = MakeTimestampedName("screenshot-", ".png");
+		SDL_Rect captureRect{};
+		if (!GetCaptureRect(spriteRects, pixelRects, captureRect)) {
+			SDL_Log("Screenshot failed: invalid capture region.");
+			return;
+		}
+
+		int captureWidth = captureRect.w;
+		int captureHeight = captureRect.h;
 
 		// Create a surface to capture the screen content
 		SDL_Surface* screenSurface = SDL_CreateRGBSurface(0, captureWidth, captureHeight, 32,
 			0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 
 		if (screenSurface != nullptr) {
-			// Define the area to capture
-			SDL_Rect captureRect = { minX, minY, captureWidth, captureHeight };
-
 			// Copy the renderer to the surface
 			if (SDL_RenderReadPixels(renderer, &captureRect, SDL_PIXELFORMAT_RGBA32,
 				screenSurface->pixels, screenSurface->pitch) == 0) {
 
 #ifdef __ANDROID__
 				// Save to MediaStore
-				auto str = filename.str();
+				auto str = filename;
 				bool success = saveImageToMediaStore(screenSurface->pixels, screenSurface->w, screenSurface->h, screenSurface->pitch, str.c_str());
 				if (!success) {
 					SDL_Log("Error saving screenshot using MediaStore API");
@@ -1257,7 +1876,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 				}
 #else
 				// Save to file on Windows/Desktop
-				auto str = filename.str();
+				auto str = filename;
 				if (IMG_SavePNG(screenSurface, str.c_str()) != 0) {
 					SDL_Log("Error saving screenshot: %s", IMG_GetError());
 				}
@@ -1341,36 +1960,18 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	}
 
 	void UpdatePreview(SDL_Renderer* renderer, ScreenMirror* sm, const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects) {
-
-		// Calculate the bounding box of the rendering area from both sprite and pixel rectangles
-		int minX = INT_MAX, minY = INT_MAX, maxX = INT_MIN, maxY = INT_MIN;
-
-		// Traverse all sprite rectangles
-		for (const auto& rect : spriteRects) {
-			minX = std::min(minX, rect.x);
-			minY = std::min(minY, rect.y);
-			maxX = std::max(maxX, rect.x + rect.w);
-			maxY = std::max(maxY, rect.y + rect.h);
+		SDL_Rect captureRect{};
+		if (!GetCaptureRect(spriteRects, pixelRects, captureRect)) {
+			SDL_Log("Preview update failed: invalid capture region.");
+			return;
 		}
 
-		// Traverse all pixel rectangles (representing the screen pixels)
-		for (const auto& rect : pixelRects) {
-			minX = std::min(minX, rect.x);
-			minY = std::min(minY, rect.y);
-			maxX = std::max(maxX, rect.x + rect.w);
-			maxY = std::max(maxY, rect.y + rect.h);
-		}
-
-		// Calculate the width and height of the capture area
-		int captureWidth = maxX - minX;
-		int captureHeight = maxY - minY;
+		int captureWidth = captureRect.w;
+		int captureHeight = captureRect.h;
 
 		// Create a surface to capture the screen content
 		SDL_Surface* screenSurface = SDL_CreateRGBSurface(0, captureWidth, captureHeight, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 		if (screenSurface != nullptr) {
-			// Define the area to capture
-			SDL_Rect captureRect = { minX, minY, captureWidth, captureHeight };
-
 			// Copy the renderer to the surface
 			if (SDL_RenderReadPixels(renderer, &captureRect, SDL_PIXELFORMAT_RGBA32, screenSurface->pixels, screenSurface->pitch) == 0) {
 				sm->update(screenSurface->pixels, screenSurface->pitch);
@@ -1386,34 +1987,19 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	}
 
 	std::pair<int, int> GetSize(const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects) {
-
-		// Calculate the bounding box of the rendering area from both sprite and pixel rectangles
-		int minX = INT_MAX, minY = INT_MAX, maxX = INT_MIN, maxY = INT_MIN;
-
-		// Traverse all sprite rectangles
-		for (const auto& rect : spriteRects) {
-			minX = std::min(minX, rect.x);
-			minY = std::min(minY, rect.y);
-			maxX = std::max(maxX, rect.x + rect.w);
-			maxY = std::max(maxY, rect.y + rect.h);
+		SDL_Rect captureRect{};
+		if (!GetCaptureRect(spriteRects, pixelRects, captureRect)) {
+			return { 0, 0 };
 		}
-
-		// Traverse all pixel rectangles (representing the screen pixels)
-		for (const auto& rect : pixelRects) {
-			minX = std::min(minX, rect.x);
-			minY = std::min(minY, rect.y);
-			maxX = std::max(maxX, rect.x + rect.w);
-			maxY = std::max(maxY, rect.y + rect.h);
-		}
-
-		// Calculate the width and height of the capture area
-		int captureWidth = maxX - minX;
-		int captureHeight = maxY - minY;
-		return { captureWidth, captureHeight };
+		return { captureRect.w, captureRect.h };
 	}
+#endif
 	// Function to collect all sprite and pixel rectangles
 	template <HardwareId hardware_id>
 	void Screen<hardware_id>::Frame() {
+#ifdef __EMSCRIPTEN__
+		tick();
+#endif
 		int x = 0;
 		int screenWidth = 0, screenHeight = 0;
 
@@ -1468,11 +2054,39 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			}
 		}
 
+#ifndef __EMSCRIPTEN__
 		// If screenshot is requested, capture only the rendered screen region
 		if (emulator.screenshot_requested.load()) {
 			// Capture the region using both sprite and pixel rectangles
 			CaptureScreenshot(renderer, spriteRects, pixelRects);
 			emulator.screenshot_requested.store(false);
+		}
+		static ScreenRecorder recorder;
+		if (emulator.recording_requested.exchange(false) && !recorder.IsRecording()) {
+			SDL_Rect captureRect{};
+			if (GetCaptureRect(spriteRects, pixelRects, captureRect) && recorder.Start(captureRect, 30)) {
+				emulator.recording_frame_count.store(0);
+				emulator.recording_active.store(true);
+			}
+			else {
+				emulator.recording_active.store(false);
+			}
+		}
+		if (emulator.recording_stop_requested.exchange(false)) {
+			recorder.Stop();
+			emulator.recording_active.store(false);
+		}
+		if (recorder.IsRecording()) {
+			if (recorder.CaptureFrame(renderer)) {
+				emulator.recording_active.store(true);
+				emulator.recording_frame_count.store(recorder.FrameCount());
+			}
+			else {
+				emulator.recording_active.store(false);
+			}
+		}
+		else {
+			emulator.recording_active.store(false);
 		}
 		static ScreenMirror* mirror = nullptr;
 		if (emulator.mirroring_requested.load()) {
@@ -1485,6 +2099,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		if (mirror) {
 			UpdatePreview(renderer, mirror, spriteRects, pixelRects);
 		}
+#endif
 	}
 
 	template <HardwareId hardware_id>

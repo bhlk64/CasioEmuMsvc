@@ -1,4 +1,4 @@
-﻿#include "MMU.hpp"
+#include "MMU.hpp"
 
 #include "CPU.hpp"
 #include "Chipset.hpp"
@@ -108,6 +108,9 @@ namespace casioemu {
 		}
 	}
 	uint8_t MMU::ReadData(size_t offset, bool softwareRead) {
+		if (emulator.chipset.cpu.reg_dsr) {
+			offset = (((size_t)emulator.chipset.cpu.reg_dsr) << 16) | (offset & 0xFFFF);
+		}
 		// if (offset >= (1 << 24))
 		//	PANIC("offset doesn't fit 24 bits\n");
 #ifdef DBG
@@ -171,6 +174,9 @@ namespace casioemu {
 	}
 
 	void MMU::WriteData(size_t offset, uint8_t data, bool softwareWrite) {
+		if (emulator.chipset.cpu.reg_dsr) {
+			offset = (((size_t)emulator.chipset.cpu.reg_dsr) << 16) | (offset & 0xFFFF);
+		}
 		// if (offset >= (1 << 24))
 		//	PANIC("offset doesn't fit 24 bits\n");
 

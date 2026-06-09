@@ -94,7 +94,11 @@ namespace casioemu {
 			desired_spec.freq = 44100;
 			desired_spec.format = AUDIO_S16SYS;
 			desired_spec.channels = 1;
+#ifdef __EMSCRIPTEN__
+			desired_spec.samples = 512;
+#else
 			desired_spec.samples = 64;
+#endif
 			desired_spec.userdata = this;
 			desired_spec.callback = audio_callback;
 

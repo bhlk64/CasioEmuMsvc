@@ -1,4 +1,4 @@
-﻿#include "CPU.hpp"
+#include "CPU.hpp"
 
 #include "Chipset.hpp"
 #include "Emulator.hpp"
@@ -411,6 +411,7 @@ namespace casioemu {
 		if (iea.should_break) {
 			emulator.SetPaused(true);
 		}
+		reg_dsr = 0;
 	}
 
 	void CPU::SetMemoryModel(MemoryModel _memory_model) {

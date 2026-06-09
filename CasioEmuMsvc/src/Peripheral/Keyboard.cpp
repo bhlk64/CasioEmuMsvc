@@ -600,6 +600,9 @@ namespace casioemu {
 			auto iterator = keyboard_map.find(keycode);
 			// printf("[Keyboard][Info] SDL_Keycode: %x(%s)\n", keycode, SDL_GetKeyName(keycode));
 			if (event.key.keysym.sym == SDLK_F12 && event.key.state == SDL_PRESSED) {
+				if (event.key.keysym.mod & KMOD_CTRL) {
+					return;
+				}
 				// Trigger screenshot when F12 is pressed
 				emulator.screenshot_requested.store(true);
 				printf("[Keyboard][Info] Screenshot requested via F12\n");

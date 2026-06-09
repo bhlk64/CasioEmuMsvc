@@ -2,6 +2,7 @@
 #include "Config.hpp"
 #include <SDL.h>
 #include <SDL_image.h>
+#include <atomic>
 #include <map>
 #include <string>
 
@@ -51,6 +52,10 @@ namespace casioemu {
 
 		std::atomic<bool> screenshot_requested{};
 		std::atomic<bool> mirroring_requested{};
+		std::atomic<bool> recording_requested{};
+		std::atomic<bool> recording_stop_requested{};
+		std::atomic<bool> recording_active{};
+		std::atomic<unsigned int> recording_frame_count{};
 
 		std::thread* tick_thread;
 

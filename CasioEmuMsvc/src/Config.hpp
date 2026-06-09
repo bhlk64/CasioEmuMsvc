@@ -87,7 +87,7 @@ public:                       \
 
 #define DISABLE_SENTRY
 
-#if !defined(__ANDROID__) && !defined(DISABLE_SENTRY)
+#if !defined(__ANDROID__) && !defined(__EMSCRIPTEN__) && !defined(DISABLE_SENTRY)
 #define ENABLE_SENTRY
 #define SENTRY_BUILD_STATIC 1
 #endif

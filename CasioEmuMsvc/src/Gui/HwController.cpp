@@ -20,6 +20,20 @@ void HwController::RenderCore() {
 	if (ImGui::Button("PopUpScreenBtn"_lc)) {
 		m_emu->mirroring_requested.store(true);
 	}
+	ImGui::SameLine();
+	const bool recording = m_emu->recording_active.load();
+	if (UIHelpers::ButtonWithShortcut(recording ? "RecordStopBtn"_lc : "RecordStartBtn"_lc, "Ctrl+F12")) {
+		if (recording) {
+			m_emu->recording_stop_requested.store(true);
+		}
+		else {
+			m_emu->recording_requested.store(true);
+		}
+	}
+	if (recording) {
+		ImGui::SameLine();
+		ImGui::Text("RecordStatus"_lc, m_emu->recording_frame_count.load());
+	}
 	
 	ImGui::SliderInt("HwController.Value1"_lc, &screen_flashing_threshold, 0, 0x3F);
 	ImGui::SliderFloat("HwController.Value2"_lc, &screen_flashing_brightness_coeff, 1.0f, 8.0f);

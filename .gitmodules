@@ -1,6 +1,3 @@
-[submodule "CasioEmuMsvc/asmjit"]
-	path = CasioEmuMsvc/asmjit
-	url = https://github.com/asmjit/asmjit
 [submodule "SDL"]
 	path = SDL
 	url = https://github.com/libsdl-org/SDL.git

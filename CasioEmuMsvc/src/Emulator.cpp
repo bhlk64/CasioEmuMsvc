@@ -105,6 +105,9 @@ namespace casioemu {
 
 		SetupInternals();
 		cycles.Reset();
+		#ifdef __EMSCRIPTEN__
+		tick_thread = nullptr;
+		#else
 		if (ModelDefinition.real_hardware) {
 			tick_thread = new std::thread([this] {
 				auto iteration_end = std::chrono::steady_clock::now();
@@ -145,6 +148,7 @@ namespace casioemu {
 				},
 				this);
 		}
+		#endif
 
 		RunStartupScript();
 
@@ -238,6 +242,9 @@ namespace casioemu {
 		SetupInternals();
 		cycles.Reset();
 		if (!headless) {
+		#ifdef __EMSCRIPTEN__
+			tick_thread = nullptr;
+		#else
 			if (ModelDefinition.real_hardware) {
 				tick_thread = new std::thread([this] {
 					auto iteration_end = std::chrono::steady_clock::now();
@@ -278,6 +285,7 @@ namespace casioemu {
 					},
 					this);
 			}
+		#endif
 
 			RunStartupScript();
 		}
@@ -287,7 +295,7 @@ namespace casioemu {
 
 	Emulator::~Emulator() {
 		if (!headless) {
-			if (tick_thread->joinable())
+			if (tick_thread && tick_thread->joinable())
 				tick_thread->join();
 			delete tick_thread;
 
@@ -314,7 +322,17 @@ namespace casioemu {
 		// std::lock_guard<decltype(access_mx)> access_lock(access_mx);
 		if (event.type == SDL_KEYDOWN) {
 			if (event.key.keysym.sym == SDL_KeyCode::SDLK_F12) {
-				screenshot_requested.store(true);
+				if (event.key.keysym.mod & KMOD_CTRL) {
+					if (recording_active.load()) {
+						recording_stop_requested.store(true);
+					}
+					else {
+						recording_requested.store(true);
+					}
+				}
+				else {
+					screenshot_requested.store(true);
+				}
 			}
 		}
 		switch (event.type) {
