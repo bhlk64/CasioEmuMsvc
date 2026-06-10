@@ -455,8 +455,8 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
              MakeThemeWindow(),
              CreateBitmapViewer(), })
         windows.push_back(item);
-    //for (auto item : GetEditors())
-    //    windows.push_back(item);
+    for (auto item : GetEditors())
+        windows.push_back(item);
     if (!std::filesystem::exists(ui_state_fn)) {
         for (auto* w : windows) {
             if (w) {
