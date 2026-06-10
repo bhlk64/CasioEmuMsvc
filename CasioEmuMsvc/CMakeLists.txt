@@ -138,28 +138,36 @@ endif()
 
 if(BUILD_EXECUTABLE)
     message(STATUS "Building executable")
+
     if(APPLE)
         set(TARGET_NAME "CasioEmuMsvc")
+
         set(APP_ICON ${CMAKE_SOURCE_DIR}/MacResources/AppIcon.icns)
         set_source_files_properties(${APP_ICON} PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources"
         )
+
         add_executable(${TARGET_NAME}
             MACOSX_BUNDLE
             ${MAIN_SOURCES}
             ${APP_ICON}
         )
-    elseif(CASIOEMU_WEB)
-        set(TARGET_NAME "CasioEmuWeb")
+
     else()
-        set(TARGET_NAME "CasioEmuMsvc")
-    endif()
-    
-    elseif(WIN32)
-        set(WIN_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Resource.rc)
-        add_executable(${TARGET_NAME} ${MAIN_SOURCES} ${WIN_RESOURCES})
-    else()
-        add_executable(${TARGET_NAME} ${MAIN_SOURCES})
+        if(CASIOEMU_WEB)
+            set(TARGET_NAME "CasioEmuWeb")
+        else()
+            set(TARGET_NAME "CasioEmuMsvc")
+        endif()
+
+        if(WIN32)
+            set(WIN_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Resource.rc)
+        endif()
+
+        add_executable(${TARGET_NAME}
+            ${MAIN_SOURCES}
+            ${WIN_RESOURCES}
+        )
     endif()
 
 else()
