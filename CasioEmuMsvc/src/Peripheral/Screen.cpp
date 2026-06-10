@@ -208,7 +208,7 @@ namespace casioemu {
 			std::thread thd([&]() {
 				while (1) {
 					tick();
-#ifdef __ANDROID__
+#elif defined(__ANDROID__)
 					SDL_Delay(10);
 #elif !defined(__EMSCRIPTEN__)
 					if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
