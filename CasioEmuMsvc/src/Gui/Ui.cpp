@@ -65,17 +65,22 @@ Breakpoints* membp = 0;
 std::vector<UIWindow*> windows{};
 
 std::string ui_state_fn = "ui_state.txt";
-
+bool ui_ready = false;
 void SaveUIState() {
-    std::ofstream f(ui_state_fn);
-    if (windows.empty()) return;
-    if (!ImGui::GetCurrentContext()) return;
-    
+    if (!ui_ready) return;
+
+    std::string tmp = ui_state_fn + ".tmp";
+
+    std::ofstream f(tmp, std::ios::out | std::ios::trunc);
+    if (!f.is_open()) return;
 
     for (auto* w : windows) {
         if (!w) continue;
         f << w->name << "=" << (w->open ? 1 : 0) << "\n";
     }
+
+    f.close();
+    std::filesystem::rename(tmp, ui_state_fn);
 }
 
 void RenderDebuggerToolbar() {
@@ -461,6 +466,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         }
     }
     LoadUIState();
+    ui_ready = true;
     /*for (auto* w : windows) {
         if (!w) continue;
     
