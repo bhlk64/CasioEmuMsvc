@@ -370,10 +370,14 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         (int)ThemeManager::Instance().windowHeight,
         SDL_WINDOW_RESIZABLE);
 #else
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm);
+    
     window = SDL_CreateWindow("CasioEmuMsvc Debugger",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        1600, 1080,
+        dm.w * 0.8,
+        dm.h * 0.8,
         SDL_WINDOW_RESIZABLE);
 #endif
 #ifdef _WIN32
@@ -443,8 +447,8 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
              MakeThemeWindow(),
              CreateBitmapViewer(), })
         windows.push_back(item);
-    for (auto item : GetEditors())
-        windows.push_back(item);
+    //for (auto item : GetEditors())
+    //    windows.push_back(item);
     if (!std::filesystem::exists(ui_state_fn)) {
         for (auto* w : windows) {
             if (w) {
