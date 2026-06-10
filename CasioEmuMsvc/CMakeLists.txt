@@ -294,6 +294,19 @@ if(ANDROID)
     set(ASSET_DIR ${CMAKE_SOURCE_DIR}/app/src/main/assets)
 elseif(APPLE AND BUILD_EXECUTABLE)
     set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources)
+elseif(BUILD_EXECUTABLE AND NOT CASIOEMU_WEB)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${TARGET_NAME}>/locales)
+    foreach(FILE_PATH ${LOCALE_FILES})
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${FILE_PATH}
+            $<TARGET_FILE_DIR:${TARGET_NAME}>/locales/)
+    endforeach()
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/roms.db
+        $<TARGET_FILE_DIR:${TARGET_NAME}>/roms.db || ${CMAKE_COMMAND} -E true)
 else()
     set(ASSET_DIR $<TARGET_FILE_DIR:${TARGET_NAME}>)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
@@ -308,19 +321,6 @@ else()
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_CURRENT_SOURCE_DIR}/roms.db
         ${CMAKE_SOURCE_DIR}/app/src/main/assets/roms.db || ${CMAKE_COMMAND} -E true)
-elseif(BUILD_EXECUTABLE AND NOT CASIOEMU_WEB)
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${TARGET_NAME}>/locales)
-    foreach(FILE_PATH ${LOCALE_FILES})
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${FILE_PATH}
-            $<TARGET_FILE_DIR:${TARGET_NAME}>/locales/)
-    endforeach()
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/roms.db
-        $<TARGET_FILE_DIR:${TARGET_NAME}>/roms.db || ${CMAKE_COMMAND} -E true)
 endif()
 
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
