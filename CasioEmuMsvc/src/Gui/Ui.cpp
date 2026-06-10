@@ -68,6 +68,9 @@ std::string ui_state_fn = "ui_state.txt";
 
 void SaveUIState() {
     std::ofstream f(ui_state_fn);
+    if (windows.empty()) return;
+    if (!ImGui::GetCurrentContext()) return;
+    
 
     for (auto* w : windows) {
         if (!w) continue;
@@ -560,6 +563,7 @@ void gui_cleanup() {
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
+    SaveUIState();
     windows.clear();
 
     SDL_DestroyRenderer(renderer);
