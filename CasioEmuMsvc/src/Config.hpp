@@ -60,6 +60,16 @@
 #define SINGLE_WINDOW
 #endif
 
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
+    #define IOS
+#elif TARGET_OS_MAC
+    #define MACOS
+#endif
+
+
 #if defined(_MSC_VER) || (defined(__clang__) && defined(_WIN32))
 #define DLLEXPORT __declspec(dllexport)
 #define DLLIMPORT __declspec(dllimport)

@@ -901,7 +901,7 @@ namespace casioemu {
 		void Render() {
 			auto& io = ImGui::GetIO();
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 			ThemeManager::Instance().UpdateUIScale();
 			auto& tm = ThemeManager::Instance();
 			float scaledWidth = tm.windowWidth;
@@ -928,7 +928,7 @@ namespace casioemu {
 			float buttonWidth = 200.0f;
 #endif
 			ImGui::Begin("StartupUI.Title"_lc);
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(padding, padding));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(padding * 1.5f, padding));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(padding, padding * 0.5f));
@@ -976,21 +976,21 @@ namespace casioemu {
 				ImGui::OpenPopup("StartupUI.EnterPassword"_lc);
 			}
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 			ImGui::SetNextWindowSize(ImVec2(contentWidth * 0.8f, 0));
 #endif
 
 			if (ImGui::BeginPopupModal("StartupUI.EnterPassword"_lc, NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 				ImGui::TextUnformatted("StartupUI.PasswordPopupHint"_lc);
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 				float inputWidth = ImGui::GetContentRegionAvail().x - padding * 2;
 				ImGui::PushItemWidth(inputWidth);
 #endif
 
 				ImGui::InputText("##password", password, IM_ARRAYSIZE(password), ImGuiInputTextFlags_Password);
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 				ImGui::PopItemWidth();
 #endif
 
@@ -998,7 +998,7 @@ namespace casioemu {
 					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Password incorrect. Please try again.");
 				}
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(padding, buttonHeight * 0.25f));
 #endif
 				if (ImGui::Button("Button.Positive"_lc)) {
@@ -1030,7 +1030,7 @@ namespace casioemu {
 					ImGui::CloseCurrentPopup();
 				}
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 				ImGui::PopStyleVar();
 #endif
 
@@ -1043,7 +1043,7 @@ namespace casioemu {
 			}
 
 			if (loading) {
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 				ImGui::PopStyleVar(3);
 #endif
 				ImGui::End();
@@ -1167,7 +1167,7 @@ namespace casioemu {
 				ImGui::EndPopup();
 			}
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 			ImGui::PopStyleVar(3);
 #endif
 			ImGui::End();
@@ -1195,7 +1195,7 @@ namespace casioemu {
 				if (pwd_op) {
 					ImGui::InputText("##input_pwd", password, 60);
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 					if (ImGui::MenuItem("StartupUI.Export"_lc)) {
 						RomPackage rp{};
 						try {
@@ -1332,7 +1332,7 @@ namespace casioemu {
 				}
 				else {
 					if (ImGui::MenuItem("StartupUI.Launch"_lc)) {
-#if __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 						ThemeManager::Instance().LoadSettings();
 #endif
 						selected_path = model.path;
@@ -1508,7 +1508,7 @@ std::string sui_loop() {
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	ThemeManager::Instance().ApplyDefaultTheme();
 	ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w = 1.0f;
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 	windows2->push_back(new CopyrightWatermark(windows2));
 #endif
 	ImGui_ImplSDL2_InitForSDLRenderer(window2, renderer2);

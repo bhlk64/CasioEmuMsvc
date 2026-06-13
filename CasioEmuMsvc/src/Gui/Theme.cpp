@@ -40,7 +40,7 @@ public:
 			tm.SetLightMode();
 		}
 
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) || !defined(IOS)
 		ImGui::SameLine();
 		if (ImGui::Checkbox("Ui.LowPerformanceMode"_lc, &settings.lowPerformanceMode)) {
 			tm.SaveSettings();
@@ -51,7 +51,7 @@ public:
 			ImGui::EndTooltip();
 		}
 #endif
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 		ImGui::Checkbox("Ui.DisableVibration"_lc, &setting_DisableVibration);
 #endif
 

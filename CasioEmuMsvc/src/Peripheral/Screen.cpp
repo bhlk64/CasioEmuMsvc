@@ -43,7 +43,7 @@
 #include <system_error>
 #include <vector>
 
-#if !defined(__ANDROID__) && !defined(__EMSCRIPTEN__)
+#if !defined(__ANDROID__) && !defined(__EMSCRIPTEN__) && !defined(IOS)
 #include "Theme.h"
 #elif defined(__ANDROID__)
 #include <android/api-level.h>
@@ -51,6 +51,9 @@
 #include <media/NdkMediaCodec.h>
 #include <media/NdkMediaFormat.h>
 #include <media/NdkMediaMuxer.h>
+#include <unistd.h>
+#elif defined(IOS)
+#include <fcntl.h>
 #include <unistd.h>
 #endif
 
@@ -208,7 +211,7 @@ namespace casioemu {
 			std::thread thd([&]() {
 				while (1) {
 					tick();
-#elif defined(__ANDROID__)
+#elif defined(__ANDROID__) || defined(IOS)
 					SDL_Delay(10);
 #elif !defined(__EMSCRIPTEN__)
 					if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
@@ -269,7 +272,7 @@ namespace casioemu {
 				ratio = 1 - 5e-4;
 #ifdef __EMSCRIPTEN__
 			ratio = 0.0f;
-#elif defined(__ANDROID__)
+#elif defined(__ANDROID__) || defined(IOS)
 			ratio = 0.80f;
 #else
 			if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
@@ -280,7 +283,7 @@ namespace casioemu {
 				ratio = 1 - 1e-4;
 #ifdef __EMSCRIPTEN__
 				ratio = 0.0f;
-#elif defined(__ANDROID__)
+#elif defined(__ANDROID__) || defined(IOS)
 				ratio = 0.80f;
 #else
 				if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
@@ -331,7 +334,7 @@ namespace casioemu {
 				ratio = 1 - 1e-4;
 #ifdef __EMSCRIPTEN__
 				ratio = 0.0f;
-#elif defined(__ANDROID__)
+#elif defined(__ANDROID__) || defined(IOS)
 				ratio = 0.80f;
 #else
 				if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
@@ -1503,7 +1506,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	};
 #endif
 
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) || !defined(IOS)
 	class RawVideoPipe {
 	public:
 		~RawVideoPipe() {

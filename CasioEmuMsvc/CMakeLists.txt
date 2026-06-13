@@ -144,6 +144,7 @@ endif()
 
 if(BUILD_EXECUTABLE)
     message(STATUS "Building executable")
+    set(TARGET_NAME "CasioEmuMsvc")
 
     if(APPLE)
         set(TARGET_NAME "CasioEmuMsvc")

@@ -34,7 +34,7 @@
 #include "sdl_win32_extra.h"
 #endif
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && defined(__MACH__))
+#if defined(__ANDROID__) || defined(__APPLE__)
 #include <unistd.h>
 #endif
 #ifdef ENABLE_SENTRY
@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
 #endif
 #ifdef __ANDROID__
 	chdir(SDL_AndroidGetExternalStoragePath());
-#elif defined(__APPLE__) && defined(__MACH__)
+#elif defined(MACOS)
 	{
 		const char* home = getenv("HOME");
 		if (home) {
@@ -185,6 +185,13 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+#elif defined(IOS)
+  const char* home = getenv("HOME");
+  if (home) {
+    std::string path = std::string(home) + "Documents/CasioEmuMsvc"
+    std::filesystem::create_directories(path);
+    chdir(path.c_str());
+  }
 #endif
 	g_local.Load();
 	ThemeManager::Instance().LoadSettings();
@@ -192,7 +199,7 @@ int main(int argc, char* argv[]) {
 	DiscordRPC::Init();
   DiscordRPC::UpdatePresence("");
 
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) || !defined(IOS)
 	std::string rendererDriver = ReadRendererHint();
 	bool previouslyCrashed = std::filesystem::exists(kCrashLockFile);
 	if (previouslyCrashed) {
@@ -258,7 +265,7 @@ int main(int argc, char* argv[]) {
 
 	// After startupui has done its job:
 	// startupui doesn't need that.
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 #endif
@@ -272,7 +279,7 @@ int main(int argc, char* argv[]) {
 	
 	DiscordRPC::UpdatePresence(emulator.ModelDefinition.model_name);
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 	TouchMouseTranslator touchTranslator(
 		SDL_GetWindowID(emulator.window),
 
@@ -310,7 +317,7 @@ int main(int argc, char* argv[]) {
 		while (running) {
 			if (!busy)
 				SDL_PushEvent(&se);
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 			SDL_Delay(40);
 #else
 			if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext)
@@ -383,7 +390,7 @@ int main(int argc, char* argv[]) {
 			emulator.Frame();
 			gui_loop();
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 			touchTranslator.RenderDebug(renderer);
 #endif
 
@@ -428,7 +435,7 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 			break;
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 		case SDL_FINGERDOWN:
 		case SDL_FINGERUP:
 		case SDL_FINGERMOTION:

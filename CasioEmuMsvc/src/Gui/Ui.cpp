@@ -174,7 +174,7 @@ void gui_loop() {
 
     ImGuiIO& io = ImGui::GetIO();
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && defined(__MACH__))
+#if defined(__ANDROID__) || defined(MACOS) || defined(
     ThemeManager::Instance().UpdateUIScale();
 #endif
 
@@ -182,7 +182,7 @@ void gui_loop() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
     
-    #ifndef __ANDROID__
+    #if !defined(__ANDROID__) || !defined(IOS)
     
       // --- BẮT ĐẦU DOCKSPACE ---
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -290,7 +290,7 @@ void gui_loop() {
     //    }
     // #endif
     top_bar_size = ImGui::GetCursorPosY();
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) || !defined(IOS)
 	RenderStatusBar();
 #endif
 
@@ -370,7 +370,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     window = wnd;
     renderer = rnd;
 #else
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
     window = SDL_CreateWindow("CasioEmuMsvc Debugger",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
@@ -404,7 +404,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
     ThemeManager::Instance().LoadSettings();
     ThemeManager::Instance().UpdateUIScale();
 #endif

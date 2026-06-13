@@ -283,8 +283,8 @@ void ThemeManager::ApplyDefaultTheme() {
 	style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.08f, 0.10f, 0.15f, 1.0f);
 	style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.12f, 0.16f, 0.26f, 1.0f);
 
-#ifdef __ANDROID__
-	style.ScaleAllSizes(3.0f);
+#if defined(__ANDROID__) || defined(IOS)
+	style.ScaleAllSizes(2.0f);
 #endif
 }
 
