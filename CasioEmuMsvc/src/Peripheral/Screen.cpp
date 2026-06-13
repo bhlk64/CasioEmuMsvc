@@ -1506,7 +1506,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	};
 #endif
 
-#if !defined(__ANDROID__) || !defined(IOS)
+#if !defined(__ANDROID__) && !defined(IOS)
 	class RawVideoPipe {
 	public:
 		~RawVideoPipe() {
