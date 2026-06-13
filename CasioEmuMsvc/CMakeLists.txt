@@ -164,9 +164,9 @@ if(BUILD_EXECUTABLE)
             set(TARGET_NAME "CasioEmuCore")
         elseif(CASIOEMU_WEB)
             set(TARGET_NAME "CasioEmuWeb")
-        else()
+        
 
-        if(WIN32)
+        elseif(WIN32)
             set(WIN_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Resource.rc)
         endif()
 
