@@ -124,7 +124,7 @@ struct MemoryEditor {
 		// Settings
 		Open = true;
 		ReadOnly = false;
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 		Cols = 8;
 #else
 		Cols = 16;

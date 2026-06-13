@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Containers/ConcurrentObject.h"
 #include <cstdint>
 #include <cstdio>
@@ -58,6 +58,16 @@
 // #define SINGLE_WINDOW
 #if !defined(SINGLE_WINDOW) && defined(__ANDROID__)
 #define SINGLE_WINDOW
+#endif
+
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
+    #define IOS
+#elif TARGET_OS_MAC
+    #define MACOS
+#endif
 #endif
 
 #if defined(_MSC_VER) || (defined(__clang__) && defined(_WIN32))

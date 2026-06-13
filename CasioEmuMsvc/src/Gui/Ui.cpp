@@ -88,7 +88,6 @@ void RenderDebuggerToolbar() {
         if (ImGui::BeginMenu("Debugger Windows")) {
             for (auto* w : windows) {
                 if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
-                    // MenuItem sẽ tự động toggle biến w->open
                     SaveUIState();
                 }
             }
@@ -98,6 +97,27 @@ void RenderDebuggerToolbar() {
         if (ImGui::Button("Close All")) {
             for (auto* w : windows) if (w) w->open = false;
         }
+
+		// Spacer
+		ImGui::Dummy(ImVec2(10.0f, 0.0f));
+		ImGui::Separator();
+		ImGui::Dummy(ImVec2(10.0f, 0.0f));
+        
+		// Add Quick Actions
+        bool isPaused = m_emu->GetPaused();
+		if (ImGui::MenuItem(isPaused ? "\xe2\x96\xb6 Resume" : "\xe2\x8f\xb8 Pause")) {
+			m_emu->SetPaused(!isPaused);
+		}
+		if (ImGui::MenuItem("\xf0\x9f\x93\xb8 Screenshot")) {
+			m_emu->screenshot_requested = true;
+		}
+		if (ImGui::MenuItem(ThemeManager::Instance().Settings().isDarkMode ? "\xe2\x98\x80 Light" : "\xe1\x8c\x99 Dark")) {
+			if (ThemeManager::Instance().Settings().isDarkMode)
+				ThemeManager::Instance().SetLightMode();
+			else
+				ThemeManager::Instance().SetDarkMode();
+		}
+
         ImGui::EndMainMenuBar();
     }
 }
@@ -174,7 +194,7 @@ void gui_loop() {
 
     ImGuiIO& io = ImGui::GetIO();
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && defined(__MACH__))
+#if defined(__ANDROID__) || defined(MACOS) || defined(IOS)
     ThemeManager::Instance().UpdateUIScale();
 #endif
 
@@ -182,7 +202,7 @@ void gui_loop() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
     
-    #ifndef __ANDROID__
+    #if !defined(__ANDROID__) || !defined(IOS)
     
       // --- BẮT ĐẦU DOCKSPACE ---
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -290,7 +310,7 @@ void gui_loop() {
     //    }
     // #endif
     top_bar_size = ImGui::GetCursorPosY();
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) || !defined(IOS)
 	RenderStatusBar();
 #endif
 
@@ -370,7 +390,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     window = wnd;
     renderer = rnd;
 #else
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
     window = SDL_CreateWindow("CasioEmuMsvc Debugger",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
@@ -404,7 +424,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
     ThemeManager::Instance().LoadSettings();
     ThemeManager::Instance().UpdateUIScale();
 #endif

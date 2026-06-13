@@ -392,10 +392,9 @@ void SystemDialogs::SaveFolderDialog(std::function<void(std::filesystem::path)> 
     // Trên Mac choose folder có thể dùng chung cho cả chọn nơi save folder
     OpenFolderDialog(callback);
 }
-#endif
 
 // --- SỬA ĐỔI KHỐI ĐỂ TRÁNH XUNG ĐỘT VỚI MACOS ---
-#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(__APPLE__)
+#elif !defined(_WIN32) && !defined(__ANDROID__) && !defined(__APPLE__)
 #include <iostream>
 #include <cstdio>
 #include <memory>

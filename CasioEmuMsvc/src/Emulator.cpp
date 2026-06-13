@@ -381,11 +381,30 @@ namespace casioemu {
 	}
 
 	std::string Emulator::GetModelFilePath(std::string relative_path) {
-		return
 #ifdef __ANDROID__
-		(SDL_AndroidGetExternalStoragePath() / std::filesystem::path(model_path) / relative_path).string();
+    return (
+        std::filesystem::path(SDL_AndroidGetExternalStoragePath()) /
+        model_path /
+        relative_path
+    ).string();
+
+#elif defined(IOS)
+
+    return (
+        std::filesystem::path(getenv("HOME")) /
+        "Documents" /
+        "CasioEmuMsvc" /
+        model_path /
+        relative_path
+    ).string();
+
 #else
-			(std::filesystem::path(model_path) / relative_path).string();
+
+    return (
+        std::filesystem::path(model_path) /
+        relative_path
+    ).string();
+
 #endif
 	}
 

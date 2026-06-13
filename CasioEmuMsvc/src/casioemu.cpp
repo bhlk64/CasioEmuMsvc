@@ -34,7 +34,7 @@
 #include "sdl_win32_extra.h"
 #endif
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && defined(__MACH__))
+#if defined(__ANDROID__) || defined(__APPLE__)
 #include <unistd.h>
 #endif
 #ifdef ENABLE_SENTRY
@@ -45,6 +45,7 @@
 #include <Gui.h>
 #include <Plugin/PluginMan.h>
 #include <ThemeManager.h>
+#include "DiscordRPC.h"
 
 #include "TouchMouseTranslator.h"
 
@@ -153,7 +154,7 @@ int main(int argc, char* argv[]) {
 #endif
 #ifdef __ANDROID__
 	chdir(SDL_AndroidGetExternalStoragePath());
-#elif defined(__APPLE__) && defined(__MACH__)
+#elif defined(MACOS)
 	{
 		const char* home = getenv("HOME");
 		if (home) {
@@ -184,10 +185,21 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+#elif defined(IOS)
+  const char* home = getenv("HOME");
+  if (home) {
+    std::string path = std::string(home) + "Documents/CasioEmuMsvc"
+    std::filesystem::create_directories(path);
+    chdir(path.c_str());
+  }
 #endif
 	g_local.Load();
+	ThemeManager::Instance().LoadSettings();
 
-#ifndef __ANDROID__
+	DiscordRPC::Init();
+  DiscordRPC::UpdatePresence("");
+
+#if !defined(__ANDROID__) || !defined(IOS)
 	std::string rendererDriver = ReadRendererHint();
 	bool previouslyCrashed = std::filesystem::exists(kCrashLockFile);
 	if (previouslyCrashed) {
@@ -246,13 +258,14 @@ int main(int argc, char* argv[]) {
 		auto s = sui_loop();
 		argv_map["model"] = std::move(s);
 		if (argv_map["model"].empty()) {
+      DiscordRPC::Shutdown();
 			return -1;
-		}
+	  }
 	}
 
 	// After startupui has done its job:
 	// startupui doesn't need that.
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 #endif
@@ -263,7 +276,10 @@ int main(int argc, char* argv[]) {
 	m_emu = &emulator;
 
 	// static std::atomic<bool> running(true);
-#ifdef __ANDROID__
+	
+	DiscordRPC::UpdatePresence(emulator.ModelDefinition.model_name);
+
+#if defined(__ANDROID__) || defined(IOS)
 	TouchMouseTranslator touchTranslator(
 		SDL_GetWindowID(emulator.window),
 
@@ -301,7 +317,7 @@ int main(int argc, char* argv[]) {
 		while (running) {
 			if (!busy)
 				SDL_PushEvent(&se);
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 			SDL_Delay(40);
 #else
 			if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext)
@@ -335,6 +351,7 @@ int main(int argc, char* argv[]) {
 	while (emulator.Running()) {
 		SDL_Event event{};
 		busy = false;
+		DiscordRPC::Update();
 		if (!SDL_PollEvent(&event))
 			continue;
 		busy = true;
@@ -373,7 +390,7 @@ int main(int argc, char* argv[]) {
 			emulator.Frame();
 			gui_loop();
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 			touchTranslator.RenderDebug(renderer);
 #endif
 
@@ -418,7 +435,7 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 			break;
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(IOS)
 		case SDL_FINGERDOWN:
 		case SDL_FINGERUP:
 		case SDL_FINGERMOTION:
@@ -461,6 +478,6 @@ int main(int argc, char* argv[]) {
 #ifdef ENABLE_SENTRY
 	sentry_close();
 #endif
-
+  DiscordRPC::Shutdown();
 	return 0;
 };
