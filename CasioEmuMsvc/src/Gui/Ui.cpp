@@ -174,7 +174,7 @@ void gui_loop() {
 
     ImGuiIO& io = ImGui::GetIO();
 
-#if defined(__ANDROID__) || defined(MACOS) || defined(
+#if defined(__ANDROID__) || defined(MACOS) || defined(IOS)
     ThemeManager::Instance().UpdateUIScale();
 #endif
 
