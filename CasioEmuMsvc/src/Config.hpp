@@ -68,6 +68,7 @@
 #elif TARGET_OS_MAC
     #define MACOS
 #endif
+#endif
 
 
 #if defined(_MSC_VER) || (defined(__clang__) && defined(_WIN32))
