@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
 	DiscordRPC::Init();
   DiscordRPC::UpdatePresence("");
 
-#if !defined(__ANDROID__) || !defined(IOS)
+#if !defined(__ANDROID__) && !defined(IOS)
 	std::string rendererDriver = ReadRendererHint();
 	bool previouslyCrashed = std::filesystem::exists(kCrashLockFile);
 	if (previouslyCrashed) {

@@ -202,7 +202,7 @@ void gui_loop() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
     
-    #if !defined(__ANDROID__) || !defined(IOS)
+    #if !defined(__ANDROID__) && !defined(IOS)
     
       // --- BẮT ĐẦU DOCKSPACE ---
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -315,7 +315,7 @@ void gui_loop() {
     //    }
     // #endif
     top_bar_size = ImGui::GetCursorPosY();
-#if !defined(__ANDROID__) || !defined(IOS)
+#if !defined(__ANDROID__) && !defined(IOS)
 	RenderStatusBar();
 #endif
 

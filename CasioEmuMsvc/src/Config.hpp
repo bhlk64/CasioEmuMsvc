@@ -60,7 +60,7 @@
 #define SINGLE_WINDOW
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
 #include <TargetConditionals.h>
 
 #if TARGET_OS_IPHONE
