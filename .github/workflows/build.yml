@@ -33,9 +33,9 @@ jobs:
           - platform: linux
             os: ubuntu-latest
             name: "Linux-x64"
-          - platform: ios
-            os: macos-latest
-            name: "iOS"
+          #- platform: ios
+          #  os: macos-latest
+          #  name: "iOS"
     
     runs-on: ${{ matrix.os }}
     name: Build ${{ matrix.name }}
@@ -258,9 +258,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: Test-upload-ios-build
-        path: |
-          CasioEmuMsvc/src/*
-          build/*
+        path: build/*
         archive: true
         retention-days: 1
     
