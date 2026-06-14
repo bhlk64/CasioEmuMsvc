@@ -1698,7 +1698,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			std::string ffmpeg_path = "ffmpeg";
 			if (std::filesystem::exists("/opt/homebrew/bin/ffmpeg")) ffmpeg_path = "/opt/homebrew/bin/ffmpeg";
 			else if (std::filesystem::exists("/usr/local/bin/ffmpeg")) ffmpeg_path = "/usr/local/bin/ffmpeg";
-
+#ifndef IOS
 			if (std::system((ffmpeg_path + " -version > /dev/null 2>&1").c_str()) == 0) {
 				if (encoder.Start(command)) {
 					frameSequence = false;
@@ -1707,6 +1707,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 					return true;
 				}
 			}
+#endif
 #endif
 
 			frameSequence = true;
@@ -1845,6 +1846,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 
 #ifdef __ANDROID__
 		AndroidVideoEncoder encoder;
+#elif defined(IOS)
 #else
 		RawVideoPipe encoder;
 #endif
