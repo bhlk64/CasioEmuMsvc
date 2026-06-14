@@ -650,7 +650,7 @@ static bool CreateDesktopShortcut(const std::filesystem::path& model_path, const
 
 	return true;
 }
-#elif defined(__APPLE__)
+#elif defined(MACOS)
 static bool CreateDesktopShortcut(const std::filesystem::path& model_path, const std::string& shortcut_name, const std::string& icon_path_str) {
 
 	// Get Desktop path
@@ -704,6 +704,10 @@ static bool CreateDesktopShortcut(const std::filesystem::path& model_path, const
 
 	return true;
 }
+#elif defined(IOS)
+	static bool CreateDesktopShortcut(const std::filesystem::path& model_path, const std::string& shortcut_name, const std::string& icon_path_str) {
+	return false;
+	}
 #endif
 
 namespace casioemu {
@@ -1368,7 +1372,7 @@ namespace casioemu {
 				if (pwd_op) {
 					ImGui::InputText("##input_pwd", password, 60);
 
-#if defined(__ANDROID__) || defined(IOS)
+#if defined(__ANDROID__)
 					if (ImGui::MenuItem("StartupUI.Export"_lc)) {
 						RomPackage rp{};
 						try {
