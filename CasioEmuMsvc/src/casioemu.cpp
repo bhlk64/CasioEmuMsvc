@@ -188,7 +188,7 @@ int main(int argc, char* argv[]) {
 #elif defined(IOS)
   const char* home = getenv("HOME");
   if (home) {
-    std::string path = std::string(home) + "Documents/CasioEmuMsvc"
+    std::string path = std::string(home) + "Documents/CasioEmuMsvc";
     std::filesystem::create_directories(path);
     chdir(path.c_str());
   }
@@ -281,6 +281,7 @@ int main(int argc, char* argv[]) {
 	
 	DiscordRPC::UpdatePresence(emulator.ModelDefinition.model_name);
 
+	bool guiCreated = false;
 #if defined(__ANDROID__) || defined(IOS)
 	TouchMouseTranslator touchTranslator(
 		SDL_GetWindowID(emulator.window),
@@ -308,7 +309,6 @@ int main(int argc, char* argv[]) {
 #endif
 		});
 #endif
-	bool guiCreated = false;
 	auto frame_event = SDL_RegisterEvents(1);
 	bool busy = false;
 	bool running = true;
@@ -508,7 +508,7 @@ static std::thread* background_timer_thread = nullptr;
 static std::atomic<bool> exit_timer_thread(false);
 
 extern "C" void onAppCreate() {
-    return main(1, nullptr);
+    main(1, nullptr);
 }
 
 extern "C" void onAppResume() {

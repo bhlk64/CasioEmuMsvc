@@ -36,7 +36,7 @@ set(ASMJIT_STATIC ON CACHE BOOL "Build AsmJit as a static library")
 set(ASMJIT_BUILD_TEST OFF CACHE BOOL "Disable AsmJit tests")
 set(ASMJIT_BUILD_EXAMPLES OFF CACHE BOOL "Disable AsmJit examples")
 
-if(NOT CASIOEMU_WEB AND NOT IOS AND NOT ANDROID)
+if(NOT CASIOEMU_WEB AND NOT IOS AND)
     message(STATUS "Attempting to add subdirectory: ${ASMJIT_DIR}")
     if(EXISTS "${ASMJIT_DIR}/CMakeLists.txt")
         message(STATUS "Found ${ASMJIT_DIR}/CMakeLists.txt")
@@ -204,7 +204,7 @@ endif()
 # Apply include dirs to target (scoped) to reduce global includes and compiler parsing
 target_include_directories(${TARGET_NAME} PRIVATE ${PROJECT_INCLUDE_DIRS})
 
-if(CASIOEMU_WEB OR IOS OR ANDROID)
+if(CASIOEMU_WEB OR IOS)
     target_compile_definitions(${TARGET_NAME} PRIVATE DISABLE_SENTRY ASMJIT_NO_JIT)
     if(CASIOEMU_WEB)
         target_compile_definitions(${TARGET_NAME} PRIVATE CASIOEMU_WEB)
@@ -285,7 +285,7 @@ elseif(BUILD_EXECUTABLE)
         SDL2_image::SDL2_image-static
         #CpuFeatures::cpu_features
     )
-    if(NOT IOS AND NOT ANDROID)
+    if(NOT IOS)
         target_link_libraries(${TARGET_NAME} PRIVATE asmjit::asmjit)
     endif()
     if(WIN32)
@@ -326,7 +326,7 @@ else()
         SDL2_image::SDL2_image
         #CpuFeatures::cpu_features
     )
-    if(NOT IOS AND NOT ANDROID)
+    if(NOT IOS)
         target_link_libraries(${TARGET_NAME} PRIVATE asmjit::asmjit)
     endif()
     if(ANDROID)
