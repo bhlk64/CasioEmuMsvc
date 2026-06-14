@@ -245,7 +245,7 @@ jobs:
     - name: Build for iOS
       if: matrix.platform == 'ios'
       run: |
-        cmake -S . -B build-ios \
+        cmake -S . -B build \
           -G Ninja \
           -DIOS=TRUE \
           -DBUILD_EXECUTABLE=ON \
@@ -258,7 +258,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: Test-upload-ios-build
-        path: build/*
+        path: build/CasioEmuMsvc/*
         archive: true
         retention-days: 1
     
