@@ -2126,6 +2126,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			emulator.screenshot_requested.store(false);
 			emulator.screenshot_taken.store(true);
 		}
+#ifndef IOS
 		static ScreenRecorder recorder;
 		if (emulator.recording_requested.exchange(false) && !recorder.IsRecording()) {
 			SDL_Rect captureRect{};
@@ -2155,6 +2156,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		else {
 			emulator.recording_active.store(false);
 		}
+#endif
 		if (emulator.mirroring_requested.load()) {
 			auto p = GetSize(spriteRects, pixelRects);
 			auto sm = new ScreenMirror(p.first, p.second);
