@@ -1658,6 +1658,8 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	};
 #endif
 
+#ifndef IOS
+
 	class ScreenRecorder {
 	public:
 		~ScreenRecorder() {
@@ -1846,7 +1848,6 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 
 #ifdef __ANDROID__
 		AndroidVideoEncoder encoder;
-#elif defined(IOS)
 #else
 		RawVideoPipe encoder;
 #endif
@@ -1862,7 +1863,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		std::filesystem::path outputPath;
 		std::filesystem::path frameDirectory;
 	};
-
+#endif
 	// Function to capture the current screen, save as PNG file and copy to clipboard
 	void CaptureScreenshot(SDL_Renderer* renderer, const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects) {
 		std::string filename = MakeTimestampedName("screenshot-", ".png");
