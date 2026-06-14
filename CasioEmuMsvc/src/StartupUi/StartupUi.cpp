@@ -1023,9 +1023,13 @@ namespace casioemu {
 			ImGui::Separator();
 			ImGui::TextUnformatted("StartupUI.RecentlyUsed"_lc);
 
-            float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-            float card_width = 180.0f * fontScale;
-            float card_height = 110.0f * fontScale;
+			float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+			float window_width = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
+			float ideal_width = 200.0f * fontScale;
+			int num_columns = std::max(1, (int)(window_width / ideal_width));
+			float spacing = ImGui::GetStyle().ItemSpacing.x;
+			float card_width = (window_width - (num_columns - 1) * spacing) / num_columns;
+			float card_height = std::max(110.0f * fontScale, card_width * 0.6f);
 
 			if (ImGui::BeginChild("Recently_Child", ImVec2(0, card_height + padding * 3), false)) {
 				auto i = 114;

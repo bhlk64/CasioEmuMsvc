@@ -207,7 +207,12 @@ void gui_loop() {
       // --- BẮT ĐẦU DOCKSPACE ---
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
+    
+    ImVec2 dockSize = viewport->WorkSize;
+    float barHeight = ImGui::GetFrameHeight() + 4.0f;
+    dockSize.y -= barHeight;
+    ImGui::SetNextWindowSize(dockSize);
+    
     ImGui::SetNextWindowViewport(viewport->ID);
 
     ImGuiWindowFlags host_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | 

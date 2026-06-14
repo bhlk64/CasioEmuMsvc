@@ -396,9 +396,9 @@ int main(int argc, char* argv[]) {
 
 			SDL_RenderPresent(emulator.renderer);
 #else
+			emulator.Frame();
 			if (!no_dbg)
 				gui_loop();
-			emulator.Frame();
 			SDL_RenderPresent(emulator.renderer);
 #endif
 			if (!no_dbg) {
