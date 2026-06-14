@@ -252,9 +252,9 @@ jobs:
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
         -DBUILD_EXECUTABLE=ON
       
-      cmake --build build \
-        --config Release \
-        -- -sdk iphoneos
+        cmake --build build \
+          --config Release \
+          -- -sdk iphoneos
     - name: upload full build ios
       if: failure() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
