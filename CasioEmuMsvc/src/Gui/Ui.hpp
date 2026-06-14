@@ -78,7 +78,7 @@ public:
 	}
 	virtual void RenderCore() = 0;
 	// Optional: navigate the window to a specific memory address. No-op by default.
-	virtual void GotoMemoryAddress(uint32_t /*addr*/) {}
+	virtual bool GotoMemoryAddress(uint32_t /*addr*/) { return false; }
 	virtual ~UIWindow() {}
 
 };

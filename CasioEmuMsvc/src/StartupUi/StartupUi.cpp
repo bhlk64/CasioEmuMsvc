@@ -944,135 +944,6 @@ namespace casioemu {
 			static RomPackage current_rp;
 			static bool password_error = false;
 
-
-			if (show_password_input) {
-				ImGui::OpenPopup("StartupUI.EnterPassword"_lc);
-			}
-
-#if defined(__ANDROID__) || defined(IOS)
-			ImGui::SetNextWindowSize(ImVec2(contentWidth * 0.8f, 0));
-#endif
-
-			if (ImGui::BeginPopupModal("StartupUI.EnterPassword"_lc, NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-				ImGui::TextUnformatted("StartupUI.PasswordPopupHint"_lc);
-
-#if defined(__ANDROID__) || defined(IOS)
-				float inputWidth = ImGui::GetContentRegionAvail().x - padding * 2;
-				ImGui::PushItemWidth(inputWidth);
-#endif
-
-				ImGui::InputText("##password", password, IM_ARRAYSIZE(password), ImGuiInputTextFlags_Password);
-
-#if defined(__ANDROID__) || defined(IOS)
-				ImGui::PopItemWidth();
-#endif
-
-				if (password_error) {
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Password incorrect. Please try again.");
-				}
-
-#if defined(__ANDROID__) || defined(IOS)
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(padding, buttonHeight * 0.25f));
-#endif
-				if (ImGui::Button("Button.Positive"_lc)) {
-					try {
-						if (password[0] == '\0') {
-							password_error = true;
-						}
-						else {
-							current_rp.Decrypt(password);
-							std::string filename = current_file.stem().string();
-							std::string unique_dirname = create_unique_directory(filename);
-							std::filesystem::path extract_path = "./models/" + unique_dirname;
-							current_rp.ExtractTo(extract_path);
-							Reload();
-							show_password_input = false;
-							password_error = false;
-							ImGui::CloseCurrentPopup();
-						}
-					}
-					catch (const std::exception& e) {
-						SDL_Log("Decryption failed: %s", e.what());
-						password_error = true;
-					}
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Button.Negative"_lc)) {
-					show_password_input = false;
-					password_error = false;
-					ImGui::CloseCurrentPopup();
-				}
-
-#if defined(__ANDROID__) || defined(IOS)
-				ImGui::PopStyleVar();
-#endif
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("Button.Refresh"_lc)) {
-				Reload();
-			}
-
-			if (loading) {
-#if defined(__ANDROID__) || defined(IOS)
-				ImGui::PopStyleVar(3);
-#endif
-				ImGui::End();
-				return;
-			}
-
-			ImGui::TextUnformatted("StartupUI.ChooseModelHint"_lc);
-			ImGui::Separator();
-			ImGui::TextUnformatted("StartupUI.RecentlyUsed"_lc);
-
-            float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-            float card_width = 180.0f * fontScale;
-            float card_height = 110.0f * fontScale;
-
-			if (ImGui::BeginChild("Recently_Child", ImVec2(0, card_height + padding * 3), false)) {
-				auto i = 114;
-				auto ru = recently_used;
-				for (auto& s : ru) {
-					auto iter = std::find_if(models.begin(), models.end(), [&](const Model& x) {
-						return x.path == s;
-					});
-					if (iter != models.end()) {
-						auto& model = *iter;
-						RenderModel(model, i, card_width, card_height);
-						
-						float last_x2 = ImGui::GetItemRectMax().x;
-                        float next_x2 = last_x2 + ImGui::GetStyle().ItemSpacing.x + card_width;
-                        if (next_x2 < window_visible_x2)
-                            ImGui::SameLine();
-					}
-				}
-				ImGui::EndChild();
-			}
-
-			if (ImGui::CollapsingHeader("StartupUI.AllModel"_lc)) {
-				ImGui::SetNextItemWidth(searchBarWidth);
-				ImGui::InputText("StartupUI.SearchBoxHeader"_lc, search_txt, 200);
-				ImGui::SameLine();
-
-				const char* items[] = {"##", "ES", "ESP", "ESP2nd", "CWX", "CWII", "Fx5800p", "TI", "SolarII"};
-				ImGui::SetNextItemWidth(filterWidth);
-				if (ImGui::BeginCombo("##cb", current_filter)) {
-					for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
-						bool is_selected = (current_filter == items[n]);
-						if (ImGui::Selectable(items[n], is_selected))
-							current_filter = items[n];
-						if (is_selected)
-							ImGui::SetItemDefaultFocus();
-					}
-					ImGui::EndCombo();
-				}
-
-				ImGui::SameLine();
-				ImGui::Checkbox("StartupUI.DontShowEmuRom"_lc, &not_show_emu);
-
-				ImGui::SameLine();
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(padding, buttonHeight * 0.25f));
 			if (ImGui::Button("StartupUI.ImportRomPackage"_lc, ImVec2(buttonWidth, 0))) {
 				SystemDialogs::OpenFileDialog([&](std::filesystem::path f) {
@@ -1105,6 +976,9 @@ namespace casioemu {
 				});
 			}
 			ImGui::PopStyleVar();
+			if (show_password_input) {
+				ImGui::OpenPopup("StartupUI.EnterPassword"_lc);
+			}
 
 #if defined(__ANDROID__) || defined(IOS)
 			ImGui::SetNextWindowSize(ImVec2(contentWidth * 0.8f, 0));
@@ -1228,15 +1102,10 @@ namespace casioemu {
 						bool matches_filter = (strcmp(current_filter, "##") == 0) || (current_filter == model.type);
 						bool matches_search = (stristr(model.name.c_str(), search_txt) != nullptr || stristr(model.version.c_str(), search_txt) != nullptr);
 						if (matches_filter && matches_search && (not_show_emu ? model.realhw : 1)) {
-							RenderModel(model, i, card_width, card_height);
-							
-							float last_x2 = ImGui::GetItemRectMax().x;
-                            float next_x2 = last_x2 + ImGui::GetStyle().ItemSpacing.x + card_width;
-                            if (next_x2 < window_visible_x2)
-                                ImGui::SameLine();
+							RenderModel(model, i);
 						}
 					}
-					ImGui::EndChild();
+					ImGui::EndTable();
 				}
 			}
 
@@ -1316,58 +1185,16 @@ namespace casioemu {
 			ImGui::TableHeadersRow();
 		}
 
-		void RenderModel(const Model& model, int& i, float card_width, float card_height) {
+		void RenderModel(const Model& model, int& i) {
 			static char password[60]{};
 			static bool pwd_op = true;
-			ImGuiStyle& style = ImGui::GetStyle();
-
+			ImGui::TableNextRow();
 			ImGui::PushID(i++);
-
-			// Custom background for hovered state
-			bool isHovered = false;
-			ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-			ImRect bb(cursorPos, ImVec2(cursorPos.x + card_width, cursorPos.y + card_height));
-			if (ImGui::IsMouseHoveringRect(bb.Min, bb.Max)) {
-			    isHovered = true;
+			ImGui::TableNextColumn();
+			if (ImGui::Selectable(model.name.c_str())) {
+				ImGui::OpenPopup("ContextMenu");
+				pwd_op = false;
 			}
-
-			if (isHovered) {
-			    ImGui::PushStyleColor(ImGuiCol_ChildBg, style.Colors[ImGuiCol_ButtonHovered]);
-			}
-
-			if (ImGui::BeginChild("Card", ImVec2(card_width, card_height), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
-				
-				// Model Type (Top Right) & Name
-				ImGui::TextDisabled("%s", model.type.c_str());
-				ImGui::Separator();
-				
-				ImGui::PushTextWrapPos(card_width - style.WindowPadding.x * 2.0f);
-				ImGui::Text("%s", model.name.c_str());
-				ImGui::PopTextWrapPos();
-				
-				// Version (Bottom)
-				ImGui::SetCursorPosY(card_height - ImGui::GetTextLineHeightWithSpacing() - style.WindowPadding.y * 2.0f);
-				ImGui::TextDisabled("Ver: %s", model.version.c_str());
-				
-				if (ImGui::IsWindowHovered()) {
-				    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-#if defined(__ANDROID__) || defined(IOS)
-						ThemeManager::Instance().LoadSettings();
-#endif
-						selected_path = model.path;
-						auto iter = std::find_if(recently_used.begin(), recently_used.end(),
-							[&](auto& x) { return x == model.path.string(); });
-						if (iter != recently_used.end()) recently_used.erase(iter);
-						recently_used.insert(recently_used.begin(), model.path.string());
-						if (recently_used.size() > 5) recently_used.resize(5);
-				    }
-				    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-				        ImGui::OpenPopup("ContextMenu");
-				        pwd_op = false;
-				    }
-				}
-
 			if (ImGui::BeginPopup("ContextMenu")) {
 				if (pwd_op) {
 					ImGui::InputText("##input_pwd", password, 60);
@@ -1555,15 +1382,27 @@ namespace casioemu {
 				ImGui::EndPopup();
 			}
 		ed:
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(model.version.c_str());
+			ImGui::TableNextColumn();
+			if (model.realhw) {
+				if (model.show_sum) {
+					ImGui::Text("%s (%s) %s", model.checksum.c_str(), model.checksum2.c_str(), model.sum_good.c_str());
+				}
+				else {
+					ImGui::TextUnformatted("Table.NotAvailable"_lc);
+				}
 			}
-			ImGui::EndChild();
-			
-			if (isHovered) {
-			    ImGui::PopStyleColor();
+			else {
+				ImGui::TextUnformatted("StartupUI.EmulatorRom"_lc);
 			}
-
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(model.type.c_str());
+			ImGui::SameLine();
+			ImGui::Dummy({0, ImGui::GetTextLineHeightWithSpacing()});
 			ImGui::PopID();
-		}	};
+		}
+	};
 } // namespace casioemu
 class LicenseWindow : public UIWindow {
 public:

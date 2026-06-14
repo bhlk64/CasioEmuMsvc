@@ -254,7 +254,9 @@ int main(int argc, char* argv[]) {
 	if (headless && argv_map["model"].empty()) {
 		PANIC("No model path supplied.\n");
 	}
-	if (argv_map["model"].empty()) {
+	
+	while (true) {
+		if (argv_map["model"].empty()) {
 		auto s = sui_loop();
 		argv_map["model"] = std::move(s);
 		if (argv_map["model"].empty()) {
@@ -327,7 +329,7 @@ int main(int argc, char* argv[]) {
 #endif
 		}
 	});
-	t3.detach();
+	// t3.detach(); removed to allow joining
 #ifdef DBG
 	if (!no_dbg) {
 		test_gui(&guiCreated, emulator.window, emulator.renderer);
@@ -396,9 +398,9 @@ int main(int argc, char* argv[]) {
 
 			SDL_RenderPresent(emulator.renderer);
 #else
+			emulator.Frame();
 			if (!no_dbg)
 				gui_loop();
-			emulator.Frame();
 			SDL_RenderPresent(emulator.renderer);
 #endif
 			if (!no_dbg) {
@@ -427,10 +429,16 @@ int main(int argc, char* argv[]) {
 		switch (event.type) {
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
-			case SDL_WINDOWEVENT_CLOSE:
-				emulator.Shutdown();
-				std::exit(0);
+						case SDL_WINDOWEVENT_CLOSE: {
+				extern SDL_Window* window; // This is the debugger window
+				if (event.window.windowID == SDL_GetWindowID(emulator.window)) {
+					emulator.return_to_home_requested = true;
+					emulator.Shutdown();
+				} else if (window && event.window.windowID == SDL_GetWindowID(window)) {
+					std::exit(0);
+				}
 				break;
+			}
 			case SDL_WINDOWEVENT_RESIZED:
 				break;
 			}
@@ -475,6 +483,15 @@ int main(int argc, char* argv[]) {
 	if (bg_txt) {
 		SDL_DestroyTexture(bg_txt);
 	}
+	
+	if (emulator.return_to_home_requested) {
+		argv_map["model"] = "";
+		continue;
+	} else {
+		break;
+	}
+	} // end while(true)
+	
 #ifdef ENABLE_SENTRY
 	sentry_close();
 #endif

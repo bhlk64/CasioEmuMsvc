@@ -22,6 +22,45 @@
     return instance;
 }
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
+        onAppCreate();
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - App Lifecycle Observers
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification {
+    onAppResume();
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification {
+    onAppPause();
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification {
+    onAppBackground();
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification {
+    onAppForeground();
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    onAppTerminate();
+}
+
 // Get the root view controller to present dialogs
 - (UIViewController*)rootViewController {
     UIWindowScene *scene = (UIWindowScene *)UIApplication.sharedApplication.connectedScenes.allObjects.firstObject;

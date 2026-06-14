@@ -10,6 +10,13 @@ extern "C" void onFolderSaved(const char* path);
 extern "C" void onImportFailed();
 extern "C" void onExportFailed();
 
+extern "C" void onAppCreate();
+extern "C" void onAppResume();
+extern "C" void onAppPause();
+extern "C" void onAppBackground();
+extern "C" void onAppForeground();
+extern "C" void onAppTerminate();
+
 // Functions callable from C++
 extern "C" void nativeVibrate(long milliseconds);
 extern "C" void onNativeCrash(const char* message);

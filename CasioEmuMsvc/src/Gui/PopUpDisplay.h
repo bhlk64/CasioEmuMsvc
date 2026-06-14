@@ -1,4 +1,6 @@
 #pragma once
+class ScreenMirror;
+extern ScreenMirror* g_mirror;
 class ScreenMirror {
 private:
 	SDL_Window* mirrorWindow;
@@ -99,25 +101,29 @@ public:
 		isOpen = false;
 	}
 
-	bool handleEvents() {
+	Uint32 getWindowID() const {
+		return mirrorWindow ? SDL_GetWindowID(mirrorWindow) : 0;
+	}
+
+	bool handleEvent(const SDL_Event& event) {
 		if (!isOpen)
 			return false;
 
-		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-			case SDL_QUIT:
-				isOpen = false;
-				break;
-			case SDL_WINDOWEVENT:
+		switch (event.type) {
+		case SDL_QUIT:
+			isOpen = false;
+			break;
+		case SDL_WINDOWEVENT:
+			if (event.window.windowID == getWindowID()) {
 				if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
 					isOpen = false;
+                    g_mirror = nullptr;
 				}
 				else if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 					updateDisplayRect(event.window.data1, event.window.data2);
 				}
-				break;
 			}
+			break;
 		}
 		return isOpen;
 	}
