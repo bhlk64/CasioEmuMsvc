@@ -33,9 +33,9 @@ jobs:
           - platform: linux
             os: ubuntu-latest
             name: "Linux-x64"
-          #- platform: ios
-          #  os: macos-latest
-          #  name: "iOS"
+          - platform: ios
+            os: macos-latest
+            name: "iOS"
     
     runs-on: ${{ matrix.os }}
     name: Build ${{ matrix.name }}
@@ -246,13 +246,15 @@ jobs:
       if: matrix.platform == 'ios'
       run: |
         cmake -S . -B build \
-          -G Ninja \
-          -DIOS=TRUE \
-          -DBUILD_EXECUTABLE=ON \
-          -DCMAKE_SYSTEM_NAME=iOS \
-          -DCMAKE_OSX_ARCHITECTURES=arm64
-
-          cmake --build build --config Release
+        -G Xcode \
+        -DCMAKE_SYSTEM_NAME=iOS \
+        -DCMAKE_OSX_SYSROOT=iphoneos \
+        -DCMAKE_OSX_ARCHITECTURES=arm64 \
+        -DBUILD_EXECUTABLE=ON
+      
+      cmake --build build \
+        --config Release \
+        -- -sdk iphoneos
     - name: upload full build ios
       if: failure() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
