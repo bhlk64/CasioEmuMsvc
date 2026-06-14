@@ -88,7 +88,6 @@ void RenderDebuggerToolbar() {
         if (ImGui::BeginMenu("Debugger Windows")) {
             for (auto* w : windows) {
                 if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
-                    // MenuItem sẽ tự động toggle biến w->open
                     SaveUIState();
                 }
             }
@@ -98,6 +97,27 @@ void RenderDebuggerToolbar() {
         if (ImGui::Button("Close All")) {
             for (auto* w : windows) if (w) w->open = false;
         }
+
+		// Spacer
+		ImGui::Dummy(ImVec2(10.0f, 0.0f));
+		ImGui::Separator();
+		ImGui::Dummy(ImVec2(10.0f, 0.0f));
+        
+		// Add Quick Actions
+        bool isPaused = m_emu->GetPaused();
+		if (ImGui::MenuItem(isPaused ? "\xe2\x96\xb6 Resume" : "\xe2\x8f\xb8 Pause")) {
+			m_emu->SetPaused(!isPaused);
+		}
+		if (ImGui::MenuItem("\xf0\x9f\x93\xb8 Screenshot")) {
+			m_emu->screenshot_requested = true;
+		}
+		if (ImGui::MenuItem(ThemeManager::Instance().Settings().isDarkMode ? "\xe2\x98\x80 Light" : "\xe1\x8c\x99 Dark")) {
+			if (ThemeManager::Instance().Settings().isDarkMode)
+				ThemeManager::Instance().SetLightMode();
+			else
+				ThemeManager::Instance().SetDarkMode();
+		}
+
         ImGui::EndMainMenuBar();
     }
 }

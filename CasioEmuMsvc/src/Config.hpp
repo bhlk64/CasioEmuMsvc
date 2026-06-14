@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Containers/ConcurrentObject.h"
 #include <cstdint>
 #include <cstdio>
@@ -69,7 +69,6 @@
     #define MACOS
 #endif
 #endif
-
 
 #if defined(_MSC_VER) || (defined(__clang__) && defined(_WIN32))
 #define DLLEXPORT __declspec(dllexport)
