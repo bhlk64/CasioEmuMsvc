@@ -258,7 +258,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: Test-upload-ios-build
-        path: build/CasioEmuMsvc/*
+        path: build/*
         archive: true
         retention-days: 1
     
