@@ -487,7 +487,7 @@ void Injector::RenderCustomInjectTab(bool& show_info, std::string& info_msg) {
 
 	if (isReloading.load()) {
 		ImGui::SameLine(0, 15.0f);
-		ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Rop.Loading"_lc);
+		ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "%s", "Rop.Loading"_lc);
 	}
 
 	ImGui::Spacing();
