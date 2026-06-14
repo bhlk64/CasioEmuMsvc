@@ -252,13 +252,15 @@ jobs:
           -DCMAKE_SYSTEM_NAME=iOS \
           -DCMAKE_OSX_ARCHITECTURES=arm64
 
-          cmake --build build-ios --config Release
+          cmake --build build --config Release
     - name: upload full build ios
       if: failure() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
       with:
         name: Test-upload-ios-build
-        path: CasioEmuMsvc/src/*
+        path: |
+          CasioEmuMsvc/src/*
+          build/*
         archive: true
         retention-days: 1
     
