@@ -5,6 +5,8 @@ project(CasioEmuMsvc)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
+
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU" AND NOT MSVC)
     add_compile_options(-Wno-error=implicit-function-declaration)
 endif()
@@ -21,8 +23,8 @@ endif()
 
 set(IOS FALSE)
 
-if(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    set(IOS TRUE)
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    set(IOS TRUE CACHE BOOL "" FORCE)
 endif()
 
 if(IOS)
@@ -166,6 +168,9 @@ endif()
 if(BUILD_EXECUTABLE)
     message(STATUS "Building executable")
     set(TARGET_NAME "CasioEmuMsvc")
+    if(NOT MAIN_SOURCES)
+        message(FATAL_ERROR "MAIN_SOURCES is EMPTY on this platform 💀")
+    endif()
 
     if(APPLE)
         set(TARGET_NAME "CasioEmuMsvc")
