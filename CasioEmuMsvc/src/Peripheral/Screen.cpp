@@ -44,6 +44,9 @@ ScreenMirror* g_mirror = nullptr;
 #include <sstream>
 #include <system_error>
 #include <vector>
+#ifndef _WIN32
+#include <csignal>
+#endif
 
 #if !defined(__ANDROID__) && !defined(__EMSCRIPTEN__) && !defined(IOS)
 #include "Theme.h"
@@ -1194,7 +1197,9 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		int renderW, renderH;
 		if (SDL_GetRendererOutputSize(renderer, &renderW, &renderH) != 0) return false;
 		int windowW, windowH;
-		SDL_GetWindowSize(SDL_RenderGetWindow(renderer), &windowW, &windowH);
+		SDL_Window* win = SDL_RenderGetWindow(renderer);
+		if (!win) return false;
+		SDL_GetWindowSize(win, &windowW, &windowH);
 		if (windowW == 0 || windowH == 0) return false;
 		
 		float scaleX = (float)renderW / windowW;
@@ -1581,6 +1586,8 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			CloseHandle(processInfo.hThread);
 			return true;
 #else
+			// Ignore SIGPIPE so broken pipe won't crash the process
+			std::signal(SIGPIPE, SIG_IGN);
 			pipe = ::popen(command.c_str(), "w");
 			return pipe != nullptr;
 #endif
@@ -1664,10 +1671,11 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 				return false;
 			}
 
+			logicalCaptureRect = logicalRect;
+			// Compute physical rect for buffer allocation
 			if (!GetPhysicalCaptureRect(renderer, logicalRect, captureRect)) {
 				captureRect = logicalRect;
 			}
-			
 			fps = std::max(1, requestedFps);
 			outputWidth = (captureRect.w + 1) & ~1;
 			outputHeight = (captureRect.h + 1) & ~1;
@@ -1685,11 +1693,19 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			}
 #else
 			const std::string command = BuildFfmpegCommand(outputPath);
-			if (encoder.Start(command)) {
-				frameSequence = false;
-				recording = true;
-				SDL_Log("Recording started: %s", outputPath.string().c_str());
-				return true;
+			std::string check_cmd = command + " -version > /dev/null 2>&1";
+			// Check if ffmpeg exists by running it with -version
+			std::string ffmpeg_path = "ffmpeg";
+			if (std::filesystem::exists("/opt/homebrew/bin/ffmpeg")) ffmpeg_path = "/opt/homebrew/bin/ffmpeg";
+			else if (std::filesystem::exists("/usr/local/bin/ffmpeg")) ffmpeg_path = "/usr/local/bin/ffmpeg";
+
+			if (std::system((ffmpeg_path + " -version > /dev/null 2>&1").c_str()) == 0) {
+				if (encoder.Start(command)) {
+					frameSequence = false;
+					recording = true;
+					SDL_Log("Recording started: %s", outputPath.string().c_str());
+					return true;
+				}
 			}
 #endif
 
@@ -1741,12 +1757,14 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			}
 			nextCaptureTick = now + static_cast<Uint64>(1000 / fps);
 
+			// Use physical (backing) dimensions for buffer allocation
 			const int frameWidth = frameSequence ? captureRect.w : outputWidth;
 			const int frameHeight = frameSequence ? captureRect.h : outputHeight;
 			const int pitch = frameWidth * 4;
 			std::vector<uint8_t> pixels(static_cast<size_t>(pitch) * frameHeight, 255);
 
-			if (SDL_RenderReadPixels(renderer, &captureRect, SDL_PIXELFORMAT_RGBA32, pixels.data(), pitch) != 0) {
+			// Read using logical rect - SDL maps to physical internally and writes physical pixels
+			if (SDL_RenderReadPixels(renderer, &logicalCaptureRect, SDL_PIXELFORMAT_RGBA32, pixels.data(), pitch) != 0) {
 				SDL_Log("Error capturing recording frame: %s", SDL_GetError());
 				Stop();
 				return false;
@@ -1779,8 +1797,16 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 
 	private:
 		std::string BuildFfmpegCommand(const std::filesystem::path& path) const {
+			std::string ffmpeg_path = "ffmpeg";
+#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(IOS)
+			if (std::filesystem::exists("/opt/homebrew/bin/ffmpeg")) {
+				ffmpeg_path = "/opt/homebrew/bin/ffmpeg";
+			} else if (std::filesystem::exists("/usr/local/bin/ffmpeg")) {
+				ffmpeg_path = "/usr/local/bin/ffmpeg";
+			}
+#endif
 			std::ostringstream command;
-			command << "ffmpeg -y -hide_banner -loglevel error"
+			command << ffmpeg_path << " -y -hide_banner -loglevel error"
 				<< " -f rawvideo -vcodec rawvideo"
 				<< " -pixel_format rgba"
 				<< " -video_size " << outputWidth << "x" << outputHeight
@@ -1822,7 +1848,8 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 #else
 		RawVideoPipe encoder;
 #endif
-		SDL_Rect captureRect{};
+		SDL_Rect captureRect{};      // physical (backing) size for buffer allocation
+		SDL_Rect logicalCaptureRect{}; // logical size for SDL_RenderReadPixels
 		int fps = 30;
 		int outputWidth = 0;
 		int outputHeight = 0;
@@ -1837,27 +1864,29 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	// Function to capture the current screen, save as PNG file and copy to clipboard
 	void CaptureScreenshot(SDL_Renderer* renderer, const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects) {
 		std::string filename = MakeTimestampedName("screenshot-", ".png");
-		SDL_Rect logicalCaptureRect{};
-		if (!GetCaptureRect(spriteRects, pixelRects, logicalCaptureRect)) {
+		SDL_Rect logicalRect{};
+		if (!GetCaptureRect(spriteRects, pixelRects, logicalRect)) {
 			SDL_Log("Screenshot failed: invalid capture region.");
 			return;
 		}
-		
-		SDL_Rect captureRect{};
-		if (!GetPhysicalCaptureRect(renderer, logicalCaptureRect, captureRect)) {
-			captureRect = logicalCaptureRect;
+
+		// SDL_RenderReadPixels reads at physical (backing) resolution on HiDPI.
+		// We must allocate a buffer at the physical size.
+		SDL_Rect physicalRect{};
+		if (!GetPhysicalCaptureRect(renderer, logicalRect, physicalRect)) {
+			physicalRect = logicalRect;
 		}
 
-		int captureWidth = captureRect.w;
-		int captureHeight = captureRect.h;
+		int captureWidth = physicalRect.w;
+		int captureHeight = physicalRect.h;
 
 		// Create a surface to capture the screen content
 		SDL_Surface* screenSurface = SDL_CreateRGBSurface(0, captureWidth, captureHeight, 32,
 			0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 
 		if (screenSurface != nullptr) {
-			// Copy the renderer to the surface
-			if (SDL_RenderReadPixels(renderer, &captureRect, SDL_PIXELFORMAT_RGBA32,
+			// Read pixels using the LOGICAL rect (SDL maps to physical internally)
+			if (SDL_RenderReadPixels(renderer, &logicalRect, SDL_PIXELFORMAT_RGBA32,
 				screenSurface->pixels, screenSurface->pitch) == 0) {
 
 #ifdef __ANDROID__
@@ -2087,15 +2116,19 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 #ifndef __EMSCRIPTEN__
 		// If screenshot is requested, capture only the rendered screen region
 		if (emulator.screenshot_requested.load()) {
-			// Capture the region using both sprite and pixel rectangles
-			CaptureScreenshot(renderer, spriteRects, pixelRects);
+			// Capture the region using both sprite and pixel rectangles or just pixels
+			std::vector<SDL_Rect> emptyRects;
+			const auto& spritesToUse = emulator.screenshot_full_ui.load() ? spriteRects : emptyRects;
+			CaptureScreenshot(renderer, spritesToUse, pixelRects);
 			emulator.screenshot_requested.store(false);
 			emulator.screenshot_taken.store(true);
 		}
 		static ScreenRecorder recorder;
 		if (emulator.recording_requested.exchange(false) && !recorder.IsRecording()) {
 			SDL_Rect captureRect{};
-			if (GetCaptureRect(spriteRects, pixelRects, captureRect) && recorder.Start(renderer, captureRect, 30)) {
+			std::vector<SDL_Rect> emptyRects;
+			const auto& spritesToUse = emulator.recording_full_ui.load() ? spriteRects : emptyRects;
+			if (GetCaptureRect(spritesToUse, pixelRects, captureRect) && recorder.Start(renderer, captureRect, 30)) {
 				emulator.recording_frame_count.store(0);
 				emulator.recording_active.store(true);
 			}

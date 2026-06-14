@@ -86,47 +86,77 @@ void SaveUIState() {
 static float screenshot_toast_timer = 0.0f;
 void RenderDebuggerToolbar() {
     if (ImGui::BeginMainMenuBar()) {
-        if (ImGui::BeginMenu("Debugger Windows")) {
-            for (auto* w : windows) {
-                if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
-                    SaveUIState();
+        if (ImGui::BeginTabBar("ToolbarTabs", ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip)) {
+            
+            if (ImGui::TabItemButton("Debugger Windows")) {
+                ImGui::OpenPopup("DebuggerMenuPopup");
+            }
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
+            if (ImGui::BeginPopup("DebuggerMenuPopup")) {
+                for (auto* w : windows) {
+                    if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
+                        SaveUIState();
+                    }
+                }
+                ImGui::EndPopup();
+            }
+            
+            if (ImGui::TabItemButton("Close All")) {
+                for (auto* w : windows) if (w) w->open = false;
+            }
+
+            bool isPaused = m_emu->GetPaused();
+            if (ImGui::TabItemButton(isPaused ? "[>] Resume" : "[||] Pause")) {
+                m_emu->SetPaused(!isPaused);
+            }
+
+            if (ImGui::TabItemButton("[C] Screenshot")) {
+                ImGui::OpenPopup("ScreenshotMenuPopup");
+            }
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
+            if (ImGui::BeginPopup("ScreenshotMenuPopup")) {
+                if (ImGui::MenuItem("Full Calculator")) {
+                    m_emu->screenshot_full_ui = true;
+                    m_emu->screenshot_requested = true;
+                }
+                if (ImGui::MenuItem("Screen Only")) {
+                    m_emu->screenshot_full_ui = false;
+                    m_emu->screenshot_requested = true;
+                }
+                ImGui::EndPopup();
+            }
+
+            if (m_emu->recording_active.load()) {
+                if (ImGui::TabItemButton("[ ] Stop Rec")) {
+                    m_emu->recording_stop_requested = true;
+                }
+            } else {
+                if (ImGui::TabItemButton("[O] Record")) {
+                    ImGui::OpenPopup("RecordMenuPopup");
+                }
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
+                if (ImGui::BeginPopup("RecordMenuPopup")) {
+                    if (ImGui::MenuItem("Full Calculator")) {
+                        m_emu->recording_full_ui = true;
+                        m_emu->recording_requested = true;
+                    }
+                    if (ImGui::MenuItem("Screen Only")) {
+                        m_emu->recording_full_ui = false;
+                        m_emu->recording_requested = true;
+                    }
+                    ImGui::EndPopup();
                 }
             }
-            ImGui::EndMenu();
-        }
-        
-        if (ImGui::Button("Close All")) {
-            for (auto* w : windows) if (w) w->open = false;
-        }
 
-		// Spacer
-		ImGui::Dummy(ImVec2(10.0f, 0.0f));
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(10.0f, 0.0f));
-        
-		// Add Quick Actions
-        bool isPaused = m_emu->GetPaused();
-		if (ImGui::MenuItem(isPaused ? "[>] Resume" : "[||] Pause")) {
-			m_emu->SetPaused(!isPaused);
-		}
-		if (ImGui::MenuItem("\xf0\x9f\x93\xb8 Screenshot")) {
-			m_emu->screenshot_requested = true;
-		}
-		if (m_emu->recording_active.load()) {
-			if (ImGui::MenuItem("[ ] Stop Rec")) { // ⏹
-				m_emu->recording_stop_requested = true;
-			}
-		} else {
-			if (ImGui::MenuItem("[O] Record")) { // ⏺
-				m_emu->recording_requested = true;
-			}
-		}
-		if (ImGui::MenuItem(ThemeManager::Instance().Settings().isDarkMode ? "Light Theme" : "Dark Theme")) {
-			if (ThemeManager::Instance().Settings().isDarkMode)
-				ThemeManager::Instance().SetLightMode();
-			else
-				ThemeManager::Instance().SetDarkMode();
-		}
+            if (ImGui::TabItemButton(ThemeManager::Instance().Settings().isDarkMode ? "Light Theme" : "Dark Theme")) {
+                if (ThemeManager::Instance().Settings().isDarkMode)
+                    ThemeManager::Instance().SetLightMode();
+                else
+                    ThemeManager::Instance().SetDarkMode();
+            }
+
+            ImGui::EndTabBar();
+        }
 
 
 		if (m_emu->screenshot_taken.exchange(false)) {

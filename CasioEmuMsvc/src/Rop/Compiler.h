@@ -225,8 +225,6 @@ public:
 class FontTable {
     string font_;
     unordered_map<char, int> fontAssoc_;
-    unordered_map<char, string> charToHex_;
-    unordered_map<string, string> tokenToHex_;
 
 public:
     void setFont(const string& f) {
@@ -237,10 +235,323 @@ public:
     }
 
     const string& font() const { return font_; }
-    void setCharToHex(unordered_map<char, string> m) { charToHex_ = std::move(m); }
-    void setTokenToHex(unordered_map<string, string> m) { tokenToHex_ = std::move(m); }
-    const unordered_map<char, string>& charToHexMap() const { return charToHex_; }
-    const unordered_map<string, string>& tokenToHexMap() const { return tokenToHex_; }
+
+    static const unordered_map<string, string>& charToHexMap() {
+        static const unordered_map<string, string> m = {
+            {"0", "30"},
+            {"1", "31"},
+            {"2", "32"},
+            {"3", "33"},
+            {"4", "34"},
+            {"5", "35"},
+            {"6", "36"},
+            {"7", "37"},
+            {"8", "38"},
+            {"9", "39"},
+            {"A", "41"},
+            {"B", "42"},
+            {"C", "43"},
+            {"D", "44"},
+            {"E", "45"},
+            {"F", "46"},
+            {"G", "47"},
+            {"H", "48"},
+            {"I", "49"},
+            {"J", "4A"},
+            {"K", "4B"},
+            {"L", "4C"},
+            {"M", "4D"},
+            {"N", "4E"},
+            {"O", "4F"},
+            {"P", "50"},
+            {"Q", "51"},
+            {"R", "52"},
+            {"S", "53"},
+            {"T", "54"},
+            {"U", "55"},
+            {"V", "56"},
+            {"W", "57"},
+            {"X", "58"},
+            {"Y", "59"},
+            {"Z", "5A"},
+            {"a", "61"},
+            {"b", "62"},
+            {"c", "63"},
+            {"d", "64"},
+            {"e", "65"},
+            {"f", "66"},
+            {"g", "67"},
+            {"h", "68"},
+            {"i", "69"},
+            {"j", "6A"},
+            {"k", "6B"},
+            {"l", "6C"},
+            {"m", "6D"},
+            {"n", "6E"},
+            {"o", "6F"},
+            {"p", "70"},
+            {"q", "71"},
+            {"r", "72"},
+            {"s", "73"},
+            {"t", "74"},
+            {"u", "75"},
+            {"v", "76"},
+            {"w", "77"},
+            {"x", "78"},
+            {"y", "79"},
+            {"z", "7A"},
+            {"Á", "F451"},
+            {"á", "F471"},
+            {"À", "F450"},
+            {"à", "F470"},
+            {"Ả", "F454"},
+            {"ả", "F474"},
+            {"Ã", "F453"},
+            {"ã", "F473"},
+            {"Ạ", "F410"},
+            {"ạ", "F465"},
+            {"Ă", "F455"},
+            {"ă", "F475"},
+            {"Ắ", "F411"},
+            {"ắ", "F431"},
+            {"Ằ", "F412"},
+            {"ằ", "F432"},
+            {"Ẳ", "F490"},
+            {"ẳ", "F456"},
+            {"Ẵ", "F491"},
+            {"ẵ", "F457"},
+            {"Ặ", "F413"},
+            {"ặ", "F433"},
+            {"Â", "F452"},
+            {"â", "F472"},
+            {"Ấ", "F414"},
+            {"ấ", "F434"},
+            {"Ầ", "F415"},
+            {"ầ", "F435"},
+            {"Ẩ", "F416"},
+            {"ẩ", "F436"},
+            {"Ẫ", "F492"},
+            {"ẫ", "F477"},
+            {"Ậ", "F417"},
+            {"ậ", "F437"},
+            {"É", "F459"},
+            {"é", "F479"},
+            {"È", "F458"},
+            {"è", "F478"},
+            {"Ẻ", "F45B"},
+            {"ẻ", "F47B"},
+            {"Ẽ", "F418"},
+            {"ẽ", "F438"},
+            {"Ẹ", "F419"},
+            {"ẹ", "F439"},
+            {"Ê", "F45A"},
+            {"ê", "F47A"},
+            {"Ế", "F41A"},
+            {"ế", "F43A"},
+            {"Ề", "F41B"},
+            {"ề", "F43B"},
+            {"Ể", "F41C"},
+            {"ể", "F43C"},
+            {"Ễ", "F41D"},
+            {"ễ", "F43D"},
+            {"Ệ", "F41E"},
+            {"ệ", "F43E"},
+            {"Í", "F45D"},
+            {"í", "F47D"},
+            {"Ì", "F45C"},
+            {"ì", "F47C"},
+            {"Ỉ", "F42B"},
+            {"ỉ", "F47F"},
+            {"Ĩ", "F45E"},
+            {"ĩ", "F47E"},
+            {"Ị", "F428"},
+            {"ị", "F448"},
+            {"Ó", "F463"},
+            {"ó", "F483"},
+            {"Ò", "F462"},
+            {"ò", "F482"},
+            {"Ỏ", "F429"},
+            {"ỏ", "F486"},
+            {"Õ", "F430"},
+            {"õ", "F485"},
+            {"Ọ", "F42A"},
+            {"ọ", "F487"},
+            {"Ô", "F464"},
+            {"ô", "F484"},
+            {"Ố", "F41F"},
+            {"ố", "F43F"},
+            {"Ồ", "F420"},
+            {"ồ", "F440"},
+            {"Ổ", "F421"},
+            {"ổ", "F441"},
+            {"Ỗ", "F422"},
+            {"ỗ", "F442"},
+            {"Ộ", "F423"},
+            {"ộ", "F445"},
+            {"Ơ", "F444"},
+            {"ơ", "F44D"},
+            {"Ớ", "F425"},
+            {"ớ", "F44E"},
+            {"Ờ", "F426"},
+            {"ờ", "F446"},
+            {"Ở", "F427"},
+            {"ở", "F447"},
+            {"Ỡ", "F443"},
+            {"ỡ", "F46E"},
+            {"Ợ", "F424"},
+            {"ợ", "F48E"},
+            {"Ú", "F46A"},
+            {"ú", "F48A"},
+            {"Ù", "F469"},
+            {"ù", "F489"},
+            {"Ủ", "F42C"},
+            {"ủ", "F48C"},
+            {"Ũ", "F42D"},
+            {"ũ", "F48B"},
+            {"Ụ", "F42E"},
+            {"ụ", "F488"},
+            {"Ư", "F44F"},
+            {"ư", "F46F"},
+            {"Ứ", "F44A"},
+            {"ứ", "F461"},
+            {"Ừ", "F44B"},
+            {"ừ", "F467"},
+            {"Ử", "F44C"},
+            {"ử", "F468"},
+            {"Ữ", "F48F"},
+            {"ữ", "F476"},
+            {"Ự", "F449"},
+            {"ự", "F481"},
+            {"Ý", "F46D"},
+            {"ý", "F48D"},
+            {"Ỳ", "F42F"},
+            {"ỳ", "F45F"},
+            {"Ỷ", "F493"},
+            {"ỷ", "F466"},
+            {"Ỹ", "F494"},
+            {"ỹ", "F46B"},
+            {"Ỵ", "F495"},
+            {"ỵ", "F46C"},
+            {"Đ", "F460"},
+            {"đ", "F480"},
+            {"~", "20"},
+            {"@", "40"},
+            {"_", "5F"},
+            {"&", "1A"},
+            {"-", "2D"},
+            {"+", "2B"},
+            {"(", "28"},
+            {")", "29"},
+            {"/", "2F"},
+            {"*", "2A"},
+            {"'", "27"},
+            {":", "3A"},
+            {"!", "21"},
+            {"?", "3F"},
+            {"|", "7C"},
+            {"√", "98"},
+            {"÷", "26"},
+            {"×", "24"},
+            {"^", "5E"},
+            {"°", "85"},
+            {"{", "7B"},
+            {"}", "7D"},
+            {"[", "5B"},
+            {"]", "5D"},
+            {"%", "25"},
+            {".", "2E"},
+            {",", "2C"},
+        };
+        return m;
+    }
+
+    static const unordered_map<string, string>& tokenToHexMap() {
+        static const unordered_map<string, string> m = {
+            {"e", "46"},
+            {"pi", "22"},
+            {"𝜋", "22"},
+            {",", "2c"},
+            {"x10^", "2d"},
+            {".", "2e"},
+            {"0", "30"},
+            {"1", "31"},
+            {"2", "32"},
+            {"3", "33"},
+            {"4", "34"},
+            {"5", "35"},
+            {"6", "36"},
+            {"7", "37"},
+            {"8", "38"},
+            {"9", "39"},
+            {"m", "40"},
+            {"ans", "41"},
+            {"a", "42"},
+            {"b", "43"},
+            {"c", "44"},
+            {"d", "45"},
+            {"f", "47"},
+            {"x", "48"},
+            {"y", "49"},
+            {"preans", "4a"},
+            {"z", "4b"},
+            {"∑(", "50"},
+            {"sigma(", "50"},
+            {"∫(", "51"},
+            {"integral(", "51"},
+            {"d/dx", "52"},
+            {"∏(", "53"},
+            {"capital_pi(", "53"},
+            {"(", "60"},
+            {"abs(", "68"},
+            {"rnd(", "69"},
+            {"sinh(", "6C"},
+            {"cosh(", "6D"},
+            {"tanh(", "6E"},
+            {"sinh^-1(", "6F"},
+            {"cosh^-1(", "70"},
+            {"tanh^-1(", "71"},
+            {"e^(", "72"},
+            {"10^(", "73"},
+            {"√(", "74"},
+            {"sqrt(", "74"},
+            {"In(", "75"},
+            {"³√(", "76"},
+            {"cbrt(", "76"},
+            {"sin(", "77"},
+            {"cos(", "78"},
+            {"tan(", "79"},
+            {"sin^-1(", "7a"},
+            {"cos^-1(", "7b"},
+            {"tan^-1(", "7c"},
+            {"log(", "7d"},
+            {"int(", "83"},
+            {"intg(", "84"},
+            {"ranint#(", "87"},
+            {"gcd(", "88"},
+            {"lcm(", "89"},
+            {"rndfix(", "8a"},
+            {"=", "a5"},
+            {"+", "a6"},
+            {"-", "a7"},
+            {"*", "a8"},
+            {"÷", "a9"},
+            {"//", "a9"},
+            {"mod(", "aa"},
+            {"−", "c0"},
+            {"⌟", "c8"},
+            {"/", "c8"},
+            {"^(", "c9"},
+            {"x^√(", "ca"},
+            {"root(", "ca"},
+            {")", "d0"},
+            {"^-1", "d4"},
+            {"^2", "d5"},
+            {"^3", "d6"},
+            {"%", "d7"},
+            {"!", "d8"},
+        };
+        return m;
+    }
 
     vector<int> fromFont(const string& s) const {
         vector<int> result;
@@ -261,18 +572,37 @@ public:
     }
 
     vector<int> encodeString(const string& s) const {
-        string processed;
-        for (char c : s) processed.push_back(c == ' ' ? '~' : c);
+        string processed = s;
+        for (size_t i = 0; i < processed.size(); ++i) {
+            if (processed[i] == ' ') processed[i] = '~';
+        }
+        
+        vector<pair<string, string>> sortedChars;
+        for (auto& pair : charToHexMap())
+            sortedChars.push_back(pair);
+        sort(sortedChars.begin(), sortedChars.end(),
+            [](const auto& a, const auto& b) { return a.first.size() > b.first.size(); });
+
         vector<int> result;
-        for (unsigned char c : processed) {
-            auto it = charToHex_.find(c);
-            if (it == charToHex_.end())
-                throw runtime_error(string("Character not found in conversion table: '") + (char)c + "'");
-            const string& hv = it->second;
-            if (hv.size() == 2) result.push_back(stoi(hv, nullptr, 16));
-            else if (hv.size() == 4) {
-                result.push_back(stoi(hv.substr(0, 2), nullptr, 16));
-                result.push_back(stoi(hv.substr(2, 2), nullptr, 16));
+        size_t i = 0;
+        while (i < processed.size()) {
+            bool found = false;
+            for (auto& pair : sortedChars) {
+                const string& tok = pair.first;
+                const string& hx = pair.second;
+                if (processed.compare(i, tok.size(), tok) == 0) {
+                    if (hx.size() == 2) result.push_back(stoi(hx, nullptr, 16));
+                    else if (hx.size() == 4) {
+                        result.push_back(stoi(hx.substr(0, 2), nullptr, 16));
+                        result.push_back(stoi(hx.substr(2, 2), nullptr, 16));
+                    }
+                    i += tok.size();
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw runtime_error(string("Character not found in conversion table: '") + string(1, processed[i]) + "'");
             }
         }
         return result;
@@ -280,9 +610,15 @@ public:
 
     vector<int> encodeTokens(const string& content) const {
         vector<pair<string, string>> sortedTokens;
-        for (auto& [tok, hx] : tokenToHex_)
-            sortedTokens.push_back({tok, hx});
+        for (auto& pair : tokenToHexMap())
+            sortedTokens.push_back(pair);
         sort(sortedTokens.begin(), sortedTokens.end(),
+            [](const auto& a, const auto& b) { return a.first.size() > b.first.size(); });
+
+        vector<pair<string, string>> sortedChars;
+        for (auto& pair : charToHexMap())
+            sortedChars.push_back(pair);
+        sort(sortedChars.begin(), sortedChars.end(),
             [](const auto& a, const auto& b) { return a.first.size() > b.first.size(); });
 
         string c = content;
@@ -291,7 +627,9 @@ public:
         size_t i = 0;
         while (i < c.size()) {
             bool found = false;
-            for (auto& [tok, hx] : sortedTokens) {
+            for (auto& pair : sortedTokens) {
+                const string& tok = pair.first;
+                const string& hx = pair.second;
                 if (c.compare(i, tok.size(), tok) == 0) {
                     if (hx.size() == 2) result.push_back(stoi(hx, nullptr, 16));
                     else if (hx.size() == 4) {
@@ -304,18 +642,23 @@ public:
                 }
             }
             if (!found) {
-                unsigned char ch = c[i];
-                auto it = charToHex_.find(ch);
-                if (it != charToHex_.end()) {
-                    const string& hx = it->second;
-                    if (hx.size() == 2) result.push_back(stoi(hx, nullptr, 16));
-                    else if (hx.size() == 4) {
-                        result.push_back(stoi(hx.substr(0, 2), nullptr, 16));
-                        result.push_back(stoi(hx.substr(2, 2), nullptr, 16));
+                for (auto& pair : sortedChars) {
+                    const string& tok = pair.first;
+                    const string& hx = pair.second;
+                    if (c.compare(i, tok.size(), tok) == 0) {
+                        if (hx.size() == 2) result.push_back(stoi(hx, nullptr, 16));
+                        else if (hx.size() == 4) {
+                            result.push_back(stoi(hx.substr(0, 2), nullptr, 16));
+                            result.push_back(stoi(hx.substr(2, 2), nullptr, 16));
+                        }
+                        i += tok.size();
+                        found = true;
+                        break;
                     }
                 }
-                else throw runtime_error(string("Unknown token/char: ") + c[i]);
-                ++i;
+            }
+            if (!found) {
+                throw runtime_error(string("Unknown token/char: ") + string(1, c[i]));
             }
         }
         return result;

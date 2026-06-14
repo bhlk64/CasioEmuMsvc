@@ -51,9 +51,11 @@ namespace casioemu {
 		bool pause_on_mem_error;
 
 		std::atomic<bool> screenshot_requested{};
+		std::atomic<bool> screenshot_full_ui{true};
 		std::atomic<bool> screenshot_taken{false};
 		std::atomic<bool> mirroring_requested{};
 		std::atomic<bool> recording_requested{};
+		std::atomic<bool> recording_full_ui{true};
 		std::atomic<bool> recording_stop_requested{};
 		std::atomic<bool> recording_active{};
 		std::atomic<unsigned int> recording_frame_count{};

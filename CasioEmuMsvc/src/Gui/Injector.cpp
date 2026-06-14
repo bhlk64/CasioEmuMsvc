@@ -458,17 +458,19 @@ bool Injector::ApplyInjection(const CustomInjection& inj, bool& show_info, std::
 }
 
 void Injector::RenderCustomInjectTab(bool& show_info, std::string& info_msg) {
-	ImGui::TextUnformatted(("Rop.CurrentInjectFile"_l + ": " + injectionFilePath).c_str());
+	ImGui::Spacing();
+	ImGui::TextDisabled("File: %s", injectionFilePath.c_str());
 
 	static bool autoCheckFileChanges = true;
+	ImGui::AlignTextToFramePadding();
 	if (ImGui::Checkbox("Rop.AutoReload"_lc, &autoCheckFileChanges)) {
 		if (autoCheckFileChanges) {
 			needsReload = true;
 		}
 	}
 
-	ImGui::SameLine();
-	if (ImGui::Button("Rop.ReloadCustomInjects"_lc)) {
+	ImGui::SameLine(0, 15.0f);
+	if (ImGui::Button("Rop.ReloadCustomInjects"_lc, ImVec2(150, 0))) {
 		if (!isReloading.load() && !isShuttingDown.load()) {
 			std::string currentFilePath = ThemeManager::Instance().Settings().injectionFilePath;
 			if (currentFilePath != injectionFilePath) {
@@ -484,11 +486,13 @@ void Injector::RenderCustomInjectTab(bool& show_info, std::string& info_msg) {
 	}
 
 	if (isReloading.load()) {
-		ImGui::SameLine();
-		ImGui::TextUnformatted("Rop.Loading"_lc);
+		ImGui::SameLine(0, 15.0f);
+		ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Rop.Loading"_lc);
 	}
 
+	ImGui::Spacing();
 	ImGui::Separator();
+	ImGui::Spacing();
 
 	for (const auto& inj : customInjections) {
 		if (ImGui::CollapsingHeader(inj.name.c_str())) {
@@ -525,22 +529,26 @@ void Injector::RenderInjectorTab(InjectorData& inj, int index, bool& show_info, 
 			   (c >= 'A' && c <= 'F');
 	};
 
+	ImGui::AlignTextToFramePadding();
 	ImGui::TextUnformatted("Rop.InjectAddr"_lc);
-	ImGui::SameLine();
-	ImGui::SetNextItemWidth(80);
+	ImGui::SameLine(0, 10.0f);
+	ImGui::SetNextItemWidth(120.0f);
 	ImGui::InputText(("##addr" + std::to_string(index)).c_str(), inj.addr, 10);
 
-	if (ImGui::Button(("Rop.Paste"_l + "##" + std::to_string(index)).c_str())) {
+	ImGui::SameLine(0, 20.0f);
+
+	if (ImGui::Button(("Rop.Paste"_l + "##" + std::to_string(index)).c_str(), ImVec2(80, 0))) {
 		if (ImGui::GetClipboardText() != nullptr) {
 			strncpy(inj.data, ImGui::GetClipboardText(), sizeof(inj.data) - 1);
 			inj.data[sizeof(inj.data) - 1] = '\0';
 		}
 	}
-	ImGui::SameLine();
-	if (ImGui::Button(("Rop.Clear"_l + "##" + std::to_string(index)).c_str())) {
+	ImGui::SameLine(0, 5.0f);
+	if (ImGui::Button(("Rop.Clear"_l + "##" + std::to_string(index)).c_str(), ImVec2(80, 0))) {
 		memset(inj.data, 0, sizeof(inj.data));
 	}
 
+	ImGui::Spacing();
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 	ImGui::InputTextMultiline(
 		("##hex" + std::to_string(index)).c_str(),
@@ -548,7 +556,8 @@ void Injector::RenderInjectorTab(InjectorData& inj, int index, bool& show_info, 
 		IM_ARRAYSIZE(inj.data) - 1,
 		ImVec2(-1, ImGui::GetTextLineHeight() * 8));
 
-	if (ImGui::Button(("Rop.Inject"_l + "##" + std::to_string(index)).c_str())) {
+	ImGui::Spacing();
+	if (ImGui::Button(("Rop.Inject"_l + "##" + std::to_string(index)).c_str(), ImVec2(120, 30))) {
 		auto plc = strtol(inj.addr, 0, 16);
 		size_t i = 0, j = 0;
 		char hex_buf[3];
@@ -607,13 +616,19 @@ void Injector::RenderCore() {
 
 	if (ImGui::BeginTabBar("Rop.TabBar"_lc)) {
 		if (ImGui::BeginTabItem("Rop.XAnMode"_lc)) {
-			ImGui::TextUnformatted("Rop.InputSize"_lc);
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(80);
-			ImGui::InputText("##off", buf, 9);
-			ImGui::SameLine();
+			ImGui::Spacing();
+			ImGui::TextDisabled("Inject an arbitrary size block into memory. Useful for basic overflows.");
+			ImGui::Separator();
+			ImGui::Spacing();
 
-			if (ImGui::Button("Rop.InputAn"_lc)) {
+			ImGui::AlignTextToFramePadding();
+			ImGui::TextUnformatted("Rop.InputSize"_lc);
+			ImGui::SameLine(0, 10.0f);
+			ImGui::SetNextItemWidth(120.0f);
+			ImGui::InputText("##off", buf, 9);
+			ImGui::SameLine(0, 15.0f);
+
+			if (ImGui::Button("Rop.InputAn"_lc, ImVec2(100, 0))) {
 				int off = atoi(buf);
 				if (off > 100) {
 					memset(base_addr + inputbase, 0x31, 100);
@@ -633,9 +648,13 @@ void Injector::RenderCore() {
 		}
 
 		if (ImGui::BeginTabItem("Rop.InjectHex"_lc)) {
-			if (ImGui::Button("Rop.AddInjector"_lc)) {
+			ImGui::Spacing();
+			if (ImGui::Button("Rop.AddInjector"_lc, ImVec2(150, 0))) {
 				injectors.push_back(InjectorData());
 			}
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
 
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			for (size_t i = 0; i < injectors.size(); i++) {
@@ -644,15 +663,23 @@ void Injector::RenderCore() {
 				std::string header = "Rop.InjectorNum"_l + " " + std::to_string(i + 1);
 
 				if (injectors.size() > 1) {
-					if (ImGui::Button(("Rop.RemoveInjector"_l + "##" + std::to_string(i)).c_str())) {
+					ImGui::PushStyleColor(ImGuiCol_Button, UIHelpers::kColorError);
+					if (ImGui::Button(("X##" + std::to_string(i)).c_str())) {
 						injectors.erase(injectors.begin() + i);
+						ImGui::PopStyleColor();
 						ImGui::PopID();
 						break;
 					}
+					ImGui::PopStyleColor();
+					ImGui::SameLine();
 				}
 
-				if (ImGui::CollapsingHeader(header.c_str())) {
+				if (ImGui::CollapsingHeader(header.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+					ImGui::Indent();
+					ImGui::Spacing();
 					RenderInjectorTab(injectors[i], i, show_info, info_msg);
+					ImGui::Spacing();
+					ImGui::Unindent();
 				}
 
 				ImGui::PopID();
@@ -662,14 +689,22 @@ void Injector::RenderCore() {
 		}
 
 		if (ImGui::BeginTabItem("Rop.Input"_lc)) {
-			ImGui::BeginChild("RopInput");
+			ImGui::Spacing();
+			ImGui::TextDisabled("Load custom buffer into RAM");
+			ImGui::Separator();
+			
+			ImGui::BeginChild("RopInput", ImVec2(0, ImGui::GetContentRegionAvail().y - 45), true);
 			editor.DrawContents(data_buf, range);
 			ImGui::EndChild();
 
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGui::SliderInt("Rop.InputSize"_lc, &range, 64, 1024);
+			ImGui::AlignTextToFramePadding();
+			ImGui::TextUnformatted("Rop.InputSize"_lc);
+			ImGui::SameLine(0, 10.0f);
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 180.0f);
+			ImGui::SliderInt("##RopInputSize", &range, 64, 1024);
 
-			if (ImGui::Button("Rop.LoadToInputArea"_lc)) {
+			ImGui::SameLine(0, 15.0f);
+			if (ImGui::Button("Rop.LoadToInputArea"_lc, ImVec2(-1, 0))) {
 				memcpy(base_addr + inputbase, data_buf, range);
 				SetFeedback("[v] " + "Rop.LoadedTip"_l, false);
 				show_info = false;
