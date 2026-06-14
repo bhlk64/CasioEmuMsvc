@@ -33,6 +33,9 @@ jobs:
           - platform: linux
             os: ubuntu-latest
             name: "Linux-x64"
+          - platform: ios
+            os: macos-latest
+            name: "iOS"
     
     runs-on: ${{ matrix.os }}
     name: Build ${{ matrix.name }}
@@ -239,6 +242,26 @@ jobs:
           build/CasioEmuMsvc/locales/
           build/CasioEmuMsvc/roms.db
         if-no-files-found: error
+    - name: Build for iOS
+      if: matrix.platform == 'ios'
+      run: |
+        cmake -S . -B build-ios \
+          -G Ninja \
+          -DIOS=TRUE \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_SYSTEM_NAME=iOS \
+          -DCMAKE_OSX_ARCHITECTURES=arm64
+
+          cmake --build build-ios --config Release
+    - name: upload full build ios
+      if: matrix.platform == "ios"
+      uses: actions/upload-artifact@v7
+      with:
+        name: Test-upload-ios-build
+        path: build/*
+        retention-days: 1
+    
+    
     - name: Dump CMake error
       if: failure()
       shell: bash

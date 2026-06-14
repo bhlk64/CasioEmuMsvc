@@ -19,6 +19,12 @@ if(EMSCRIPTEN OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     set(BUILD_EXECUTABLE ON CACHE BOOL "Web builds produce an executable html/js/wasm bundle" FORCE)
 endif()
 
+set(IOS FALSE)
+
+if(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    set(IOS TRUE)
+endif()
+
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fms-extensions")
 # set(CMAKE_CXX_EXTENSIONS OFF)
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -103,6 +109,7 @@ file(GLOB MAIN_SOURCES_PERIPHERAL "${SOURCE_DIR}/Peripheral/*.cpp")
 file(GLOB MAIN_SOURCES_PLUGIN "${SOURCE_DIR}/Plugin/*.cpp")
 file(GLOB MAIN_SOURCES_STARTUP "${SOURCE_DIR}/StartupUi/*.cpp")
 file(GLOB MAIN_SOURCES_WEB "${SOURCE_DIR}/Web/*.cpp")
+file(GLOB MAIN_SOURCES_EXT_MM "${SOURCE_DIR}/Ext/*.mm")
 
 if(CASIOEMU_WEB)
     list(FILTER MAIN_SOURCES_ROOT EXCLUDE REGEX "casioemu\\.cpp$")
@@ -130,6 +137,7 @@ else()
         ${MAIN_SOURCES_CRASH}
         ${MAIN_SOURCES_EXT}
         ${MAIN_SOURCES_EXT_CAM}
+        ${MAIN_SOURCES_EXT_MM}
         ${MAIN_SOURCES_GUI}
         ${MAIN_SOURCES_ROP}
         ${MAIN_SOURCES_IMGUI}
@@ -284,6 +292,13 @@ elseif(BUILD_EXECUTABLE)
             imm32
         )
         set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "")
+    elseif(IOS)
+        target_link_libraries(${TARGET_NAME} PRIVATE
+            "-framework UIKit"
+            "-framework Foundation"
+            "-framework AudioToolbox"
+            "-framework UniformTypeIdentifiers"
+        )
     elseif(APPLE)
         target_link_libraries(${TARGET_NAME} PRIVATE
             "-framework Cocoa"

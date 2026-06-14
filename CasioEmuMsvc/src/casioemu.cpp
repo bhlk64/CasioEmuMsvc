@@ -498,7 +498,7 @@ int main(int argc, char* argv[]) {
   DiscordRPC::Shutdown();
 	return 0;
 };
-
+#ifdef IOS
 #include <chrono>
 #include <thread>
 #include <atomic>
@@ -508,6 +508,7 @@ static std::thread* background_timer_thread = nullptr;
 static std::atomic<bool> exit_timer_thread(false);
 
 extern "C" void onAppCreate() {
+    return main(1, nullptr);
 }
 
 extern "C" void onAppResume() {
@@ -552,3 +553,4 @@ extern "C" void onAppForeground() {
 
 extern "C" void onAppTerminate() {
 }
+#endif
