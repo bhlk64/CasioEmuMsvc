@@ -498,3 +498,57 @@ int main(int argc, char* argv[]) {
   DiscordRPC::Shutdown();
 	return 0;
 };
+
+#include <chrono>
+#include <thread>
+#include <atomic>
+
+static std::atomic<bool> is_in_background(false);
+static std::thread* background_timer_thread = nullptr;
+static std::atomic<bool> exit_timer_thread(false);
+
+extern "C" void onAppCreate() {
+}
+
+extern "C" void onAppResume() {
+    is_in_background.store(false);
+}
+
+extern "C" void onAppPause() {
+}
+
+extern "C" void onAppBackground() {
+    is_in_background.store(true);
+    if (background_timer_thread) {
+        exit_timer_thread.store(true);
+        background_timer_thread->join();
+        delete background_timer_thread;
+        background_timer_thread = nullptr;
+    }
+    
+    exit_timer_thread.store(false);
+    background_timer_thread = new std::thread([]() {
+        for (int i = 0; i < 300; ++i) { // 5 minutes
+            if (exit_timer_thread.load()) return;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            if (!is_in_background.load()) return;
+        }
+        
+        if (is_in_background.load() && !exit_timer_thread.load()) {
+            exit(0);
+        }
+    });
+}
+
+extern "C" void onAppForeground() {
+    is_in_background.store(false);
+    if (background_timer_thread) {
+        exit_timer_thread.store(true);
+        background_timer_thread->join();
+        delete background_timer_thread;
+        background_timer_thread = nullptr;
+    }
+}
+
+extern "C" void onAppTerminate() {
+}
