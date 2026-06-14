@@ -83,6 +83,7 @@ void SaveUIState() {
     std::filesystem::rename(tmp, ui_state_fn);
 }
 
+static float screenshot_toast_timer = 0.0f;
 void RenderDebuggerToolbar() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Debugger Windows")) {
@@ -111,11 +112,43 @@ void RenderDebuggerToolbar() {
 		if (ImGui::MenuItem("\xf0\x9f\x93\xb8 Screenshot")) {
 			m_emu->screenshot_requested = true;
 		}
-		if (ImGui::MenuItem(ThemeManager::Instance().Settings().isDarkMode ? "\xe2\x98\x80 Light" : "\xe1\x8c\x99 Dark")) {
-			if (ThemeManager::Instance().Settings().isDarkMode)
-				ThemeManager::Instance().SetLightMode();
-			else
-				ThemeManager::Instance().SetDarkMode();
+		if (m_emu->recording_active.load()) {
+			if (ImGui::MenuItem("\xe2\x97\xbc Stop Rec")) { // ⏹
+				m_emu->recording_stop_requested = true;
+			}
+		} else {
+			if (ImGui::MenuItem("\xe2\x97\xbe Record")) { // ⏺
+				m_emu->recording_requested = true;
+			}
+		}
+		if (ImGui::MenuItem("\xe2\x8c\x82 Home")) { // ⌂
+			m_emu->return_to_home_requested = true;
+			m_emu->Shutdown();
+		}
+		if (ImGui::MenuItem("\xe2\x9a\x99 Settings")) { // ⚙
+			for (auto* w : windows) {
+				if (w && strcmp(w->name, "Theme") == 0) {
+					w->open = !w->open;
+					SaveUIState();
+					break;
+				}
+			}
+		}
+
+
+		if (m_emu->screenshot_taken.exchange(false)) {
+			screenshot_toast_timer = 3.0f;
+		}
+
+		if (screenshot_toast_timer > 0.0f) {
+			ImGui::SameLine(ImGui::GetWindowWidth() - 250.0f);
+			ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "ð¸ Screenshot Saved!");
+			screenshot_toast_timer -= ImGui::GetIO().DeltaTime;
+		}
+
+		if (m_emu->recording_active.load()) {
+			ImGui::SameLine(ImGui::GetWindowWidth() - (screenshot_toast_timer > 0.0f ? 450.0f : 200.0f));
+			ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "â¾ REC: %u frames", m_emu->recording_frame_count.load());
 		}
 
         ImGui::EndMainMenuBar();
@@ -512,22 +545,21 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 namespace UIHelpers {
 
 	void JumpToMemory(uint32_t addr) {
-		// Prefer the "Ram" window; fall back to any window that overrides GotoMemoryAddress.
-		UIWindow* fallback = nullptr;
+		// Try Ram first
 		for (auto* win : windows) {
-			const char* n = win->name;
-			if (n && strcmp(n, "Ram") == 0) {
-				win->GotoMemoryAddress(addr);
-				return;
-			}
-			// Track first editor-like window as fallback
-			if (!fallback && n && (strcmp(n, "Rom") == 0 || strcmp(n, "All") == 0
-				|| strcmp(n, "PRam") == 0 || strcmp(n, "Flash") == 0)) {
-				fallback = win;
+			if (win->name && strcmp(win->name, "Ram") == 0) {
+				if (win->GotoMemoryAddress(addr)) return;
 			}
 		}
-		if (fallback) {
-			fallback->GotoMemoryAddress(addr);
+		// Try PRam next
+		for (auto* win : windows) {
+			if (win->name && strcmp(win->name, "PRam") == 0) {
+				if (win->GotoMemoryAddress(addr)) return;
+			}
+		}
+		// Try any remaining
+		for (auto* win : windows) {
+			if (win->GotoMemoryAddress(addr)) return;
 		}
 	}
 

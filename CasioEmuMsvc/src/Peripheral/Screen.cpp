@@ -30,6 +30,8 @@
 #include "ModelInfo.h"
 #include "Models.h"
 #include "PopUpDisplay.h"
+
+ScreenMirror* g_mirror = nullptr;
 #include "Ui.hpp"
 #include <algorithm> // for std::min, std::max
 #include <array>
@@ -2063,6 +2065,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			// Capture the region using both sprite and pixel rectangles
 			CaptureScreenshot(renderer, spriteRects, pixelRects);
 			emulator.screenshot_requested.store(false);
+			emulator.screenshot_taken.store(true);
 		}
 		static ScreenRecorder recorder;
 		if (emulator.recording_requested.exchange(false) && !recorder.IsRecording()) {
@@ -2091,16 +2094,20 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		else {
 			emulator.recording_active.store(false);
 		}
-		static ScreenMirror* mirror = nullptr;
 		if (emulator.mirroring_requested.load()) {
 			auto p = GetSize(spriteRects, pixelRects);
 			auto sm = new ScreenMirror(p.first, p.second);
 			sm->create();
-			mirror = sm;
+			g_mirror = sm;
 			emulator.mirroring_requested.store(false);
 		}
-		if (mirror) {
-			UpdatePreview(renderer, mirror, spriteRects, pixelRects);
+		if (g_mirror) {
+			if (!g_mirror->isAlive()) {
+				delete g_mirror;
+				g_mirror = nullptr;
+			} else {
+				UpdatePreview(renderer, g_mirror, spriteRects, pixelRects);
+			}
 		}
 #endif
 	}
