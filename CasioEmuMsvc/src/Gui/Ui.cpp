@@ -106,33 +106,26 @@ void RenderDebuggerToolbar() {
         
 		// Add Quick Actions
         bool isPaused = m_emu->GetPaused();
-		if (ImGui::MenuItem(isPaused ? "\xe2\x96\xb6 Resume" : "\xe2\x8f\xb8 Pause")) {
+		if (ImGui::MenuItem(isPaused ? "[>] Resume" : "[||] Pause")) {
 			m_emu->SetPaused(!isPaused);
 		}
 		if (ImGui::MenuItem("\xf0\x9f\x93\xb8 Screenshot")) {
 			m_emu->screenshot_requested = true;
 		}
 		if (m_emu->recording_active.load()) {
-			if (ImGui::MenuItem("\xe2\x97\xbc Stop Rec")) { // ⏹
+			if (ImGui::MenuItem("[ ] Stop Rec")) { // ⏹
 				m_emu->recording_stop_requested = true;
 			}
 		} else {
-			if (ImGui::MenuItem("\xe2\x97\xbe Record")) { // ⏺
+			if (ImGui::MenuItem("[O] Record")) { // ⏺
 				m_emu->recording_requested = true;
 			}
 		}
-		if (ImGui::MenuItem("\xe2\x8c\x82 Home")) { // ⌂
-			m_emu->return_to_home_requested = true;
-			m_emu->Shutdown();
-		}
-		if (ImGui::MenuItem("\xe2\x9a\x99 Settings")) { // ⚙
-			for (auto* w : windows) {
-				if (w && strcmp(w->name, "Theme") == 0) {
-					w->open = !w->open;
-					SaveUIState();
-					break;
-				}
-			}
+		if (ImGui::MenuItem(ThemeManager::Instance().Settings().isDarkMode ? "Light Theme" : "Dark Theme")) {
+			if (ThemeManager::Instance().Settings().isDarkMode)
+				ThemeManager::Instance().SetLightMode();
+			else
+				ThemeManager::Instance().SetDarkMode();
 		}
 
 
@@ -196,9 +189,9 @@ void RenderStatusBar() {
 		
 		// Run/Pause state status indicator
 		if (m_emu->GetPaused()) {
-			ImGui::TextColored(UIHelpers::kColorWarning, "\xe2\x8f\xb8 %s", "StatusBar.Paused"_lc);  // ⏸
+			ImGui::TextColored(UIHelpers::kColorWarning, "[||] %s", "StatusBar.Paused"_lc);  // ⏸
 		} else {
-			ImGui::TextColored(UIHelpers::kColorSuccess, "\xe2\x96\xb6 %s", "StatusBar.Running"_lc); // ▶
+			ImGui::TextColored(UIHelpers::kColorSuccess, "[>] %s", "StatusBar.Running"_lc); // ▶
 		}
 		
 		ImGui::SameLine(0.0f, 20.0f);

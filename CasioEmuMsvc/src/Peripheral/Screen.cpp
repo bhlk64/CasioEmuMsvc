@@ -1190,6 +1190,23 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	}
 
 #ifndef __EMSCRIPTEN__
+	bool GetPhysicalCaptureRect(SDL_Renderer* renderer, const SDL_Rect& logicalRect, SDL_Rect& physicalRect) {
+		int renderW, renderH;
+		if (SDL_GetRendererOutputSize(renderer, &renderW, &renderH) != 0) return false;
+		int windowW, windowH;
+		SDL_GetWindowSize(SDL_RenderGetWindow(renderer), &windowW, &windowH);
+		if (windowW == 0 || windowH == 0) return false;
+		
+		float scaleX = (float)renderW / windowW;
+		float scaleY = (float)renderH / windowH;
+		
+		physicalRect.x = (int)(logicalRect.x * scaleX);
+		physicalRect.y = (int)(logicalRect.y * scaleY);
+		physicalRect.w = (int)(logicalRect.w * scaleX);
+		physicalRect.h = (int)(logicalRect.h * scaleY);
+		return true;
+	}
+
 	bool GetCaptureRect(const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects, SDL_Rect& captureRect) {
 		if (spriteRects.empty() && pixelRects.empty()) {
 			return false;
@@ -1640,14 +1657,17 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			Stop();
 		}
 
-		bool Start(const SDL_Rect& rect, int requestedFps = 30) {
+		bool Start(SDL_Renderer* renderer, const SDL_Rect& logicalRect, int requestedFps = 30) {
 			Stop();
-			if (rect.w <= 0 || rect.h <= 0) {
+			if (logicalRect.w <= 0 || logicalRect.h <= 0) {
 				SDL_Log("Recording failed: invalid capture region.");
 				return false;
 			}
 
-			captureRect = rect;
+			if (!GetPhysicalCaptureRect(renderer, logicalRect, captureRect)) {
+				captureRect = logicalRect;
+			}
+			
 			fps = std::max(1, requestedFps);
 			outputWidth = (captureRect.w + 1) & ~1;
 			outputHeight = (captureRect.h + 1) & ~1;
@@ -1817,10 +1837,15 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	// Function to capture the current screen, save as PNG file and copy to clipboard
 	void CaptureScreenshot(SDL_Renderer* renderer, const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects) {
 		std::string filename = MakeTimestampedName("screenshot-", ".png");
-		SDL_Rect captureRect{};
-		if (!GetCaptureRect(spriteRects, pixelRects, captureRect)) {
+		SDL_Rect logicalCaptureRect{};
+		if (!GetCaptureRect(spriteRects, pixelRects, logicalCaptureRect)) {
 			SDL_Log("Screenshot failed: invalid capture region.");
 			return;
+		}
+		
+		SDL_Rect captureRect{};
+		if (!GetPhysicalCaptureRect(renderer, logicalCaptureRect, captureRect)) {
+			captureRect = logicalCaptureRect;
 		}
 
 		int captureWidth = captureRect.w;
@@ -2070,7 +2095,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		static ScreenRecorder recorder;
 		if (emulator.recording_requested.exchange(false) && !recorder.IsRecording()) {
 			SDL_Rect captureRect{};
-			if (GetCaptureRect(spriteRects, pixelRects, captureRect) && recorder.Start(captureRect, 30)) {
+			if (GetCaptureRect(spriteRects, pixelRects, captureRect) && recorder.Start(renderer, captureRect, 30)) {
 				emulator.recording_frame_count.store(0);
 				emulator.recording_active.store(true);
 			}

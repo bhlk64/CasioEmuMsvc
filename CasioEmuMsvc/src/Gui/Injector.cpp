@@ -580,7 +580,7 @@ void Injector::RenderInjectorTab(InjectorData& inj, int index, bool& show_info, 
 		}
 	exit:
 		char buf[128];
-		snprintf(buf, sizeof(buf), "✔ Injected %zu bytes at 0x%05X", j, (unsigned int)plc);
+		snprintf(buf, sizeof(buf), "[v] Injected %zu bytes at 0x%05X", j, (unsigned int)plc);
 		SetFeedback(buf, false);
 		show_info = false;
 	}
@@ -625,7 +625,7 @@ void Injector::RenderCore() {
 				}
 				*(base_addr + inputbase + off) = 0xfd;
 				*(base_addr + inputbase + off + 1) = 0x20;
-				SetFeedback("✔ " + "Rop.AnInputed"_l, false);
+				SetFeedback("[v] " + "Rop.AnInputed"_l, false);
 				show_info = false;
 			}
 
@@ -671,7 +671,7 @@ void Injector::RenderCore() {
 
 			if (ImGui::Button("Rop.LoadToInputArea"_lc)) {
 				memcpy(base_addr + inputbase, data_buf, range);
-				SetFeedback("✔ " + "Rop.LoadedTip"_l, false);
+				SetFeedback("[v] " + "Rop.LoadedTip"_l, false);
 				show_info = false;
 			}
 
