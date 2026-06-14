@@ -5,7 +5,9 @@ project(CasioEmuMsvc)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
-
+set(HAVE_ITOA 0 CACHE BOOL "" FORCE)
+set(HAVE_UI64TOA 0 CACHE BOOL "" FORCE)
+set(HAVE_I64TOA 0 CACHE BOOL "" FORCE)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU" AND NOT MSVC)
     add_compile_options(-Wno-error=implicit-function-declaration)
