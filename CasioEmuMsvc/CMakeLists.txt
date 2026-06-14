@@ -21,10 +21,8 @@ if(EMSCRIPTEN OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     set(BUILD_EXECUTABLE ON CACHE BOOL "Web builds produce an executable html/js/wasm bundle" FORCE)
 endif()
 
-set(IOS FALSE)
-
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    set(IOS TRUE CACHE BOOL "" FORCE)
+    set(IOS TRUE)
 endif()
 
 if(IOS)
