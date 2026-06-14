@@ -55,33 +55,31 @@ public:
 	}
 
 	void RenderCore() override {
-	
 		drawMenuBar();
 		drawToolbar();
 		ImGuiIO& io = ImGui::GetIO();
 
-    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
-    {
-        io.WantTextInput = true;
-    }
-		ImGui::Separator();
+		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+			io.WantTextInput = true;
+		}
+		ImGui::Spacing();
 
 		// Show database prompt banner if no database loaded
 		if (!databaseLoaded_) {
 			drawNoDatabaseBanner();
 		}
 
-		const float diagnosticsHeight = 135.0f;
-		const float mainHeight =
-			ImGui::GetContentRegionAvail().y - diagnosticsHeight - ImGui::GetStyle().ItemSpacing.y;
+		static bool showDiagnostics = true;
+		float diagnosticsHeight = showDiagnostics ? 120.0f : 0.0f;
+		float mainHeight = ImGui::GetContentRegionAvail().y - (showDiagnostics ? (diagnosticsHeight + 25.0f) : 25.0f);
 
 		if (ImGui::BeginTable("##compiler_layout", 2,
 				ImGuiTableFlags_Resizable |
 					ImGuiTableFlags_BordersInnerV |
 					ImGuiTableFlags_SizingStretchProp,
 				ImVec2(-1, mainHeight))) {
-			ImGui::TableSetupColumn("Source", ImGuiTableColumnFlags_WidthStretch, 0.58f);
-			ImGui::TableSetupColumn("Output", ImGuiTableColumnFlags_WidthStretch, 0.42f);
+			ImGui::TableSetupColumn("Source", ImGuiTableColumnFlags_WidthStretch, 0.55f);
+			ImGui::TableSetupColumn("Output", ImGuiTableColumnFlags_WidthStretch, 0.45f);
 			ImGui::TableNextRow();
 
 			ImGui::TableSetColumnIndex(0);
@@ -93,7 +91,17 @@ public:
 			ImGui::EndTable();
 		}
 
-		drawDiagnosticsPanel(diagnosticsHeight);
+		// Diagnostics collapsible header/toggle
+		ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0,0,0,0));
+		if (ImGui::Selectable(showDiagnostics ? "▼ Diagnostics" : "▶ Diagnostics", false, 0, ImVec2(100, 20))) {
+			showDiagnostics = !showDiagnostics;
+		}
+		ImGui::PopStyleColor();
+
+		if (showDiagnostics) {
+			drawDiagnosticsPanel(diagnosticsHeight);
+		}
+
 		handleShortcuts();
 	}
 
@@ -414,6 +422,9 @@ private:
 	}
 
 	void drawToolbar() {
+		ImGui::BeginChild("##toolbar", ImVec2(0, 36), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		ImGui::AlignTextToFramePadding();
+
 		// ── Primary actions ──────────────────────────────────────
 		// Compile button: green tint on OK, red tint on error
 		if (lastCompileOk_) {
@@ -436,7 +447,7 @@ private:
 			ImGui::EndTooltip();
 		}
 
-		ImGui::SameLine();
+		ImGui::SameLine(0, 10.0f);
 
 		// Inject to RAM button (only enabled when there is output)
 		bool canInject = !outputBytes_.empty() && n_ram_buffer != nullptr;
@@ -452,14 +463,14 @@ private:
 			ImGui::EndTooltip();
 		}
 
-		ImGui::SameLine();
+		ImGui::SameLine(0, 15.0f);
 		ImGui::TextDisabled("|");
-		ImGui::SameLine();
+		ImGui::SameLine(0, 15.0f);
 
 		// ── Database badge ────────────────────────────────────────
 		if (databaseLoaded_) {
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.25f, 0.95f, 0.35f, 1.0f));
-			ImGui::TextUnformatted("[DB]");
+			ImGui::TextUnformatted("[DB OK]");
 			ImGui::PopStyleColor();
 			if (ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
@@ -480,40 +491,37 @@ private:
 			}
 		}
 
-		ImGui::SameLine();
-		if (ImGui::SmallButton("RopCompiler.LoadDatabase"_lc)) {
+		ImGui::SameLine(0, 5.0f);
+		if (ImGui::Button("RopCompiler.LoadDatabase"_lc)) {
 			openDatabaseDialog();
 		}
 
-		ImGui::SameLine();
+		ImGui::SameLine(0, 15.0f);
 		ImGui::TextDisabled("|");
-		ImGui::SameLine();
+		ImGui::SameLine(0, 15.0f);
 
 		// ── Base address + length ─────────────────────────────────
 		ImGui::TextUnformatted("RopCompiler.Base"_lc);
-		ImGui::SameLine();
+		ImGui::SameLine(0, 5.0f);
 		int base = static_cast<int>(baseAddress_);
 		ImGui::SetNextItemWidth(90.0f);
 		if (ImGui::InputInt("##base_address", &base, 0, 0, ImGuiInputTextFlags_CharsHexadecimal)) {
 			if (base < 0) base = 0;
 			baseAddress_ = static_cast<uint32_t>(base);
 		}
-		ImGui::SameLine();
-		ImGui::TextDisabled("%s 0x%04X / %zu bytes",
-			"RopCompiler.Length"_lc,
-			static_cast<unsigned>(outputBytes_.size()),
-			outputBytes_.size());
+		ImGui::SameLine(0, 10.0f);
+		ImGui::TextDisabled("Len: %zu bytes", outputBytes_.size());
 
-		ImGui::SameLine();
+		ImGui::SameLine(0, 15.0f);
 		ImGui::TextDisabled("|");
-		ImGui::SameLine();
+		ImGui::SameLine(0, 15.0f);
 
 		// ── Secondary actions ─────────────────────────────────────
-		if (ImGui::SmallButton("RopCompiler.CopyHex"_lc)) {
+		if (ImGui::Button("RopCompiler.CopyHex"_lc)) {
 			copyOutputHexToClipboard();
 		}
-		ImGui::SameLine();
-		if (ImGui::SmallButton("RopCompiler.ClearOutput"_lc)) {
+		ImGui::SameLine(0, 5.0f);
+		if (ImGui::Button("RopCompiler.ClearOutput"_lc)) {
 			outputBytes_.clear();
 			diagnosticsText_.clear();
 			editor_.SetErrorMarkers({});
@@ -522,7 +530,7 @@ private:
 
 		// Show database load error if any (inline red badge)
 		if (!dbLoadError_.empty()) {
-			ImGui::SameLine();
+			ImGui::SameLine(0, 15.0f);
 			ImGui::PushStyleColor(ImGuiCol_Text, UIHelpers::kColorError);
 			ImGui::TextUnformatted(dbLoadError_.c_str());
 			ImGui::PopStyleColor();
@@ -532,7 +540,7 @@ private:
 		if (injectFeedbackTimer_ > 0.0) {
 			double elapsed = ImGui::GetTime() - injectFeedbackTimer_;
 			if (elapsed < 3.0) {
-				ImGui::SameLine();
+				ImGui::SameLine(0, 15.0f);
 				float alpha = (float)std::max(0.0, 1.0 - elapsed / 1.5);
 				ImGui::PushStyleColor(ImGuiCol_Text,
 					ImVec4(UIHelpers::kColorSuccess.x, UIHelpers::kColorSuccess.y,
@@ -543,6 +551,8 @@ private:
 				injectFeedbackTimer_ = 0.0;
 			}
 		}
+
+		ImGui::EndChild();
 	}
 
 
@@ -617,8 +627,6 @@ private:
 
 	void drawDiagnosticsPanel(float height) {
 		ImGui::BeginChild("##diagnostics_panel", ImVec2(-1, height), true);
-		ImGui::TextUnformatted("RopCompiler.DiagnosticsTitle"_lc);
-		ImGui::Separator();
 
 		if (diagnosticsText_.empty()) {
 			ImGui::TextDisabled("%s", "RopCompiler.NoDiagnostics"_lc);

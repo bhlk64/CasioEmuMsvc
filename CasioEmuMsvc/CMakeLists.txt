@@ -30,7 +30,7 @@ set(ASMJIT_STATIC ON CACHE BOOL "Build AsmJit as a static library")
 set(ASMJIT_BUILD_TEST OFF CACHE BOOL "Disable AsmJit tests")
 set(ASMJIT_BUILD_EXAMPLES OFF CACHE BOOL "Disable AsmJit examples")
 
-if(NOT CASIOEMU_WEB)
+if(NOT CASIOEMU_WEB AND NOT IOS AND NOT ANDROID)
     message(STATUS "Attempting to add subdirectory: ${ASMJIT_DIR}")
     if(EXISTS "${ASMJIT_DIR}/CMakeLists.txt")
         message(STATUS "Found ${ASMJIT_DIR}/CMakeLists.txt")
@@ -46,7 +46,7 @@ if(NOT CASIOEMU_WEB)
         message(WARNING "Target asmjit::asmjit NOT FOUND after add_subdirectory")
     endif()
 else()
-    message(STATUS "Web build: skipping AsmJit; the browser target uses the interpreter")
+    message(STATUS "Web/Mobile build: skipping AsmJit")
 endif()
 
 if(NOT ANDROID AND NOT IOS AND NOT CASIOEMU_WEB)
@@ -196,8 +196,11 @@ endif()
 # Apply include dirs to target (scoped) to reduce global includes and compiler parsing
 target_include_directories(${TARGET_NAME} PRIVATE ${PROJECT_INCLUDE_DIRS})
 
-if(CASIOEMU_WEB)
-    target_compile_definitions(${TARGET_NAME} PRIVATE DISABLE_SENTRY ASMJIT_NO_JIT CASIOEMU_WEB)
+if(CASIOEMU_WEB OR IOS OR ANDROID)
+    target_compile_definitions(${TARGET_NAME} PRIVATE DISABLE_SENTRY ASMJIT_NO_JIT)
+    if(CASIOEMU_WEB)
+        target_compile_definitions(${TARGET_NAME} PRIVATE CASIOEMU_WEB)
+    endif()
 else()
     target_compile_definitions(${TARGET_NAME} PRIVATE ASMJIT_STATIC)
 endif()
@@ -273,8 +276,10 @@ elseif(BUILD_EXECUTABLE)
         SDL2::SDL2
         SDL2_image::SDL2_image-static
         #CpuFeatures::cpu_features
-        asmjit::asmjit
     )
+    if(NOT IOS AND NOT ANDROID)
+        target_link_libraries(${TARGET_NAME} PRIVATE asmjit::asmjit)
+    endif()
     if(WIN32)
         target_link_libraries(${TARGET_NAME} PRIVATE
             SDL2::SDL2main
@@ -305,8 +310,10 @@ else()
         SDL2::SDL2
         SDL2_image::SDL2_image
         #CpuFeatures::cpu_features
-        asmjit::asmjit
     )
+    if(NOT IOS AND NOT ANDROID)
+        target_link_libraries(${TARGET_NAME} PRIVATE asmjit::asmjit)
+    endif()
     if(ANDROID)
         target_link_libraries(${TARGET_NAME} PRIVATE log mediandk)
     endif()

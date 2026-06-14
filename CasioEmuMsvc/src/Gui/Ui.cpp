@@ -91,6 +91,7 @@ void RenderDebuggerToolbar() {
             if (ImGui::TabItemButton("Debugger Windows")) {
                 ImGui::OpenPopup("DebuggerMenuPopup");
             }
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
             if (ImGui::BeginPopup("DebuggerMenuPopup")) {
                 for (auto* w : windows) {
                     if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
@@ -112,6 +113,7 @@ void RenderDebuggerToolbar() {
             if (ImGui::TabItemButton("[C] Screenshot")) {
                 ImGui::OpenPopup("ScreenshotMenuPopup");
             }
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
             if (ImGui::BeginPopup("ScreenshotMenuPopup")) {
                 if (ImGui::MenuItem("Full Calculator")) {
                     m_emu->screenshot_full_ui = true;
@@ -132,6 +134,7 @@ void RenderDebuggerToolbar() {
                 if (ImGui::TabItemButton("[O] Record")) {
                     ImGui::OpenPopup("RecordMenuPopup");
                 }
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
                 if (ImGui::BeginPopup("RecordMenuPopup")) {
                     if (ImGui::MenuItem("Full Calculator")) {
                         m_emu->recording_full_ui = true;
