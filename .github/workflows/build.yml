@@ -254,11 +254,12 @@ jobs:
 
           cmake --build build-ios --config Release
     - name: upload full build ios
-      if: matrix.platform == 'ios'
+      if: failure() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
       with:
         name: Test-upload-ios-build
-        path: build/*
+        path: build/CasioEmuMsvc/*
+        archive: true
         retention-days: 1
     
     

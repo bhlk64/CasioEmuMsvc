@@ -302,9 +302,8 @@ elseif(BUILD_EXECUTABLE)
             "-framework UIKit"
             "-framework Foundation"
             "-framework AudioToolbox"
-            "-framework UniformTypeIdentifiers"
             "-framework ImageIO"
-            "-framework UniformTypeIdentifiers"
+            "-framework MobileCoreServices"
         )
     elseif(APPLE)
         target_link_libraries(${TARGET_NAME} PRIVATE
