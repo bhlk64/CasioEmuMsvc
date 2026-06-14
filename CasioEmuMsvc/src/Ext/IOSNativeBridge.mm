@@ -1,3 +1,4 @@
+#ifdef IOS
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <AudioToolbox/AudioToolbox.h>
@@ -220,3 +221,4 @@ void openFolderDialog() {
 void saveFolderDialog() {
     [[iOSNativeBridge sharedInstance] saveFolderDialog];
 }
+#endif
