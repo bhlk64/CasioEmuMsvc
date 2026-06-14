@@ -44,6 +44,9 @@ ScreenMirror* g_mirror = nullptr;
 #include <sstream>
 #include <system_error>
 #include <vector>
+#ifndef _WIN32
+#include <csignal>
+#endif
 
 #if !defined(__ANDROID__) && !defined(__EMSCRIPTEN__) && !defined(IOS)
 #include "Theme.h"
@@ -1583,6 +1586,8 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			CloseHandle(processInfo.hThread);
 			return true;
 #else
+			// Ignore SIGPIPE so broken pipe won't crash the process
+			std::signal(SIGPIPE, SIG_IGN);
 			pipe = ::popen(command.c_str(), "w");
 			return pipe != nullptr;
 #endif
@@ -1688,11 +1693,19 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			}
 #else
 			const std::string command = BuildFfmpegCommand(outputPath);
-			if (encoder.Start(command)) {
-				frameSequence = false;
-				recording = true;
-				SDL_Log("Recording started: %s", outputPath.string().c_str());
-				return true;
+			std::string check_cmd = command + " -version > /dev/null 2>&1";
+			// Check if ffmpeg exists by running it with -version
+			std::string ffmpeg_path = "ffmpeg";
+			if (std::filesystem::exists("/opt/homebrew/bin/ffmpeg")) ffmpeg_path = "/opt/homebrew/bin/ffmpeg";
+			else if (std::filesystem::exists("/usr/local/bin/ffmpeg")) ffmpeg_path = "/usr/local/bin/ffmpeg";
+
+			if (std::system((ffmpeg_path + " -version > /dev/null 2>&1").c_str()) == 0) {
+				if (encoder.Start(command)) {
+					frameSequence = false;
+					recording = true;
+					SDL_Log("Recording started: %s", outputPath.string().c_str());
+					return true;
+				}
 			}
 #endif
 
@@ -1784,8 +1797,16 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 
 	private:
 		std::string BuildFfmpegCommand(const std::filesystem::path& path) const {
+			std::string ffmpeg_path = "ffmpeg";
+#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(IOS)
+			if (std::filesystem::exists("/opt/homebrew/bin/ffmpeg")) {
+				ffmpeg_path = "/opt/homebrew/bin/ffmpeg";
+			} else if (std::filesystem::exists("/usr/local/bin/ffmpeg")) {
+				ffmpeg_path = "/usr/local/bin/ffmpeg";
+			}
+#endif
 			std::ostringstream command;
-			command << "ffmpeg -y -hide_banner -loglevel error"
+			command << ffmpeg_path << " -y -hide_banner -loglevel error"
 				<< " -f rawvideo -vcodec rawvideo"
 				<< " -pixel_format rgba"
 				<< " -video_size " << outputWidth << "x" << outputHeight
@@ -2095,15 +2116,19 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 #ifndef __EMSCRIPTEN__
 		// If screenshot is requested, capture only the rendered screen region
 		if (emulator.screenshot_requested.load()) {
-			// Capture the region using both sprite and pixel rectangles
-			CaptureScreenshot(renderer, spriteRects, pixelRects);
+			// Capture the region using both sprite and pixel rectangles or just pixels
+			std::vector<SDL_Rect> emptyRects;
+			const auto& spritesToUse = emulator.screenshot_full_ui.load() ? spriteRects : emptyRects;
+			CaptureScreenshot(renderer, spritesToUse, pixelRects);
 			emulator.screenshot_requested.store(false);
 			emulator.screenshot_taken.store(true);
 		}
 		static ScreenRecorder recorder;
 		if (emulator.recording_requested.exchange(false) && !recorder.IsRecording()) {
 			SDL_Rect captureRect{};
-			if (GetCaptureRect(spriteRects, pixelRects, captureRect) && recorder.Start(renderer, captureRect, 30)) {
+			std::vector<SDL_Rect> emptyRects;
+			const auto& spritesToUse = emulator.recording_full_ui.load() ? spriteRects : emptyRects;
+			if (GetCaptureRect(spritesToUse, pixelRects, captureRect) && recorder.Start(renderer, captureRect, 30)) {
 				emulator.recording_frame_count.store(0);
 				emulator.recording_active.store(true);
 			}
