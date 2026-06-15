@@ -355,21 +355,19 @@ jobs:
           mv "./artifacts/Release-Linux-x64.zip" "./release_assets/linux-x64-${{ env.COMMIT_HASH }}.zip"
         fi
         
-        # Copy macOS DMG if exists
-        DMG=$(find ./artifacts -name "*.dmg" | head -n 1)
-        if [ -n "$DMG" ]; then
-          cp "$DMG" "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.dmg"
-        fi
+        DMG=$(find ./artifacts -name "*.dmg" -type f | head -n 1)
+        [ -n "$DMG" ] && cp "$DMG" release_assets/
         
-        # Copy macOS APP if exists
+        # APP (zip it)
         APP=$(find ./artifacts -name "*.app" -type d | head -n 1)
         if [ -n "$APP" ]; then
-          cp -R "$APP" "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.app"
+          zip -r "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.app.zip" "$APP"
         fi
         
-        IPA=$(find ./artifacts -name "*.ipa" -type d | head -n 1)
+        # IPA FIXED
+        IPA=$(find ./artifacts -name "*.ipa" -type f | head -n 1)
         if [ -n "$IPA" ]; then
-          cp -R "$IPA" "release_assets/CasioEmu-iOS-${{ env.COMMIT_HASH }}.ipa"
+          cp "$IPA" "release_assets/CasioEmu-iOS-${{ env.COMMIT_HASH }}.ipa"
         fi
         
         ls -la release_assets/
