@@ -9,8 +9,11 @@
 #include "SDL_keyboard.h"
 #include "SDL_mouse.h"
 #include "SDL_video.h"
+#ifdef IOS
+#define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <SDL_image.h>
+#endif
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
@@ -553,10 +556,10 @@ extern "C" void onAppForeground() {
 
 extern "C" void onAppTerminate() {
 }
-#include <SDL.h>
+/*#include <SDL.h>
 
 int SDL_main(int argc, char *argv[])
 {
     return main(argc, argv);
-}
+}*/
 #endif
