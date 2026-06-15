@@ -242,92 +242,48 @@ jobs:
           build/CasioEmuMsvc/locales/
           build/CasioEmuMsvc/roms.db
         if-no-files-found: error
-    - name: Build for iOS
-      if: matrix.platform == 'ios'
-      run: |
-        cmake -S . -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
-          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
-          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=NO \
-          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
-          -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=""
-        
-        cmake --build build --config Release \
-          -- \
-          CODE_SIGNING_ALLOWED=NO \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGN_IDENTITY="" \
-          DEVELOPMENT_TEAM=""
     
-    - name: Signing for iOS bundle
+    - name: Setup certficate for iOS build
       if: matrix.platform == 'ios'
       run: |
-        # =========================
-        # iOS KEYCHAIN + SIGN FIX
-        # =========================
-        
         security create-keychain -p "" build.keychain
         security unlock-keychain -p "" build.keychain
-        
-        security set-keychain-settings -t 3600 -l build.keychain
-        security list-keychains -s build.keychain
+    
+        security set-keychain-settings -lut 21600 build.keychain
+        security list-keychains -d user -s build.keychain
         security default-keychain -s build.keychain
-        
-        # import cert
+    
         security import iOSresources/export_anar.p12 \
           -k build.keychain \
           -P "1234" \
           -A \
           -T /usr/bin/codesign
-        
-        # cực quan trọng: enable access cho codesign
+    
         security set-key-partition-list \
           -S apple-tool:,apple: \
           -s \
           -k "" \
           build.keychain
         
-        # verify
-        security find-identity -v -p codesigning build.keychain
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp iOSresources/export_anar.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+    
+    - name: Build for iOS
+      if: matrix.platform == 'ios'
+      run: |
+        cmake -S . -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=YES \
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=YES \
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="Apple Distribution" \
+          -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="4Z7V3V3G9R"
         
-        # lấy app
-        APP=$(find build -name "*.app" | head -n 1)
-        echo "APP: $APP"
-        
-        # lấy identity (an toàn nhất)
-        IDENTITY=$(security find-identity -v -p codesigning build.keychain \
-          | grep -E "iPhone|Apple Development|Apple Distribution" \
-          | head -n 1 \
-          | sed 's/.*) //')
-        
-        echo "IDENTITY: $IDENTITY"
-        
-        # SIGN
-        codesign --force --deep \
-          --sign "$IDENTITY" \
-          --keychain build.keychain \
-          "$APP"
-        
-        # VERIFY
-        codesign --verify --deep --strict "$APP"
-        
-        # =========================
-        # EXPORT IPA
-        # =========================
-        
-        rm -rf Payload
-        mkdir Payload
-        
-        cp -R "$APP" Payload/
-        
-        zip -r app.ipa Payload
-        
-        echo "DONE: app.ipa created"
+        cmake --build build --config Release 
     - name: Create .ipa
       if: matrix.platform == 'ios'
       run: |
         mkdir build/Payload
         APP=$(find build -name "*.app" | head -n 1)
-        mv -r "$APP" build/Payload
+        mv "$APP" build/Payload
         zip -r CasioEmuMsvc.ipa build/Payload
         
     - name: upload full build ios
