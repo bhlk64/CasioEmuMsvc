@@ -1,0 +1,1376 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		20C7654FB5A131681F032808 /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 0153F3DA568443C7B65171F9 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				8DCBA8140BF7C3739B8C3B22 /* Generate CMakeFiles/ALL_BUILD */,
+			);
+			dependencies = (
+				93AA36E8441547EABFB4ACBF /* PBXTargetDependency */,
+				E79ECD8053C14B3883525236 /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+		76351EAF27738D823F143E07 /* package */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 74F95F2252BC485FAA532A18 /* Build configuration list for PBXAggregateTarget "package" */;
+			buildPhases = (
+				571234464C2A5D0D43F1AB42 /* CMake PostBuild Rules */,
+			);
+			dependencies = (
+				27D49C3A8BE945608D18E8D6 /* PBXTargetDependency */,
+			);
+			name = package;
+			productName = package;
+		};
+		F2AF4B7EB06B3A8C4CFCA8C9 /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 40998614AEA14497927789A7 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				C4999F5EB344FC2CAB4B363E /* Generate CMakeFiles/ZERO_CHECK */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		0129D5CB31DB4DE097DC0CCF /* Uart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88B869FA3CDC4E93873DACEC /* Uart.cpp */; };
+		042A07DCEB7141F48785EDC5 /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2757627DC47748A8B5987F05 /* Snapshot.cpp */; };
+		0EC8ED7CF304460785364035 /* ML620Ports.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 211290CF4BCC4F7682F9FBF6 /* ML620Ports.cpp */; };
+		10894BD2E48B49C695BFB779 /* InterruptSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03B4A0EDF1CA487781FB68A5 /* InterruptSource.cpp */; };
+		10B1B4D50A7641BFB185F216 /* AddressWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4795B768A0A0478D8EF49BA1 /* AddressWindow.cpp */; };
+		226CE05720BC4245A1E506A3 /* sdl_win32_extra.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94F18923E05E4C7EAF1490FB /* sdl_win32_extra.cpp */; };
+		23EC5348A28C433A95D252C0 /* imgui_impl_sdl2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF23D75A689F42C888F0F2E9 /* imgui_impl_sdl2.cpp */; };
+		25049D266CCB4B8B97B17F3B /* Miscellaneous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A93FE21259714FFE87EB350A /* Miscellaneous.cpp */; };
+		29325EDFC8864EDA9A7BDB08 /* CrashHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C08E2C23EA4FC1BC340870 /* CrashHandler.cpp */; };
+		2940BBF2C5A94AB7B4C5B560 /* SysDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0D40246137C4F6DAD522819 /* SysDialog.cpp */; };
+		2AEC332BCDFF406191700CB3 /* PluginLogWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FD04D57799D4287891A2490 /* PluginLogWindow.cpp */; };
+		2B57B99B40FF4D0E834055E3 /* ePSDisas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB465EA345954611B4E6B1AD /* ePSDisas.cpp */; };
+		2CAB0DE35C3042E19ECFC7DF /* RopCompilerUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E64CFF2303E444E5A092E12B /* RopCompilerUI.cpp */; };
+		2E706BEA71BC4AB9A78A06F3 /* Romu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36A68E0F853C4C61B3A0291B /* Romu.cpp */; };
+		2F00475606504021A8A0725C /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDC42A2FC4F0475F871079BA /* Timer.cpp */; };
+		3086C158BAE749459621D8A4 /* Theme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4631BD1478EB4592911111D5 /* Theme.cpp */; };
+		30BA5CE192BE42359562D07E /* miniz_tdef.c in Sources */ = {isa = PBXBuildFile; fileRef = DDEA60C5A79C49FE92A6A718 /* miniz_tdef.c */; };
+		3151FA794C4F42D295F8437C /* ConsoleText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 338358627A404EF3ACB3DD81 /* ConsoleText.cpp */; };
+		37363E399E8248A09AA34437 /* StandbyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 18CB6F83A87D467A9AEDCA22 /* StandbyControl.cpp */; };
+		38FCC92C5CCD48BD9590440B /* MMURegion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D09B9BF026614FCDA983321F /* MMURegion.cpp */; };
+		3A20EAAD477A410D9C856B1F /* CodeViewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E3154C3847F44F1AD948465 /* CodeViewer.cpp */; };
+		3C05404335EF4CAA9D1E4901 /* hct_solver.cc in Sources */ = {isa = PBXBuildFile; fileRef = FEE20FA7B8B448E580E3E60E /* hct_solver.cc */; };
+		3E4BACBB7C1B481E9D98CD1E /* 5800Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 89F4F0A8AB514B369AD3D0B9 /* 5800Flash.cpp */; };
+		44D022AEE84E46BBADE50CC3 /* BCDCalc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C19A67CA5A4E50B17CE119 /* BCDCalc.cpp */; };
+		4651B5E134A54681B65FA180 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6E26D2223C641629A2894AC /* Screen.cpp */; };
+		47FD522B641F44448EEB442B /* ROMWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F327C7778C94452B131110F /* ROMWindow.cpp */; };
+		4981F990C308434581472F8C /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74F8C777DBF04CF9AB1355C2 /* imgui.cpp */; };
+		4A36A4CFAF1D426DA7F3FA58 /* hct.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5BDF4E7B0B4D406A931BE7DA /* hct.cc */; };
+		4E673F26001C415F8CC49CE3 /* 5800FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6A22990C1F4C43F58E307006 /* 5800FileSystem.cpp */; };
+		50192C3A4D5E41258E669671 /* ExternalInterrupts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F211709987494912AEC6F768 /* ExternalInterrupts.cpp */; };
+		5115B428CE6A473CB2000D9A /* VoltageLevelSupervisor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67196826834444FC8B361906 /* VoltageLevelSupervisor.cpp */; };
+		51EA18983C1B460EB6EF044D /* CPUControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28DBF854A7E4DCDBC8C900D /* CPUControl.cpp */; };
+		567B38FF7B82487DB58A61D7 /* vibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D0ED7D07EA342C3B974A5C0 /* vibration.cpp */; };
+		5AA72D8E61FD42C1A578CAC2 /* Chipset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EC4B72E5971414AA318F164 /* Chipset.cpp */; };
+		5D49CE0271194EE39E174D0F /* U8Disas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6179E70157A4A12835073C7 /* U8Disas.cpp */; };
+		5F2F2C1D832F4A698829A542 /* CPUArithmetic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BEFD992B68AE463DAF0B5D2D /* CPUArithmetic.cpp */; };
+		6356653690634AD0819EE933 /* MemBreakPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 606B122C2F8047D3A1980AB6 /* MemBreakPoint.cpp */; };
+		63E0A9C193354411B108BB9A /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DA4086EA653442CA2430C67 /* Audio.cpp */; };
+		64FE1A62DC504B8191A6B8A5 /* Hooks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B14D6E7035A414A91FFF043 /* Hooks.cpp */; };
+		6A091F0F42DE450198D8B2B7 /* PluginApi_Impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 607DD75E1A4E4673BB513B6B /* PluginApi_Impl.cpp */; };
+		6F30214911A74821A90677FF /* casioemu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFEE437069684143AA9ECD7A /* casioemu.cpp */; };
+		70B763913A6844E39E64DECB /* BatteryBackedRAM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09A4B25E26F24D82B379B0D2 /* BatteryBackedRAM.cpp */; };
+		70E9005BA49C48BCBB7AC96A /* TextEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00ED128EE8C44CB4A9F01614 /* TextEditor.cpp */; };
+		749BB0CA1C884502B2878741 /* Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D675E42207343A1A9419738 /* Flash.cpp */; };
+		74F6B824FFD845F1BDF75719 /* imgui_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6321B0A1CC094F86A8F08CCA /* imgui_tables.cpp */; };
+		759E945F9BF149FAB5EA0B84 /* miniz_tinfl.c in Sources */ = {isa = PBXBuildFile; fileRef = 91283CCE50E94ECD82822C23 /* miniz_tinfl.c */; };
+		771A523256E449A49F4A2FF6 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE1AD5D738464E5CB4FCCD41 /* Keyboard.cpp */; };
+		7720303BC39C4FBE983EE53A /* Injector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4705FFCDA894188AC81C43C /* Injector.cpp */; };
+		7B3BC63D973542F5AA26FA37 /* DiscordRPC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C65970FD4964670B619B24B /* DiscordRPC.cpp */; };
+		7F2939F9B8C044D9ACA1FA30 /* RealTimeClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0342C9FBAE584C1FB09143E9 /* RealTimeClock.cpp */; };
+		88061694631249B7A3ED17B0 /* TimerBaseCounter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0140DA0426D49BC8D090582 /* TimerBaseCounter.cpp */; };
+		89AF2788A91C42BA88932C80 /* CPUPushPop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B78876E0AED74504BBF9B3D1 /* CPUPushPop.cpp */; };
+		926BC84B90A64983AC6DF874 /* Emulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6BB205A8AB7D499881E7AB30 /* Emulator.cpp */; };
+		9A74A3AD5FD849DCB1C5942B /* ThemeManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BEF8A60EAF46EBA1911463 /* ThemeManager.cpp */; };
+		9B951E26F34B4E81B76BF47C /* WatchWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CFFEA462B2A4149856CD372 /* WatchWindow.cpp */; };
+		A2FC97C945624B31960FAC15 /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD9927D060BC4198A98EED54 /* imgui_demo.cpp */; };
+		A3DDB7BC80034C3F93510E8B /* GameBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E37FEC35C9A04B15AC69A760 /* GameBuffer.cpp */; };
+		A4FFE2E2981246E5AA2CA2B9 /* BitmapViewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF5E2711A3F6409584C8E140 /* BitmapViewer.cpp */; };
+		A89A577701864C5584C0C4BE /* CallAnalysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76E746A95BEB4122ABA40F6D /* CallAnalysis.cpp */; };
+		AC6D9C4F2A744B8E95B83F61 /* PowerSupply.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1EA9A4A82D1C4A59B4D3A86C /* PowerSupply.cpp */; };
+		AD350AE54C2F46B788E2BF24 /* HwController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03A78BEC25A245678282E48A /* HwController.cpp */; };
+		ADB43B5F15764DEEBABD32B0 /* StartupUi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C09FA8755F5C4F40BDEF5C7E /* StartupUi.cpp */; };
+		B05D1B0FD87F430586A33E9B /* ePSCpu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E98C0F37B73E443CB4CE2E7C /* ePSCpu.cpp */; };
+		B72EDCCCA4BE4FC390F3D70A /* CPULoadStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F2EA90D424BC44E68A4366DE /* CPULoadStore.cpp */; };
+		BCC9C245E4FB446293829D9B /* Localization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58C00C7C28754904BCA443A8 /* Localization.cpp */; };
+		C63EDB1CFC32436780BE453A /* FileDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD93536FC1F04F88B79CACA7 /* FileDialog.cpp */; };
+		C8CE9433AB2943C2B7005909 /* PluginMan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30B86F64A36D4951A96BE294 /* PluginMan.cpp */; };
+		CD23CEDEC6514D97840AC40E /* VariableWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A7C0D6AB6924710A6BE3B43 /* VariableWindow.cpp */; };
+		CECCD33653064F80A8670C61 /* JitU8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C11C7744D15401D85EA08A5 /* JitU8.cpp */; };
+		D23B861C30734C588755D9FD /* tones.cc in Sources */ = {isa = PBXBuildFile; fileRef = 00E392B51598470CAF59302C /* tones.cc */; };
+		D37868B6D4F34CAE83934492 /* LabelViewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B17B1FD544FC4B8090EF450C /* LabelViewer.cpp */; };
+		D3F27AF238D446BCA9B2CBC5 /* imgui_impl_sdlrenderer2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6911251F56384534A59FB4DA /* imgui_impl_sdlrenderer2.cpp */; };
+		D4B00DBA48CE4C189150DEBC /* cam.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7D2613D172344A0291074074 /* cam.cc */; };
+		DD7CC69A7A3F43F6A317E7C3 /* TouchMouseTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7EF37970946840A79E06A881 /* TouchMouseTranslator.cpp */; };
+		E3DF29AECB804774BFEC7C1C /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4180380DE07D4F68B4AC778D /* CPU.cpp */; };
+		E3F69225025C46368BCDE3B8 /* Ui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667CDB1B43E143818A30F7F4 /* Ui.cpp */; };
+		E50BE8500EA2441584EB6B6F /* IOPorts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A570D1DEE0CB473197CD190B /* IOPorts.cpp */; };
+		E7A2A3B5042F4B0F9C691C54 /* imgui_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB2652FDBCA04B9993DB621D /* imgui_draw.cpp */; };
+		EA4DD97A3A684D4C8219FE8A /* SnapshotWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBDD0AAA95DC4CA58B0B4BB1 /* SnapshotWindow.cpp */; };
+		EAEF16BA5C8449E296FFD6A5 /* WatchdogTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68077D88535E49A788C657E4 /* WatchdogTimer.cpp */; };
+		EDE11872DA074EC6945A1B91 /* imgui_widgets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B1943724D0497BBBE20D46 /* imgui_widgets.cpp */; };
+		EF1F86EE08C44D098609B5F1 /* Editors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 105EF2AF20EF44A0AAE223B2 /* Editors.cpp */; };
+		F815EEC9A5C542F5A9AB1154 /* Spi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA8FBBEED594F1895072C1A /* Spi.cpp */; };
+		FDA9FCECD58C4BD9B82AAF33 /* utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = B28FE39EB9834CC99E1BF86F /* utils.cc */; };
+		FE65B61AD1DD4692AA2BCFC4 /* viewing_conditions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 329EA7D4E4394A35BBB3D6D1 /* viewing_conditions.cc */; };
+		FF8EF45C8C3745388A1E336E /* MMU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8C508C2FAF5498B921A44F6 /* MMU.cpp */; };
+		FFD51BA562254289972A10B0 /* miniz.c in Sources */ = {isa = PBXBuildFile; fileRef = FE84DF542A3F42778E57F341 /* miniz.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		32BCC50C56AF417AA1B8663C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 73BAB63CCD664F728DB3A1CA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 20C7654FB5A131681F032808;
+			remoteInfo = ALL_BUILD;
+		};
+		391B23B9E8F6474E8B5ECB32 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 73BAB63CCD664F728DB3A1CA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F2AF4B7EB06B3A8C4CFCA8C9;
+			remoteInfo = ZERO_CHECK;
+		};
+		623EC49681F046C49C997AC2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 73BAB63CCD664F728DB3A1CA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09180B84A58F0F386124BCEE;
+			remoteInfo = main;
+		};
+		87C0A6E002DF41D8A7F98C60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 73BAB63CCD664F728DB3A1CA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F2AF4B7EB06B3A8C4CFCA8C9;
+			remoteInfo = ZERO_CHECK;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00E392B51598470CAF59302C /* tones.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = tones.cc; path = src/Ext/cam/tones.cc; sourceTree = SOURCE_ROOT; };
+		00ED128EE8C44CB4A9F01614 /* TextEditor.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TextEditor.cpp; path = src/Gui/imgui/TextEditor.cpp; sourceTree = SOURCE_ROOT; };
+		0342C9FBAE584C1FB09143E9 /* RealTimeClock.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = RealTimeClock.cpp; path = src/Peripheral/RealTimeClock.cpp; sourceTree = SOURCE_ROOT; };
+		03A78BEC25A245678282E48A /* HwController.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = HwController.cpp; path = src/Gui/HwController.cpp; sourceTree = SOURCE_ROOT; };
+		03B4A0EDF1CA487781FB68A5 /* InterruptSource.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = InterruptSource.cpp; path = src/Chipset/InterruptSource.cpp; sourceTree = SOURCE_ROOT; };
+		09A4B25E26F24D82B379B0D2 /* BatteryBackedRAM.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = BatteryBackedRAM.cpp; path = src/Peripheral/BatteryBackedRAM.cpp; sourceTree = SOURCE_ROOT; };
+		0B14D6E7035A414A91FFF043 /* Hooks.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Hooks.cpp; path = src/Gui/Hooks.cpp; sourceTree = SOURCE_ROOT; };
+		0FD04D57799D4287891A2490 /* PluginLogWindow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PluginLogWindow.cpp; path = src/Gui/PluginLogWindow.cpp; sourceTree = SOURCE_ROOT; };
+		105EF2AF20EF44A0AAE223B2 /* Editors.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Editors.cpp; path = src/Gui/Editors.cpp; sourceTree = SOURCE_ROOT; };
+		18CB6F83A87D467A9AEDCA22 /* StandbyControl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = StandbyControl.cpp; path = src/Peripheral/StandbyControl.cpp; sourceTree = SOURCE_ROOT; };
+		1D675E42207343A1A9419738 /* Flash.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Flash.cpp; path = src/Peripheral/Flash.cpp; sourceTree = SOURCE_ROOT; };
+		1EA9A4A82D1C4A59B4D3A86C /* PowerSupply.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PowerSupply.cpp; path = src/Peripheral/PowerSupply.cpp; sourceTree = SOURCE_ROOT; };
+		211290CF4BCC4F7682F9FBF6 /* ML620Ports.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ML620Ports.cpp; path = src/Peripheral/ML620Ports.cpp; sourceTree = SOURCE_ROOT; };
+		2757627DC47748A8B5987F05 /* Snapshot.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Snapshot.cpp; path = src/Snapshot.cpp; sourceTree = SOURCE_ROOT; };
+		2CFFEA462B2A4149856CD372 /* WatchWindow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = WatchWindow.cpp; path = src/Gui/WatchWindow.cpp; sourceTree = SOURCE_ROOT; };
+		30B86F64A36D4951A96BE294 /* PluginMan.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PluginMan.cpp; path = src/Plugin/PluginMan.cpp; sourceTree = SOURCE_ROOT; };
+		329EA7D4E4394A35BBB3D6D1 /* viewing_conditions.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = viewing_conditions.cc; path = src/Ext/cam/viewing_conditions.cc; sourceTree = SOURCE_ROOT; };
+		338358627A404EF3ACB3DD81 /* ConsoleText.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ConsoleText.cpp; path = src/Ext/ConsoleText.cpp; sourceTree = SOURCE_ROOT; };
+		36A68E0F853C4C61B3A0291B /* Romu.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Romu.cpp; path = src/Ext/Romu.cpp; sourceTree = SOURCE_ROOT; };
+		3A7C0D6AB6924710A6BE3B43 /* VariableWindow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = VariableWindow.cpp; path = src/Gui/VariableWindow.cpp; sourceTree = SOURCE_ROOT; };
+		3C11C7744D15401D85EA08A5 /* JitU8.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = JitU8.cpp; path = src/JitU8/JitU8.cpp; sourceTree = SOURCE_ROOT; };
+		3C65970FD4964670B619B24B /* DiscordRPC.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = DiscordRPC.cpp; path = src/Ext/DiscordRPC.cpp; sourceTree = SOURCE_ROOT; };
+		3D0ED7D07EA342C3B974A5C0 /* vibration.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = vibration.cpp; path = src/Ext/vibration.cpp; sourceTree = SOURCE_ROOT; };
+		4180380DE07D4F68B4AC778D /* CPU.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CPU.cpp; path = src/Chipset/CPU.cpp; sourceTree = SOURCE_ROOT; };
+		4631BD1478EB4592911111D5 /* Theme.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Theme.cpp; path = src/Gui/Theme.cpp; sourceTree = SOURCE_ROOT; };
+		4795B768A0A0478D8EF49BA1 /* AddressWindow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AddressWindow.cpp; path = src/Gui/AddressWindow.cpp; sourceTree = SOURCE_ROOT; };
+		49BEF8A60EAF46EBA1911463 /* ThemeManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ThemeManager.cpp; path = src/Gui/ThemeManager.cpp; sourceTree = SOURCE_ROOT; };
+		58C00C7C28754904BCA443A8 /* Localization.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Localization.cpp; path = src/Gui/Localization.cpp; sourceTree = SOURCE_ROOT; };
+		5BDF4E7B0B4D406A931BE7DA /* hct.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = hct.cc; path = src/Ext/cam/hct.cc; sourceTree = SOURCE_ROOT; };
+		5DA4086EA653442CA2430C67 /* Audio.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Audio.cpp; path = src/Peripheral/Audio.cpp; sourceTree = SOURCE_ROOT; };
+		5EC4B72E5971414AA318F164 /* Chipset.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Chipset.cpp; path = src/Chipset/Chipset.cpp; sourceTree = SOURCE_ROOT; };
+		606B122C2F8047D3A1980AB6 /* MemBreakPoint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = MemBreakPoint.cpp; path = src/Gui/MemBreakPoint.cpp; sourceTree = SOURCE_ROOT; };
+		607DD75E1A4E4673BB513B6B /* PluginApi_Impl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PluginApi_Impl.cpp; path = src/Plugin/PluginApi_Impl.cpp; sourceTree = SOURCE_ROOT; };
+		6321B0A1CC094F86A8F08CCA /* imgui_tables.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = imgui_tables.cpp; path = src/Gui/imgui/imgui_tables.cpp; sourceTree = SOURCE_ROOT; };
+		667CDB1B43E143818A30F7F4 /* Ui.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Ui.cpp; path = src/Gui/Ui.cpp; sourceTree = SOURCE_ROOT; };
+		67196826834444FC8B361906 /* VoltageLevelSupervisor.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = VoltageLevelSupervisor.cpp; path = src/Peripheral/VoltageLevelSupervisor.cpp; sourceTree = SOURCE_ROOT; };
+		68077D88535E49A788C657E4 /* WatchdogTimer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = WatchdogTimer.cpp; path = src/Peripheral/WatchdogTimer.cpp; sourceTree = SOURCE_ROOT; };
+		6911251F56384534A59FB4DA /* imgui_impl_sdlrenderer2.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = imgui_impl_sdlrenderer2.cpp; path = src/Gui/imgui/imgui_impl_sdlrenderer2.cpp; sourceTree = SOURCE_ROOT; };
+		6A22990C1F4C43F58E307006 /* 5800FileSystem.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = 5800FileSystem.cpp; path = src/Gui/5800FileSystem.cpp; sourceTree = SOURCE_ROOT; };
+		6BB205A8AB7D499881E7AB30 /* Emulator.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Emulator.cpp; path = src/Emulator.cpp; sourceTree = SOURCE_ROOT; };
+		74F8C777DBF04CF9AB1355C2 /* imgui.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = imgui.cpp; path = src/Gui/imgui/imgui.cpp; sourceTree = SOURCE_ROOT; };
+		76E746A95BEB4122ABA40F6D /* CallAnalysis.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CallAnalysis.cpp; path = src/Gui/CallAnalysis.cpp; sourceTree = SOURCE_ROOT; };
+		7D2613D172344A0291074074 /* cam.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = cam.cc; path = src/Ext/cam/cam.cc; sourceTree = SOURCE_ROOT; };
+		7E3154C3847F44F1AD948465 /* CodeViewer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CodeViewer.cpp; path = src/Gui/CodeViewer.cpp; sourceTree = SOURCE_ROOT; };
+		7EF37970946840A79E06A881 /* TouchMouseTranslator.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TouchMouseTranslator.cpp; path = src/Gui/TouchMouseTranslator.cpp; sourceTree = SOURCE_ROOT; };
+		88B869FA3CDC4E93873DACEC /* Uart.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Uart.cpp; path = src/Peripheral/Uart.cpp; sourceTree = SOURCE_ROOT; };
+		89F4F0A8AB514B369AD3D0B9 /* 5800Flash.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = 5800Flash.cpp; path = src/Peripheral/5800Flash.cpp; sourceTree = SOURCE_ROOT; };
+		8F327C7778C94452B131110F /* ROMWindow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ROMWindow.cpp; path = src/Peripheral/ROMWindow.cpp; sourceTree = SOURCE_ROOT; };
+		91283CCE50E94ECD82822C23 /* miniz_tinfl.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = miniz_tinfl.c; path = third_party/miniz/miniz_tinfl.c; sourceTree = SOURCE_ROOT; };
+		94F18923E05E4C7EAF1490FB /* sdl_win32_extra.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = sdl_win32_extra.cpp; path = src/sdl_win32_extra.cpp; sourceTree = SOURCE_ROOT; };
+		A0D40246137C4F6DAD522819 /* SysDialog.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SysDialog.cpp; path = src/Ext/SysDialog.cpp; sourceTree = SOURCE_ROOT; };
+		A28DBF854A7E4DCDBC8C900D /* CPUControl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CPUControl.cpp; path = src/Chipset/CPUControl.cpp; sourceTree = SOURCE_ROOT; };
+		A4705FFCDA894188AC81C43C /* Injector.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Injector.cpp; path = src/Gui/Injector.cpp; sourceTree = SOURCE_ROOT; };
+		A570D1DEE0CB473197CD190B /* IOPorts.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = IOPorts.cpp; path = src/Peripheral/IOPorts.cpp; sourceTree = SOURCE_ROOT; };
+		A93FE21259714FFE87EB350A /* Miscellaneous.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Miscellaneous.cpp; path = src/Peripheral/Miscellaneous.cpp; sourceTree = SOURCE_ROOT; };
+		AD9927D060BC4198A98EED54 /* imgui_demo.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = imgui_demo.cpp; path = src/Gui/imgui/imgui_demo.cpp; sourceTree = SOURCE_ROOT; };
+		B17B1FD544FC4B8090EF450C /* LabelViewer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = LabelViewer.cpp; path = src/Gui/LabelViewer.cpp; sourceTree = SOURCE_ROOT; };
+		B28FE39EB9834CC99E1BF86F /* utils.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = utils.cc; path = src/Ext/cam/utils.cc; sourceTree = SOURCE_ROOT; };
+		B5C19A67CA5A4E50B17CE119 /* BCDCalc.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = BCDCalc.cpp; path = src/Peripheral/BCDCalc.cpp; sourceTree = SOURCE_ROOT; };
+		B6179E70157A4A12835073C7 /* U8Disas.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = U8Disas.cpp; path = src/Ext/U8Disas.cpp; sourceTree = SOURCE_ROOT; };
+		B78876E0AED74504BBF9B3D1 /* CPUPushPop.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CPUPushPop.cpp; path = src/Chipset/CPUPushPop.cpp; sourceTree = SOURCE_ROOT; };
+		B8C508C2FAF5498B921A44F6 /* MMU.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = MMU.cpp; path = src/Chipset/MMU.cpp; sourceTree = SOURCE_ROOT; };
+		BBDD0AAA95DC4CA58B0B4BB1 /* SnapshotWindow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SnapshotWindow.cpp; path = src/Gui/SnapshotWindow.cpp; sourceTree = SOURCE_ROOT; };
+		BD93536FC1F04F88B79CACA7 /* FileDialog.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FileDialog.cpp; path = src/Gui/FileDialog.cpp; sourceTree = SOURCE_ROOT; };
+		BDC42A2FC4F0475F871079BA /* Timer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Timer.cpp; path = src/Peripheral/Timer.cpp; sourceTree = SOURCE_ROOT; };
+		BEFD992B68AE463DAF0B5D2D /* CPUArithmetic.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CPUArithmetic.cpp; path = src/Chipset/CPUArithmetic.cpp; sourceTree = SOURCE_ROOT; };
+		BF23D75A689F42C888F0F2E9 /* imgui_impl_sdl2.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = imgui_impl_sdl2.cpp; path = src/Gui/imgui/imgui_impl_sdl2.cpp; sourceTree = SOURCE_ROOT; };
+		C09FA8755F5C4F40BDEF5C7E /* StartupUi.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = StartupUi.cpp; path = src/StartupUi/StartupUi.cpp; sourceTree = SOURCE_ROOT; };
+		C4EA59D3579643878A0BA732 /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		CE1AD5D738464E5CB4FCCD41 /* Keyboard.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Keyboard.cpp; path = src/Peripheral/Keyboard.cpp; sourceTree = SOURCE_ROOT; };
+		CF3DD7CDF8524A89B08D9321 /* CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		CF5E2711A3F6409584C8E140 /* BitmapViewer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = BitmapViewer.cpp; path = src/Gui/BitmapViewer.cpp; sourceTree = SOURCE_ROOT; };
+		CFEE437069684143AA9ECD7A /* casioemu.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = casioemu.cpp; path = src/casioemu.cpp; sourceTree = SOURCE_ROOT; };
+		D09B9BF026614FCDA983321F /* MMURegion.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = MMURegion.cpp; path = src/Chipset/MMURegion.cpp; sourceTree = SOURCE_ROOT; };
+		D8A27B1BF73E4B6EBEC05199 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = sourcecode.text.plist; fileEncoding = 4; lastKnownFileType = text.plist; name = Info.plist; path = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/CMakeFiles/main.dir/Info.plist"; sourceTree = "<absolute>"; };
+		DDEA60C5A79C49FE92A6A718 /* miniz_tdef.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = miniz_tdef.c; path = third_party/miniz/miniz_tdef.c; sourceTree = SOURCE_ROOT; };
+		E0140DA0426D49BC8D090582 /* TimerBaseCounter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TimerBaseCounter.cpp; path = src/Peripheral/TimerBaseCounter.cpp; sourceTree = SOURCE_ROOT; };
+		E2B1943724D0497BBBE20D46 /* imgui_widgets.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = imgui_widgets.cpp; path = src/Gui/imgui/imgui_widgets.cpp; sourceTree = SOURCE_ROOT; };
+		E37FEC35C9A04B15AC69A760 /* GameBuffer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = GameBuffer.cpp; path = src/Ext/GameBuffer.cpp; sourceTree = SOURCE_ROOT; };
+		E4C08E2C23EA4FC1BC340870 /* CrashHandler.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CrashHandler.cpp; path = src/CrashHandler/CrashHandler.cpp; sourceTree = SOURCE_ROOT; };
+		E64CFF2303E444E5A092E12B /* RopCompilerUI.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = RopCompilerUI.cpp; path = src/Rop/RopCompilerUI.cpp; sourceTree = SOURCE_ROOT; };
+		E6E26D2223C641629A2894AC /* Screen.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Screen.cpp; path = src/Peripheral/Screen.cpp; sourceTree = SOURCE_ROOT; };
+		E98C0F37B73E443CB4CE2E7C /* ePSCpu.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ePSCpu.cpp; path = src/Chipset/ePSCpu.cpp; sourceTree = SOURCE_ROOT; };
+		EAA8FBBEED594F1895072C1A /* Spi.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Spi.cpp; path = src/Peripheral/Spi.cpp; sourceTree = SOURCE_ROOT; };
+		EAD0E48B07E74D60955913C7 /* libmain.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libmain.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB465EA345954611B4E6B1AD /* ePSDisas.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ePSDisas.cpp; path = src/Ext/ePSDisas.cpp; sourceTree = SOURCE_ROOT; };
+		F211709987494912AEC6F768 /* ExternalInterrupts.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ExternalInterrupts.cpp; path = src/Peripheral/ExternalInterrupts.cpp; sourceTree = SOURCE_ROOT; };
+		F2EA90D424BC44E68A4366DE /* CPULoadStore.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CPULoadStore.cpp; path = src/Chipset/CPULoadStore.cpp; sourceTree = SOURCE_ROOT; };
+		FB2652FDBCA04B9993DB621D /* imgui_draw.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = imgui_draw.cpp; path = src/Gui/imgui/imgui_draw.cpp; sourceTree = SOURCE_ROOT; };
+		FE84DF542A3F42778E57F341 /* miniz.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = miniz.c; path = third_party/miniz/miniz.c; sourceTree = SOURCE_ROOT; };
+		FEE20FA7B8B448E580E3E60E /* hct_solver.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = hct_solver.cc; path = src/Ext/cam/hct_solver.cc; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		05F350BF143D4F84991A08CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3B5F86BB4F4D46CD97DFEBCD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		56F7E3C8042342C2BE38F9D6 = {
+			isa = PBXGroup;
+			children = (
+				AA998AA9A7C946C9B21A6A38 /* ALL_BUILD */,
+				FC7ECF0EB5ED4BA386EBDAA7 /* main */,
+				75098BB5771847AB994416C8 /* Products */,
+				A2891F5DA2A34AD0B11DE5CC /* Frameworks */,
+				3B5F86BB4F4D46CD97DFEBCD /* Resources */,
+			);
+			sourceTree = "<group>";
+		};
+		75098BB5771847AB994416C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EAD0E48B07E74D60955913C7 /* libmain.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8B94110625D3461B88B3EB6E /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		A2891F5DA2A34AD0B11DE5CC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AA998AA9A7C946C9B21A6A38 /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				8B94110625D3461B88B3EB6E /* CMake Rules */,
+				CF3DD7CDF8524A89B08D9321 /* CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+		B051C7190F464C138C33A520 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D8A27B1BF73E4B6EBEC05199 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		CB275CAA56F0405CBD533510 /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				4180380DE07D4F68B4AC778D /* CPU.cpp */,
+				BEFD992B68AE463DAF0B5D2D /* CPUArithmetic.cpp */,
+				A28DBF854A7E4DCDBC8C900D /* CPUControl.cpp */,
+				F2EA90D424BC44E68A4366DE /* CPULoadStore.cpp */,
+				B78876E0AED74504BBF9B3D1 /* CPUPushPop.cpp */,
+				5EC4B72E5971414AA318F164 /* Chipset.cpp */,
+				03B4A0EDF1CA487781FB68A5 /* InterruptSource.cpp */,
+				B8C508C2FAF5498B921A44F6 /* MMU.cpp */,
+				D09B9BF026614FCDA983321F /* MMURegion.cpp */,
+				E98C0F37B73E443CB4CE2E7C /* ePSCpu.cpp */,
+				E4C08E2C23EA4FC1BC340870 /* CrashHandler.cpp */,
+				6BB205A8AB7D499881E7AB30 /* Emulator.cpp */,
+				338358627A404EF3ACB3DD81 /* ConsoleText.cpp */,
+				3C65970FD4964670B619B24B /* DiscordRPC.cpp */,
+				E37FEC35C9A04B15AC69A760 /* GameBuffer.cpp */,
+				36A68E0F853C4C61B3A0291B /* Romu.cpp */,
+				A0D40246137C4F6DAD522819 /* SysDialog.cpp */,
+				B6179E70157A4A12835073C7 /* U8Disas.cpp */,
+				7D2613D172344A0291074074 /* cam.cc */,
+				5BDF4E7B0B4D406A931BE7DA /* hct.cc */,
+				FEE20FA7B8B448E580E3E60E /* hct_solver.cc */,
+				00E392B51598470CAF59302C /* tones.cc */,
+				B28FE39EB9834CC99E1BF86F /* utils.cc */,
+				329EA7D4E4394A35BBB3D6D1 /* viewing_conditions.cc */,
+				EB465EA345954611B4E6B1AD /* ePSDisas.cpp */,
+				3D0ED7D07EA342C3B974A5C0 /* vibration.cpp */,
+				6A22990C1F4C43F58E307006 /* 5800FileSystem.cpp */,
+				4795B768A0A0478D8EF49BA1 /* AddressWindow.cpp */,
+				CF5E2711A3F6409584C8E140 /* BitmapViewer.cpp */,
+				76E746A95BEB4122ABA40F6D /* CallAnalysis.cpp */,
+				7E3154C3847F44F1AD948465 /* CodeViewer.cpp */,
+				105EF2AF20EF44A0AAE223B2 /* Editors.cpp */,
+				BD93536FC1F04F88B79CACA7 /* FileDialog.cpp */,
+				0B14D6E7035A414A91FFF043 /* Hooks.cpp */,
+				03A78BEC25A245678282E48A /* HwController.cpp */,
+				A4705FFCDA894188AC81C43C /* Injector.cpp */,
+				B17B1FD544FC4B8090EF450C /* LabelViewer.cpp */,
+				58C00C7C28754904BCA443A8 /* Localization.cpp */,
+				606B122C2F8047D3A1980AB6 /* MemBreakPoint.cpp */,
+				0FD04D57799D4287891A2490 /* PluginLogWindow.cpp */,
+				BBDD0AAA95DC4CA58B0B4BB1 /* SnapshotWindow.cpp */,
+				4631BD1478EB4592911111D5 /* Theme.cpp */,
+				49BEF8A60EAF46EBA1911463 /* ThemeManager.cpp */,
+				7EF37970946840A79E06A881 /* TouchMouseTranslator.cpp */,
+				667CDB1B43E143818A30F7F4 /* Ui.cpp */,
+				3A7C0D6AB6924710A6BE3B43 /* VariableWindow.cpp */,
+				2CFFEA462B2A4149856CD372 /* WatchWindow.cpp */,
+				00ED128EE8C44CB4A9F01614 /* TextEditor.cpp */,
+				74F8C777DBF04CF9AB1355C2 /* imgui.cpp */,
+				AD9927D060BC4198A98EED54 /* imgui_demo.cpp */,
+				FB2652FDBCA04B9993DB621D /* imgui_draw.cpp */,
+				BF23D75A689F42C888F0F2E9 /* imgui_impl_sdl2.cpp */,
+				6911251F56384534A59FB4DA /* imgui_impl_sdlrenderer2.cpp */,
+				6321B0A1CC094F86A8F08CCA /* imgui_tables.cpp */,
+				E2B1943724D0497BBBE20D46 /* imgui_widgets.cpp */,
+				3C11C7744D15401D85EA08A5 /* JitU8.cpp */,
+				89F4F0A8AB514B369AD3D0B9 /* 5800Flash.cpp */,
+				5DA4086EA653442CA2430C67 /* Audio.cpp */,
+				B5C19A67CA5A4E50B17CE119 /* BCDCalc.cpp */,
+				09A4B25E26F24D82B379B0D2 /* BatteryBackedRAM.cpp */,
+				F211709987494912AEC6F768 /* ExternalInterrupts.cpp */,
+				1D675E42207343A1A9419738 /* Flash.cpp */,
+				A570D1DEE0CB473197CD190B /* IOPorts.cpp */,
+				CE1AD5D738464E5CB4FCCD41 /* Keyboard.cpp */,
+				211290CF4BCC4F7682F9FBF6 /* ML620Ports.cpp */,
+				A93FE21259714FFE87EB350A /* Miscellaneous.cpp */,
+				1EA9A4A82D1C4A59B4D3A86C /* PowerSupply.cpp */,
+				8F327C7778C94452B131110F /* ROMWindow.cpp */,
+				0342C9FBAE584C1FB09143E9 /* RealTimeClock.cpp */,
+				E6E26D2223C641629A2894AC /* Screen.cpp */,
+				EAA8FBBEED594F1895072C1A /* Spi.cpp */,
+				18CB6F83A87D467A9AEDCA22 /* StandbyControl.cpp */,
+				BDC42A2FC4F0475F871079BA /* Timer.cpp */,
+				E0140DA0426D49BC8D090582 /* TimerBaseCounter.cpp */,
+				88B869FA3CDC4E93873DACEC /* Uart.cpp */,
+				67196826834444FC8B361906 /* VoltageLevelSupervisor.cpp */,
+				68077D88535E49A788C657E4 /* WatchdogTimer.cpp */,
+				607DD75E1A4E4673BB513B6B /* PluginApi_Impl.cpp */,
+				30B86F64A36D4951A96BE294 /* PluginMan.cpp */,
+				E64CFF2303E444E5A092E12B /* RopCompilerUI.cpp */,
+				2757627DC47748A8B5987F05 /* Snapshot.cpp */,
+				C09FA8755F5C4F40BDEF5C7E /* StartupUi.cpp */,
+				CFEE437069684143AA9ECD7A /* casioemu.cpp */,
+				94F18923E05E4C7EAF1490FB /* sdl_win32_extra.cpp */,
+				FE84DF542A3F42778E57F341 /* miniz.c */,
+				DDEA60C5A79C49FE92A6A718 /* miniz_tdef.c */,
+				91283CCE50E94ECD82822C23 /* miniz_tinfl.c */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		FC7ECF0EB5ED4BA386EBDAA7 /* main */ = {
+			isa = PBXGroup;
+			children = (
+				B051C7190F464C138C33A520 /* Resources */,
+				CB275CAA56F0405CBD533510 /* Source Files */,
+				C4EA59D3579643878A0BA732 /* CMakeLists.txt */,
+			);
+			name = main;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		09180B84A58F0F386124BCEE /* main */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7DFC665A29D44613A0A18AA5 /* Build configuration list for PBXNativeTarget "main" */;
+			buildPhases = (
+				79C9744B7B454E5F8237956E /* Sources */,
+				05F350BF143D4F84991A08CD /* Frameworks */,
+				E06B6315D42937E49F9B5B67 /* CMake PostBuild Rules */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5BB288C0A5FC4D3CB58FFA88 /* PBXTargetDependency */,
+			);
+			name = main;
+			productName = main;
+			productReference = EAD0E48B07E74D60955913C7 /* libmain.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		73BAB63CCD664F728DB3A1CA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2650;
+			};
+			buildConfigurationList = 8F88DED29EA049A890E0C9DE /* Build configuration list for PBXProject "CasioEmuMsvc" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 56F7E3C8042342C2BE38F9D6;
+			projectDirPath = /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc;
+			projectRoot = "";
+			targets = (
+				20C7654FB5A131681F032808 /* ALL_BUILD */,
+				09180B84A58F0F386124BCEE /* main */,
+				76351EAF27738D823F143E07 /* package */,
+				F2AF4B7EB06B3A8C4CFCA8C9 /* ZERO_CHECK */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		571234464C2A5D0D43F1AB42 /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "CMake PostBuild Rules";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nif test \"$CONFIGURATION\" = \"Debug\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios\n  /usr/local/bin/cpack -C $CONFIGURATION$EFFECTIVE_PLATFORM_NAME --config ./CPackConfig.cmake\nfi\nif test \"$CONFIGURATION\" = \"Release\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios\n  /usr/local/bin/cpack -C $CONFIGURATION$EFFECTIVE_PLATFORM_NAME --config ./CPackConfig.cmake\nfi\nif test \"$CONFIGURATION\" = \"MinSizeRel\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios\n  /usr/local/bin/cpack -C $CONFIGURATION$EFFECTIVE_PLATFORM_NAME --config ./CPackConfig.cmake\nfi\nif test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios\n  /usr/local/bin/cpack -C $CONFIGURATION$EFFECTIVE_PLATFORM_NAME --config ./CPackConfig.cmake\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		8DCBA8140BF7C3739B8C3B22 /* Generate CMakeFiles/ALL_BUILD */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ALL_BUILD";
+			outputPaths = (
+				"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/CMakeFiles/ALL_BUILD",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nif test \"$CONFIGURATION\" = \"Debug\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  echo Build\\ all\\ projects\nfi\nif test \"$CONFIGURATION\" = \"Release\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  echo Build\\ all\\ projects\nfi\nif test \"$CONFIGURATION\" = \"MinSizeRel\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  echo Build\\ all\\ projects\nfi\nif test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  echo Build\\ all\\ projects\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C4999F5EB344FC2CAB4B363E /* Generate CMakeFiles/ZERO_CHECK */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ZERO_CHECK";
+			outputPaths = (
+				"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/CMakeFiles/ZERO_CHECK",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nif test \"$CONFIGURATION\" = \"Debug\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  make -f /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/CMakeScripts/ReRunCMake.make\nfi\nif test \"$CONFIGURATION\" = \"Release\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  make -f /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/CMakeScripts/ReRunCMake.make\nfi\nif test \"$CONFIGURATION\" = \"MinSizeRel\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  make -f /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/CMakeScripts/ReRunCMake.make\nfi\nif test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  make -f /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/CMakeScripts/ReRunCMake.make\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		E06B6315D42937E49F9B5B67 /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "CMake PostBuild Rules";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nif test \"$CONFIGURATION\" = \"Debug\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E make_directory /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/de_DE.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/en_US.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/es_ES.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/fr_FR.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ja_JP.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ko_KR.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ru_RU.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/vi_VN.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/zh_CN.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/roms.db /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/roms.db || /usr/local/bin/cmake -E true\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E make_directory /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Debug${EFFECTIVE_PLATFORM_NAME}/locales\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E cmake_symlink_library /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Debug${EFFECTIVE_PLATFORM_NAME}/libmain.dylib /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Debug${EFFECTIVE_PLATFORM_NAME}/libmain.dylib /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Debug${EFFECTIVE_PLATFORM_NAME}/libmain.dylib\nfi\nif test \"$CONFIGURATION\" = \"Release\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E make_directory /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/de_DE.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/en_US.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/es_ES.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/fr_FR.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ja_JP.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ko_KR.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ru_RU.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/vi_VN.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/zh_CN.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/roms.db /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/roms.db || /usr/local/bin/cmake -E true\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E make_directory /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Release${EFFECTIVE_PLATFORM_NAME}/locales\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E cmake_symlink_library /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Release${EFFECTIVE_PLATFORM_NAME}/libmain.dylib /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Release${EFFECTIVE_PLATFORM_NAME}/libmain.dylib /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Release${EFFECTIVE_PLATFORM_NAME}/libmain.dylib\nfi\nif test \"$CONFIGURATION\" = \"MinSizeRel\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E make_directory /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/de_DE.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/en_US.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/es_ES.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/fr_FR.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ja_JP.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ko_KR.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ru_RU.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/vi_VN.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/zh_CN.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/roms.db /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/roms.db || /usr/local/bin/cmake -E true\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E make_directory /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/MinSizeRel${EFFECTIVE_PLATFORM_NAME}/locales\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E cmake_symlink_library /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/MinSizeRel${EFFECTIVE_PLATFORM_NAME}/libmain.dylib /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/MinSizeRel${EFFECTIVE_PLATFORM_NAME}/libmain.dylib /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/MinSizeRel${EFFECTIVE_PLATFORM_NAME}/libmain.dylib\nfi\nif test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E make_directory /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/de_DE.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/en_US.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/es_ES.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/fr_FR.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ja_JP.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ko_KR.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/ru_RU.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/vi_VN.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/locales/zh_CN.lc /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/locales/\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E copy_if_different /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/roms.db /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/app/src/main/assets/roms.db || /usr/local/bin/cmake -E true\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E make_directory /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/RelWithDebInfo${EFFECTIVE_PLATFORM_NAME}/locales\n  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc\n  /usr/local/bin/cmake -E cmake_symlink_library /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/RelWithDebInfo${EFFECTIVE_PLATFORM_NAME}/libmain.dylib /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/RelWithDebInfo${EFFECTIVE_PLATFORM_NAME}/libmain.dylib /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/RelWithDebInfo${EFFECTIVE_PLATFORM_NAME}/libmain.dylib\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		79C9744B7B454E5F8237956E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E3DF29AECB804774BFEC7C1C /* CPU.cpp in Sources */,
+				5F2F2C1D832F4A698829A542 /* CPUArithmetic.cpp in Sources */,
+				51EA18983C1B460EB6EF044D /* CPUControl.cpp in Sources */,
+				B72EDCCCA4BE4FC390F3D70A /* CPULoadStore.cpp in Sources */,
+				89AF2788A91C42BA88932C80 /* CPUPushPop.cpp in Sources */,
+				5AA72D8E61FD42C1A578CAC2 /* Chipset.cpp in Sources */,
+				10894BD2E48B49C695BFB779 /* InterruptSource.cpp in Sources */,
+				FF8EF45C8C3745388A1E336E /* MMU.cpp in Sources */,
+				38FCC92C5CCD48BD9590440B /* MMURegion.cpp in Sources */,
+				B05D1B0FD87F430586A33E9B /* ePSCpu.cpp in Sources */,
+				29325EDFC8864EDA9A7BDB08 /* CrashHandler.cpp in Sources */,
+				926BC84B90A64983AC6DF874 /* Emulator.cpp in Sources */,
+				3151FA794C4F42D295F8437C /* ConsoleText.cpp in Sources */,
+				7B3BC63D973542F5AA26FA37 /* DiscordRPC.cpp in Sources */,
+				A3DDB7BC80034C3F93510E8B /* GameBuffer.cpp in Sources */,
+				2E706BEA71BC4AB9A78A06F3 /* Romu.cpp in Sources */,
+				2940BBF2C5A94AB7B4C5B560 /* SysDialog.cpp in Sources */,
+				5D49CE0271194EE39E174D0F /* U8Disas.cpp in Sources */,
+				D4B00DBA48CE4C189150DEBC /* cam.cc in Sources */,
+				4A36A4CFAF1D426DA7F3FA58 /* hct.cc in Sources */,
+				3C05404335EF4CAA9D1E4901 /* hct_solver.cc in Sources */,
+				D23B861C30734C588755D9FD /* tones.cc in Sources */,
+				FDA9FCECD58C4BD9B82AAF33 /* utils.cc in Sources */,
+				FE65B61AD1DD4692AA2BCFC4 /* viewing_conditions.cc in Sources */,
+				2B57B99B40FF4D0E834055E3 /* ePSDisas.cpp in Sources */,
+				567B38FF7B82487DB58A61D7 /* vibration.cpp in Sources */,
+				4E673F26001C415F8CC49CE3 /* 5800FileSystem.cpp in Sources */,
+				10B1B4D50A7641BFB185F216 /* AddressWindow.cpp in Sources */,
+				A4FFE2E2981246E5AA2CA2B9 /* BitmapViewer.cpp in Sources */,
+				A89A577701864C5584C0C4BE /* CallAnalysis.cpp in Sources */,
+				3A20EAAD477A410D9C856B1F /* CodeViewer.cpp in Sources */,
+				EF1F86EE08C44D098609B5F1 /* Editors.cpp in Sources */,
+				C63EDB1CFC32436780BE453A /* FileDialog.cpp in Sources */,
+				64FE1A62DC504B8191A6B8A5 /* Hooks.cpp in Sources */,
+				AD350AE54C2F46B788E2BF24 /* HwController.cpp in Sources */,
+				7720303BC39C4FBE983EE53A /* Injector.cpp in Sources */,
+				D37868B6D4F34CAE83934492 /* LabelViewer.cpp in Sources */,
+				BCC9C245E4FB446293829D9B /* Localization.cpp in Sources */,
+				6356653690634AD0819EE933 /* MemBreakPoint.cpp in Sources */,
+				2AEC332BCDFF406191700CB3 /* PluginLogWindow.cpp in Sources */,
+				EA4DD97A3A684D4C8219FE8A /* SnapshotWindow.cpp in Sources */,
+				3086C158BAE749459621D8A4 /* Theme.cpp in Sources */,
+				9A74A3AD5FD849DCB1C5942B /* ThemeManager.cpp in Sources */,
+				DD7CC69A7A3F43F6A317E7C3 /* TouchMouseTranslator.cpp in Sources */,
+				E3F69225025C46368BCDE3B8 /* Ui.cpp in Sources */,
+				CD23CEDEC6514D97840AC40E /* VariableWindow.cpp in Sources */,
+				9B951E26F34B4E81B76BF47C /* WatchWindow.cpp in Sources */,
+				70E9005BA49C48BCBB7AC96A /* TextEditor.cpp in Sources */,
+				4981F990C308434581472F8C /* imgui.cpp in Sources */,
+				A2FC97C945624B31960FAC15 /* imgui_demo.cpp in Sources */,
+				E7A2A3B5042F4B0F9C691C54 /* imgui_draw.cpp in Sources */,
+				23EC5348A28C433A95D252C0 /* imgui_impl_sdl2.cpp in Sources */,
+				D3F27AF238D446BCA9B2CBC5 /* imgui_impl_sdlrenderer2.cpp in Sources */,
+				74F6B824FFD845F1BDF75719 /* imgui_tables.cpp in Sources */,
+				EDE11872DA074EC6945A1B91 /* imgui_widgets.cpp in Sources */,
+				CECCD33653064F80A8670C61 /* JitU8.cpp in Sources */,
+				3E4BACBB7C1B481E9D98CD1E /* 5800Flash.cpp in Sources */,
+				63E0A9C193354411B108BB9A /* Audio.cpp in Sources */,
+				44D022AEE84E46BBADE50CC3 /* BCDCalc.cpp in Sources */,
+				70B763913A6844E39E64DECB /* BatteryBackedRAM.cpp in Sources */,
+				50192C3A4D5E41258E669671 /* ExternalInterrupts.cpp in Sources */,
+				749BB0CA1C884502B2878741 /* Flash.cpp in Sources */,
+				E50BE8500EA2441584EB6B6F /* IOPorts.cpp in Sources */,
+				771A523256E449A49F4A2FF6 /* Keyboard.cpp in Sources */,
+				0EC8ED7CF304460785364035 /* ML620Ports.cpp in Sources */,
+				25049D266CCB4B8B97B17F3B /* Miscellaneous.cpp in Sources */,
+				AC6D9C4F2A744B8E95B83F61 /* PowerSupply.cpp in Sources */,
+				47FD522B641F44448EEB442B /* ROMWindow.cpp in Sources */,
+				7F2939F9B8C044D9ACA1FA30 /* RealTimeClock.cpp in Sources */,
+				4651B5E134A54681B65FA180 /* Screen.cpp in Sources */,
+				F815EEC9A5C542F5A9AB1154 /* Spi.cpp in Sources */,
+				37363E399E8248A09AA34437 /* StandbyControl.cpp in Sources */,
+				2F00475606504021A8A0725C /* Timer.cpp in Sources */,
+				88061694631249B7A3ED17B0 /* TimerBaseCounter.cpp in Sources */,
+				0129D5CB31DB4DE097DC0CCF /* Uart.cpp in Sources */,
+				5115B428CE6A473CB2000D9A /* VoltageLevelSupervisor.cpp in Sources */,
+				EAEF16BA5C8449E296FFD6A5 /* WatchdogTimer.cpp in Sources */,
+				6A091F0F42DE450198D8B2B7 /* PluginApi_Impl.cpp in Sources */,
+				C8CE9433AB2943C2B7005909 /* PluginMan.cpp in Sources */,
+				2CAB0DE35C3042E19ECFC7DF /* RopCompilerUI.cpp in Sources */,
+				042A07DCEB7141F48785EDC5 /* Snapshot.cpp in Sources */,
+				ADB43B5F15764DEEBABD32B0 /* StartupUi.cpp in Sources */,
+				6F30214911A74821A90677FF /* casioemu.cpp in Sources */,
+				226CE05720BC4245A1E506A3 /* sdl_win32_extra.cpp in Sources */,
+				FFD51BA562254289972A10B0 /* miniz.c in Sources */,
+				30BA5CE192BE42359562D07E /* miniz_tdef.c in Sources */,
+				759E945F9BF149FAB5EA0B84 /* miniz_tinfl.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		27D49C3A8BE945608D18E8D6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 20C7654FB5A131681F032808 /* ALL_BUILD */;
+			targetProxy = 32BCC50C56AF417AA1B8663C /* PBXContainerItemProxy */;
+		};
+		5BB288C0A5FC4D3CB58FFA88 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F2AF4B7EB06B3A8C4CFCA8C9 /* ZERO_CHECK */;
+			targetProxy = 87C0A6E002DF41D8A7F98C60 /* PBXContainerItemProxy */;
+		};
+		93AA36E8441547EABFB4ACBF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F2AF4B7EB06B3A8C4CFCA8C9 /* ZERO_CHECK */;
+			targetProxy = 391B23B9E8F6474E8B5ECB32 /* PBXContainerItemProxy */;
+		};
+		E79ECD8053C14B3883525236 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09180B84A58F0F386124BCEE /* main */;
+			targetProxy = 623EC49681F046C49C997AC2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		24C1A62633754270934E706D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = Release;
+		};
+		2BD18C35D9524BDAB192576A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = Release;
+		};
+		2FBBFA6A62DB4488949A04E5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Release${EFFECTIVE_PLATFORM_NAME}";
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					main_EXPORTS,
+					DISABLE_SENTRY,
+					ASMJIT_NO_JIT,
+					_GNU_SOURCE,
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Chipset,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Containers,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/CrashHandler,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Ext,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Ext/cam,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Gui,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Gui/imgui,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/JitU8,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Rop,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Peripheral,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Plugin,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/StartupUi,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/locales,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party/asmjit/src,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party/miniz,
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include/SDL2",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include-config-release/SDL2",
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/SDL_image/include,
+					"$(inherited)",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"$(inherited)",
+				);
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_CFLAGS = (
+					"-DNDEBUG",
+					"'-std=gnu11'",
+					"-fPIC",
+					"'-Wno-error=implicit-function-declaration'",
+					"$(inherited)",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-DNDEBUG",
+					"'-std=gnu++20'",
+					"-fPIC",
+					"'-Wno-error=implicit-function-declaration'",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-headerpad_max_install_names",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL_image/Release${EFFECTIVE_PLATFORM_NAME}/libSDL2_image-2.0.0.900.0.dylib",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/Release${EFFECTIVE_PLATFORM_NAME}/libSDL2-2.0.0.dylib",
+					"$(inherited)",
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = main;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/build/main.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = Release;
+		};
+		329409089027464598A60EEE /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/MinSizeRel${EFFECTIVE_PLATFORM_NAME}";
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					main_EXPORTS,
+					DISABLE_SENTRY,
+					ASMJIT_NO_JIT,
+					_GNU_SOURCE,
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Chipset,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Containers,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/CrashHandler,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Ext,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Ext/cam,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Gui,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Gui/imgui,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/JitU8,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Rop,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Peripheral,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Plugin,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/StartupUi,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/locales,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party/asmjit/src,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party/miniz,
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include/SDL2",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include-config-minsizerel/SDL2",
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/SDL_image/include,
+					"$(inherited)",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"$(inherited)",
+				);
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_CFLAGS = (
+					"-DNDEBUG",
+					"'-std=gnu11'",
+					"-fPIC",
+					"'-Wno-error=implicit-function-declaration'",
+					"$(inherited)",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-DNDEBUG",
+					"'-std=gnu++20'",
+					"-fPIC",
+					"'-Wno-error=implicit-function-declaration'",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-headerpad_max_install_names",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL_image/MinSizeRel${EFFECTIVE_PLATFORM_NAME}/libSDL2_image-2.0.0.900.0.dylib",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/MinSizeRel${EFFECTIVE_PLATFORM_NAME}/libSDL2-2.0.0.dylib",
+					"$(inherited)",
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = main;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/build/main.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = MinSizeRel;
+		};
+		39AA85E7107D4D55AAD1F106 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SYMROOT = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/build";
+			};
+			name = RelWithDebInfo;
+		};
+		3D838C943DD64CB589429B97 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = MinSizeRel;
+		};
+		49FAB19F28F94FCF9391B8F2 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = MinSizeRel;
+		};
+		5846753C2F1A470E9F6D88FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = Debug;
+		};
+		624CE835823F4B1B89B17964 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SYMROOT = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/build";
+			};
+			name = MinSizeRel;
+		};
+		6A9285CD91B04516B56F586D /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = package;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = MinSizeRel;
+		};
+		7154636A8AE043138E479558 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SYMROOT = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/build";
+			};
+			name = Release;
+		};
+		7F8B2092BF1849EF96A476D4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = package;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = Debug;
+		};
+		86D2B99C1BC740649D89871F /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/RelWithDebInfo${EFFECTIVE_PLATFORM_NAME}";
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					main_EXPORTS,
+					DISABLE_SENTRY,
+					ASMJIT_NO_JIT,
+					_GNU_SOURCE,
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Chipset,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Containers,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/CrashHandler,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Ext,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Ext/cam,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Gui,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Gui/imgui,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/JitU8,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Rop,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Peripheral,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Plugin,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/StartupUi,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/locales,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party/asmjit/src,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party/miniz,
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include/SDL2",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include-config-relwithdebinfo/SDL2",
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/SDL_image/include,
+					"$(inherited)",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"$(inherited)",
+				);
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_CFLAGS = (
+					"-DNDEBUG",
+					"'-std=gnu11'",
+					"-fPIC",
+					"'-Wno-error=implicit-function-declaration'",
+					"$(inherited)",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-DNDEBUG",
+					"'-std=gnu++20'",
+					"-fPIC",
+					"'-Wno-error=implicit-function-declaration'",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-headerpad_max_install_names",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL_image/RelWithDebInfo${EFFECTIVE_PLATFORM_NAME}/libSDL2_image-2.0.0.900.0.dylib",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/RelWithDebInfo${EFFECTIVE_PLATFORM_NAME}/libSDL2-2.0.0.dylib",
+					"$(inherited)",
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = main;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/build/main.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = RelWithDebInfo;
+		};
+		8F67ED54FA6E49D6AFDC6014 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = package;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = RelWithDebInfo;
+		};
+		93D7F71289FF413D8CBD3A5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/build";
+			};
+			name = Debug;
+		};
+		C112D7D49538442C8A820A46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/Debug${EFFECTIVE_PLATFORM_NAME}";
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					main_EXPORTS,
+					DISABLE_SENTRY,
+					ASMJIT_NO_JIT,
+					_GNU_SOURCE,
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Chipset,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Containers,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/CrashHandler,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Ext,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Ext/cam,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Gui,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Gui/imgui,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/JitU8,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Rop,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Peripheral,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/Plugin,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/StartupUi,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/src/locales,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party/asmjit/src,
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/CasioEmuMsvc/third_party/miniz,
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include/SDL2",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/include-config-debug/SDL2",
+					/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/SDL_image/include,
+					"$(inherited)",
+				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"$(inherited)",
+				);
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_CFLAGS = (
+					"'-std=gnu11'",
+					"-fPIC",
+					"'-Wno-error=implicit-function-declaration'",
+					"$(inherited)",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"'-std=gnu++20'",
+					"-fPIC",
+					"'-Wno-error=implicit-function-declaration'",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-headerpad_max_install_names",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL_image/Debug${EFFECTIVE_PLATFORM_NAME}/libSDL2_image-2.0d.0.900.0.dylib",
+					"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/Debug${EFFECTIVE_PLATFORM_NAME}/libSDL2-2.0d.0.dylib",
+					"$(inherited)",
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = main;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/build/main.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = Debug;
+		};
+		C45E8C713C97417FAAA01272 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = Debug;
+		};
+		DE26A36BC71D4CF5AAAFB573 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = RelWithDebInfo;
+		};
+		F30B79B7605A4754B3AA11ED /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = RelWithDebInfo;
+		};
+		F401734B2E33433A9381E94D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = " $(inherited)";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = package;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = "$(inherited)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0153F3DA568443C7B65171F9 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5846753C2F1A470E9F6D88FC /* Debug */,
+				2BD18C35D9524BDAB192576A /* Release */,
+				3D838C943DD64CB589429B97 /* MinSizeRel */,
+				DE26A36BC71D4CF5AAAFB573 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		40998614AEA14497927789A7 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C45E8C713C97417FAAA01272 /* Debug */,
+				24C1A62633754270934E706D /* Release */,
+				49FAB19F28F94FCF9391B8F2 /* MinSizeRel */,
+				F30B79B7605A4754B3AA11ED /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		74F95F2252BC485FAA532A18 /* Build configuration list for PBXAggregateTarget "package" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7F8B2092BF1849EF96A476D4 /* Debug */,
+				F401734B2E33433A9381E94D /* Release */,
+				6A9285CD91B04516B56F586D /* MinSizeRel */,
+				8F67ED54FA6E49D6AFDC6014 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7DFC665A29D44613A0A18AA5 /* Build configuration list for PBXNativeTarget "main" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C112D7D49538442C8A820A46 /* Debug */,
+				2FBBFA6A62DB4488949A04E5 /* Release */,
+				329409089027464598A60EEE /* MinSizeRel */,
+				86D2B99C1BC740649D89871F /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8F88DED29EA049A890E0C9DE /* Build configuration list for PBXProject "CasioEmuMsvc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93D7F71289FF413D8CBD3A5E /* Debug */,
+				7154636A8AE043138E479558 /* Release */,
+				624CE835823F4B1B89B17964 /* MinSizeRel */,
+				39AA85E7107D4D55AAD1F106 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 73BAB63CCD664F728DB3A1CA /* Project object */;
+}

@@ -1,4 +1,4 @@
-﻿#include "Emulator.hpp"
+#include "Emulator.hpp"
 #include "Chipset/Chipset.hpp"
 #include "Logger.hpp"
 #include "ModelInfo.h"
@@ -449,10 +449,14 @@ namespace casioemu {
 		dest.h = interface_background.src.h * uf;
 		dest.x = (w - dest.w) / 2;
 		dest.y = (h - dest.h) / 2; // Centre it
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, tx, nullptr, &dest);
-		emu_rect = dest;
+
+		if (!calculator_as_tab.load()) {
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderClear(renderer);
+			SDL_RenderCopy(renderer, tx, nullptr, &dest);
+			emu_rect = dest;
+		}
+
 		Repaint();
 	}
 

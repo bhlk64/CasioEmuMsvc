@@ -1,6 +1,7 @@
 #include "Config.hpp"
 #include "Ui.hpp"
 #include "imgui_impl_sdl2.h"
+#include "Gui/PopUpDisplay.h"
 
 #include "Emulator.hpp"
 #include "Localization.h"
@@ -424,16 +425,27 @@ int main(int argc, char* argv[]) {
 		}
 
 	hld:
+		if (g_mirror && g_mirror->handleEvent(event)) {
+			continue;
+		}
 		int wid, hei;
 		SDL_GetWindowSize(window, &wid, &hei);
 		switch (event.type) {
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
-						case SDL_WINDOWEVENT_CLOSE: {
+			case SDL_WINDOWEVENT_CLOSE: {
 				extern SDL_Window* window; // This is the debugger window
 				if (event.window.windowID == SDL_GetWindowID(emulator.window)) {
-					emulator.return_to_home_requested = true;
+#if !defined(__ANDROID__) && !defined(IOS)
+					if (!no_dbg) {
+						emulator.calculator_as_tab.store(true);
+						SDL_HideWindow(emulator.window);
+					} else {
+						emulator.Shutdown();
+					}
+#else
 					emulator.Shutdown();
+#endif
 				} else if (window && event.window.windowID == SDL_GetWindowID(window)) {
 					std::exit(0);
 				}
@@ -483,13 +495,7 @@ int main(int argc, char* argv[]) {
 	if (bg_txt) {
 		SDL_DestroyTexture(bg_txt);
 	}
-	
-	if (emulator.return_to_home_requested) {
-		argv_map["model"] = "";
-		continue;
-	} else {
-		break;
-	}
+	break;
 	} // end while(true)
 	
 #ifdef ENABLE_SENTRY

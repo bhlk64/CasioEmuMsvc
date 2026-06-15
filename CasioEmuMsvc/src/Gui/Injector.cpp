@@ -615,7 +615,8 @@ void Injector::RenderCore() {
 	}
 
 	if (ImGui::BeginTabBar("Rop.TabBar"_lc)) {
-		if (ImGui::BeginTabItem("Rop.XAnMode"_lc)) {
+		if (ImGui::BeginTabItem("Rop.Inject"_lc)) {
+			// ================= AN MODE =================
 			ImGui::Spacing();
 			ImGui::TextDisabled("Inject an arbitrary size block into memory. Useful for basic overflows.");
 			ImGui::Separator();
@@ -630,54 +631,69 @@ void Injector::RenderCore() {
 
 			if (ImGui::Button("Rop.InputAn"_lc, ImVec2(100, 0))) {
 				int off = atoi(buf);
+
 				if (off > 100) {
 					memset(base_addr + inputbase, 0x31, 100);
 					memset(base_addr + inputbase + 100, 0xa6, 1);
 					memset(base_addr + inputbase + 101, 0x31, off - 100);
-				}
-				else {
+				} else {
 					memset(base_addr + inputbase, 0x31, off);
 				}
+
 				*(base_addr + inputbase + off) = 0xfd;
 				*(base_addr + inputbase + off + 1) = 0x20;
+
 				SetFeedback("[v] " + "Rop.AnInputed"_l, false);
 				show_info = false;
 			}
 
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Rop.InjectHex"_lc)) {
+			// ================= HEX INJECTOR =================
 			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
 			if (ImGui::Button("Rop.AddInjector"_lc, ImVec2(150, 0))) {
 				injectors.push_back(InjectorData());
 			}
+
 			ImGui::Spacing();
 			ImGui::Separator();
 			ImGui::Spacing();
 
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+
 			for (size_t i = 0; i < injectors.size(); i++) {
 				ImGui::PushID(static_cast<int>(i));
 
-				std::string header = "Rop.InjectorNum"_l + " " + std::to_string(i + 1);
+				std::string header =
+					"Rop.InjectorNum"_l + " " + std::to_string(i + 1);
 
 				if (injectors.size() > 1) {
 					ImGui::PushStyleColor(ImGuiCol_Button, UIHelpers::kColorError);
+
 					if (ImGui::Button(("X##" + std::to_string(i)).c_str())) {
 						injectors.erase(injectors.begin() + i);
 						ImGui::PopStyleColor();
 						ImGui::PopID();
 						break;
 					}
+
 					ImGui::PopStyleColor();
 					ImGui::SameLine();
 				}
 
-				if (ImGui::CollapsingHeader(header.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+				if (ImGui::CollapsingHeader(
+						header.c_str(),
+						ImGuiTreeNodeFlags_DefaultOpen)) {
 					ImGui::Indent();
 					ImGui::Spacing();
-					RenderInjectorTab(injectors[i], i, show_info, info_msg);
+
+					RenderInjectorTab(
+						injectors[i],
+						i,
+						show_info,
+						info_msg);
+
 					ImGui::Spacing();
 					ImGui::Unindent();
 				}

@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D2EF38490665FE3E16672D5B /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 41D94454609C40E6AE9B1C1E /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				729AEE9587A19A934B341CC9 /* Generate CMakeFiles/ALL_BUILD */,
+			);
+			dependencies = (
+				37D6B4A5B027490699C6CB9B /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		6337A9C01F32425EA22BC81C /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CheckSymbolExists.c */ = {isa = PBXBuildFile; fileRef = 6599A4EE7BD24DA893BA375B /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CheckSymbolExists.c */; };
+		878579AC6BA34E91A1C60F33 /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = CBE58A45A8404090826823AD /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeLists.txt */; };
+		A95CBDB2E56A437580D44D9D /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir/Info.plist */ = {isa = PBXBuildFile; fileRef = 8DE859CCD0304EB4925DE2E7 /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir/Info.plist */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		0CD16A0ECD1940118D9387A1 /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
+		4F10D3AD5268450981AEAFE9 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		6C3E3751B87244FCB6525536 /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+		726FE7B32BCF4AB08B79D473 /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		98430E00820B4B1F93857865 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 42053CCFA5B343A8A1B03874 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7B013AFF3B0718F5CBE96BC;
+			remoteInfo = cmTC_46f4b;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		6599A4EE7BD24DA893BA375B /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CheckSymbolExists.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = CheckSymbolExists.c; path = CheckSymbolExists.c; sourceTree = SOURCE_ROOT; };
+		8DE859CCD0304EB4925DE2E7 /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir/Info.plist */ = {isa = PBXFileReference; explicitFileType = sourcecode.text.plist; fileEncoding = 4; name = Info.plist; path = CMakeFiles/cmTC_46f4b.dir/Info.plist; sourceTree = SOURCE_ROOT; };
+		CBE58A45A8404090826823AD /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		CEAB7A26A27A4051B7B2710A /* cmTC_46f4b */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = cmTC_46f4b; sourceTree = BUILT_PRODUCTS_DIR; };
+		E998AEA6987B4BB58A2C0815 /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A2CB3C94707640F3B69D7864 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		427F84078063484186F30A06 = {
+			isa = PBXGroup;
+			children = (
+				52BEBFB3CDA8445B833471DB /* ALL_BUILD */,
+				B1B13FFA848B42F094B287F8 /* cmTC_46f4b */,
+				ABE9DBD55D744E8687A2A0F1 /* Products */,
+				71CD108FE90C44438937AD27 /* Frameworks */,
+				8B8D321A1C5E4D9D9C317988 /* Resources */,
+			);
+			sourceTree = "<group>";
+		};
+		4531BEAC027B404EAC337305 /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				6599A4EE7BD24DA893BA375B /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CheckSymbolExists.c */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		52BEBFB3CDA8445B833471DB /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				64FCEDCEDA78433E8E21B69D /* CMake Rules */,
+				E998AEA6987B4BB58A2C0815 /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+		64FCEDCEDA78433E8E21B69D /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		71CD108FE90C44438937AD27 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8B8D321A1C5E4D9D9C317988 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		93595C8CE12B49CD979E6032 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8DE859CCD0304EB4925DE2E7 /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir/Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		ABE9DBD55D744E8687A2A0F1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CEAB7A26A27A4051B7B2710A /* cmTC_46f4b */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B1B13FFA848B42F094B287F8 /* cmTC_46f4b */ = {
+			isa = PBXGroup;
+			children = (
+				93595C8CE12B49CD979E6032 /* Resources */,
+				4531BEAC027B404EAC337305 /* Source Files */,
+				CBE58A45A8404090826823AD /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeLists.txt */,
+			);
+			name = cmTC_46f4b;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E7B013AFF3B0718F5CBE96BC /* cmTC_46f4b */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 56B9F09BBBDC48E8BFE75874 /* Build configuration list for PBXNativeTarget "cmTC_46f4b" */;
+			buildPhases = (
+				B7190813ED0E4592A6A2ADFD /* Sources */,
+				A2CB3C94707640F3B69D7864 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = cmTC_46f4b;
+			productName = cmTC_46f4b;
+			productReference = CEAB7A26A27A4051B7B2710A /* cmTC_46f4b */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		42053CCFA5B343A8A1B03874 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2650;
+			};
+			buildConfigurationList = 48336C0106B14AF5BBA85D51 /* Build configuration list for PBXProject "CMAKE_TRY_COMPILE" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				4F10D3AD5268450981AEAFE9 /* Debug */,
+				6C3E3751B87244FCB6525536 /* Release */,
+				726FE7B32BCF4AB08B79D473 /* MinSizeRel */,
+				0CD16A0ECD1940118D9387A1 /* RelWithDebInfo */,
+			);
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 427F84078063484186F30A06;
+			projectDirPath = .;
+			projectRoot = "";
+			targets = (
+				D2EF38490665FE3E16672D5B /* ALL_BUILD */,
+				E7B013AFF3B0718F5CBE96BC /* cmTC_46f4b */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		729AEE9587A19A934B341CC9 /* Generate CMakeFiles/ALL_BUILD */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ALL_BUILD";
+			outputPaths = (
+"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/ALL_BUILD"			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809
+  echo Build\\ all\\ projects
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		9B50530E35CC49C82C2FACCF = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B7190813ED0E4592A6A2ADFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6337A9C01F32425EA22BC81C /* /Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CheckSymbolExists.c */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		37D6B4A5B027490699C6CB9B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7B013AFF3B0718F5CBE96BC /* cmTC_46f4b */;
+			targetProxy = 98430E00820B4B1F93857865 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1599734C48C44BE7B8E2F28A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/Release";
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir/Info.plist";
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (" -idirafter \"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/SDL/src/video/khronos\"  -D_GNU_SOURCE=1     -DNDEBUG ","$(inherited)");
+				OTHER_LDFLAGS = ("","-lm","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = cmTC_46f4b;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/build/cmTC_46f4b.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		269C5CD582254D0BB811F575 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGNING_ALLOWED = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SYMROOT = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/build";
+			};
+			name = Release;
+		};
+		48E36A7D49614286880D194B /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/MinSizeRel";
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir/Info.plist";
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (" -idirafter \"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/SDL/src/video/khronos\"  -D_GNU_SOURCE=1     -DNDEBUG ","$(inherited)");
+				OTHER_LDFLAGS = ("","-lm","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = cmTC_46f4b;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/build/cmTC_46f4b.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		613194CCA539447F9AEF830B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		6F4ACF3CBCAF4974BAFF4871 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		8FBB2A2D9FF04205896DC3C5 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/RelWithDebInfo";
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir/Info.plist";
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (" -idirafter \"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/SDL/src/video/khronos\"  -D_GNU_SOURCE=1        -DNDEBUG ","$(inherited)");
+				OTHER_LDFLAGS = ("","-lm","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = cmTC_46f4b;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/build/cmTC_46f4b.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		986B25F9BD0141268B98F159 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/Debug";
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir/Info.plist";
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (" -idirafter \"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/SDL/src/video/khronos\"  -D_GNU_SOURCE=1    ","$(inherited)");
+				OTHER_LDFLAGS = ("","-lm","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = cmTC_46f4b;
+				SECTORDER_FLAGS = "";
+				TARGET_TEMP_DIR = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/build/cmTC_46f4b.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		B993633AD8174F5EA4864607 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		C177D1702B354136830D1BCF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		C7C8A601582349D49F1A56DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGNING_ALLOWED = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/build";
+			};
+			name = Debug;
+		};
+		D27498F1AB824F95B85D0469 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGNING_ALLOWED = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SYMROOT = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/build";
+			};
+			name = RelWithDebInfo;
+		};
+		F99AFFA6B56F42DA80A94D3B /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				CODE_SIGNING_ALLOWED = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SYMROOT = "/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/build";
+			};
+			name = MinSizeRel;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		41D94454609C40E6AE9B1C1E /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				613194CCA539447F9AEF830B /* Debug */,
+				C177D1702B354136830D1BCF /* Release */,
+				6F4ACF3CBCAF4974BAFF4871 /* MinSizeRel */,
+				B993633AD8174F5EA4864607 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		48336C0106B14AF5BBA85D51 /* Build configuration list for PBXProject "CMAKE_TRY_COMPILE" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7C8A601582349D49F1A56DC /* Debug */,
+				269C5CD582254D0BB811F575 /* Release */,
+				F99AFFA6B56F42DA80A94D3B /* MinSizeRel */,
+				D27498F1AB824F95B85D0469 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		56B9F09BBBDC48E8BFE75874 /* Build configuration list for PBXNativeTarget "cmTC_46f4b" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				986B25F9BD0141268B98F159 /* Debug */,
+				1599734C48C44BE7B8E2F28A /* Release */,
+				48E36A7D49614286880D194B /* MinSizeRel */,
+				8FBB2A2D9FF04205896DC3C5 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 42053CCFA5B343A8A1B03874 /* Project object */;
+}

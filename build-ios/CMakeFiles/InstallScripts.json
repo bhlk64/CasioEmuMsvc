@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/cmake_install.cmake",
+		"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/cmake_install.cmake",
+		"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL_image/cmake_install.cmake",
+		"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/CasioEmuMsvc/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

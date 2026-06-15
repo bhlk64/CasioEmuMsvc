@@ -54,6 +54,8 @@ namespace casioemu {
 		std::atomic<bool> screenshot_full_ui{true};
 		std::atomic<bool> screenshot_taken{false};
 		std::atomic<bool> mirroring_requested{};
+		std::atomic<bool> mirror_as_tab{true};
+		std::atomic<bool> calculator_as_tab{false};
 		std::atomic<bool> recording_requested{};
 		std::atomic<bool> recording_full_ui{true};
 		std::atomic<bool> recording_stop_requested{};
@@ -130,7 +132,6 @@ namespace casioemu {
 		bool GetPaused();
 		void SetPaused(bool paused);
 		void RequestStep();
-		std::atomic<bool> return_to_home_requested{false};
 		void UIEvent(SDL_Event event);
 		SDL_Renderer* GetRenderer();
 		SDL_Texture* GetInterfaceTexture();

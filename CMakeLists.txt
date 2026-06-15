@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.10...3.22)
 
+if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS deployment version" FORCE)
+endif()
+
 project(GAME)
 
 set(SDL_TEST OFF CACHE BOOL "Disable building the SDL_test library" FORCE)

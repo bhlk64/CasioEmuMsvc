@@ -1672,10 +1672,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			}
 
 			logicalCaptureRect = logicalRect;
-			// Compute physical rect for buffer allocation
-			if (!GetPhysicalCaptureRect(renderer, logicalRect, captureRect)) {
-				captureRect = logicalRect;
-			}
+			captureRect = logicalRect;
 			fps = std::max(1, requestedFps);
 			outputWidth = (captureRect.w + 1) & ~1;
 			outputHeight = (captureRect.h + 1) & ~1;
@@ -1870,12 +1867,8 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			return;
 		}
 
-		// SDL_RenderReadPixels reads at physical (backing) resolution on HiDPI.
-		// We must allocate a buffer at the physical size.
-		SDL_Rect physicalRect{};
-		if (!GetPhysicalCaptureRect(renderer, logicalRect, physicalRect)) {
-			physicalRect = logicalRect;
-		}
+		// Use logicalRect directly because the render target is a texture without HiDPI scaling
+		SDL_Rect physicalRect = logicalRect;
 
 		int captureWidth = physicalRect.w;
 		int captureHeight = physicalRect.h;
@@ -2154,13 +2147,19 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 		if (emulator.mirroring_requested.load()) {
 			auto p = GetSize(spriteRects, pixelRects);
-			auto sm = new ScreenMirror(p.first, p.second);
+			auto sm = new ScreenMirror(p.first, p.second, emulator.mirror_as_tab.load());
 			sm->create();
 			g_mirror = sm;
+			if (sm->is_tab) {
+				windows.push_back(sm);
+			}
 			emulator.mirroring_requested.store(false);
 		}
 		if (g_mirror) {
 			if (!g_mirror->isAlive()) {
+				if (g_mirror->is_tab) {
+					windows.erase(std::remove(windows.begin(), windows.end(), (UIWindow*)g_mirror), windows.end());
+				}
 				delete g_mirror;
 				g_mirror = nullptr;
 			} else {

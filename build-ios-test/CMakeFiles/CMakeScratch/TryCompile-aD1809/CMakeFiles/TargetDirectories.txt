@@ -1,0 +1,2 @@
+/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/cmTC_46f4b.dir
+/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios-test/CMakeFiles/CMakeScratch/TryCompile-aD1809/CMakeFiles/ALL_BUILD.dir

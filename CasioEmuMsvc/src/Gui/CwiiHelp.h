@@ -4,6 +4,19 @@
 #include <string>
 #include <unordered_map>
 namespace __temp_namesp_1456456 {
+	inline int safeStoi(const std::string& str, int defaultVal = 0) {
+		if (str.empty())
+			return defaultVal;
+		try {
+			size_t pos = 0;
+			int val = std::stoi(str, &pos);
+			if (pos != str.size())
+				return defaultVal;
+			return val;
+		} catch (const std::exception&) {
+			return defaultVal;
+		}
+	}
 	inline std::string trim(const std::string& str) {
 		size_t first = str.find_first_not_of('0');
 		if (first == std::string::npos)
@@ -71,7 +84,10 @@ namespace __temp_namesp_1456456 {
 			if (((p >> 4) & 0xF) == 0 && (p & 0xF) == 0)
 				return "0";
 		}
-		return sign == 1 ? trimStart(fin) : "-" + trimStart(fin);
+		auto trimmed = trimStart(fin);
+		if (trimmed.empty())
+			return "0";
+		return sign == 1 ? trimmed : "-" + trimmed;
 	}
 	inline int ConvertSign(char sign, int& expsign, int& numbersign) {
 		switch (sign) {
@@ -184,10 +200,14 @@ namespace __temp_namesp_1456456 {
 		return digits;
 	}
 	inline std::string BCD2Str(const char* p) {
+		if (!p)
+			return "?";
 		if (m_emu->hardware_id == casioemu::HW_TI) {
 			return TiBCD2Str(p);
 		}
 		auto sz = casioemu::GetVariableSize(m_emu->hardware_id);
+		if (sz < 2)
+			return "?";
 		auto type = (p[0] >> 4) & 0xF;
 		auto exp = p[sz - 2];
 		auto sign = p[sz - 1]; // 0xE == 14
@@ -199,11 +219,13 @@ namespace __temp_namesp_1456456 {
 		switch (type) {
 		case 0x0:
 		case 0x4: {
+			if (base.size() < 2)
+				return "?";
 			base[0] = base[1];
 			base[1] = '.';
 			
 			auto exps = HexExp(exp, expsign);
-			int exponent = std::stoi(exps);
+			int exponent = safeStoi(exps);
 
 			base = trimEnd(base);
 			if (base == "0") return "0";

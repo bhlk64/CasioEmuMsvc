@@ -269,6 +269,7 @@ void CodeViewer::PrepareDisasm() {
 			auto rom = beg;
 			auto end = rom + 0x80000;
 			printf("[UI][Info] Pass1: decoding opcodes...\n");
+			p_labels.clear();
 			std::stringstream ss{};
 			while (rom < end) {
 				auto pc = rom - beg;
