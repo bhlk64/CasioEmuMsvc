@@ -28,7 +28,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
 endif()
 
 if(IOS)
-    set(CMAKE_OSX_SYSROOT iphoneos)
     set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO")
 
     set_target_properties(${TARGET_NAME} PROPERTIES
