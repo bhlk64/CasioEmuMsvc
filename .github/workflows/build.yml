@@ -259,7 +259,7 @@ jobs:
           DEVELOPMENT_TEAM=""
           
     - name: upload full build ios
-      if: failure() && matrix.platform == 'ios'
+      if: always() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
       with:
         name: Test-upload-ios-build
