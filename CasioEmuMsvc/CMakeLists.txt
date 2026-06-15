@@ -153,11 +153,16 @@ if(BUILD_EXECUTABLE)
         set_source_files_properties(${APP_ICON} PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources"
         )
+        set(LAUNCH_SCREEN ${CMAKE_SOURCE_DIR}/MacResources/LaunchScreen.storyboard)
+        set_source_files_properties(${LAUNCH_SCREEN} PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources"
+        )
 
         add_executable(${TARGET_NAME}
             MACOSX_BUNDLE
             ${MAIN_SOURCES}
             ${APP_ICON}
+            ${LAUNCH_SCREEN}
         )
 
         if(IOS)
@@ -189,12 +194,22 @@ else()
     add_library(${TARGET_NAME} SHARED ${MAIN_SOURCES})
 endif()
 
-if(APPLE)
+if(APPLE AND NOT IOS)
     set_target_properties(${TARGET_NAME} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST
         ${CMAKE_SOURCE_DIR}/MacResources/Info.plist
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.luongtam.casioemu"
 
         INSTALL_RPATH "@executable_path/../Frameworks"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
+elseif(IOS)
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST
+        ${CMAKE_SOURCE_DIR}/MacResources/Info.plist
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.luongtam.casioemu"
+
+        INSTALL_RPATH "@executable_path/Frameworks"
         BUILD_WITH_INSTALL_RPATH TRUE
     )
 endif()
@@ -311,6 +326,13 @@ elseif(BUILD_EXECUTABLE)
             "-framework ImageIO"
             "-framework MobileCoreServices"
         )
+
+        # Compile SysDialog.cpp as Objective-C++ for iOS native file picker
+        set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/Ext/SysDialog.cpp PROPERTIES COMPILE_FLAGS "-x objective-c++")
+
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
+        )
     else()
         
         target_link_libraries(${TARGET_NAME} PRIVATE
@@ -345,8 +367,10 @@ file(GLOB LOCALE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/locales/*.lc")
 
 if(ANDROID)
     set(ASSET_DIR ${CMAKE_SOURCE_DIR}/app/src/main/assets)
-elseif(APPLE AND BUILD_EXECUTABLE)
+elseif(APPLE AND BUILD_EXECUTABLE AND NOT IOS)
     set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources)
+elseif(IOS AND BUILD_EXECUTABLE)
+    set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>)
 elseif(BUILD_EXECUTABLE AND NOT CASIOEMU_WEB)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${TARGET_NAME}>/locales)
@@ -397,7 +421,7 @@ if(NOT ANDROID AND NOT IOS AND NOT CASIOEMU_WEB)
     endif()
 endif()
 
-if(APPLE AND BUILD_EXECUTABLE)
+if(APPLE AND BUILD_EXECUTABLE AND NOT IOS)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
         $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
@@ -407,6 +431,17 @@ if(APPLE AND BUILD_EXECUTABLE)
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/locales
         $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
+    )
+elseif(IOS AND BUILD_EXECUTABLE)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/locales
+    )
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/locales
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/locales
     )
 endif()
 

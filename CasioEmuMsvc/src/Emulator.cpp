@@ -388,16 +388,6 @@ namespace casioemu {
         relative_path
     ).string();
 
-#elif defined(IOS)
-
-    return (
-        std::filesystem::path(getenv("HOME")) /
-        "Documents" /
-        "CasioEmuMsvc" /
-        model_path /
-        relative_path
-    ).string();
-
 #else
 
     return (

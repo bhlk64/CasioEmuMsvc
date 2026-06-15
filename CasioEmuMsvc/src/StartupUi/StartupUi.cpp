@@ -1412,9 +1412,14 @@ public:
 	void Render() override {
 		if (!open)
 			return;
-		auto& io = ImGui::GetIO();
-		ImGui::SetNextWindowSize({io.DisplaySize.x, io.DisplaySize.y}, ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos({});
+		SDL_Rect bounds;
+		if (SDL_GetDisplayUsableBounds(0, &bounds) != 0) {
+			auto& io = ImGui::GetIO();
+			bounds.x = 0; bounds.y = 0;
+			bounds.w = io.DisplaySize.x; bounds.h = io.DisplaySize.y;
+		}
+		ImGui::SetNextWindowSize({(float)bounds.w, (float)bounds.h}, ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos({(float)bounds.x, (float)bounds.y});
 		if (ImGui::Begin(name, &open, flags)) {
 			RenderCore();
 		}
@@ -1441,9 +1446,14 @@ public:
 	void Render() override {
 		if (!open)
 			return;
-		auto& io = ImGui::GetIO();
-		ImGui::SetNextWindowSize({io.DisplaySize.x, io.DisplaySize.y}, ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos({});
+		SDL_Rect bounds;
+		if (SDL_GetDisplayUsableBounds(0, &bounds) != 0) {
+			auto& io = ImGui::GetIO();
+			bounds.x = 0; bounds.y = 0;
+			bounds.w = io.DisplaySize.x; bounds.h = io.DisplaySize.y;
+		}
+		ImGui::SetNextWindowSize({(float)bounds.w, (float)bounds.h}, ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos({(float)bounds.x, (float)bounds.y});
 		if (ImGui::Begin(name, &open, flags)) {
 			RenderCore();
 		}
@@ -1561,7 +1571,14 @@ std::string sui_loop() {
 			ImGui_ImplSDLRenderer2_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
 			ImGui::NewFrame();
-			ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+			
+			ImGuiViewport* viewport = ImGui::GetMainViewport();
+			SDL_Rect bounds;
+			if (SDL_GetDisplayUsableBounds(0, &bounds) == 0) {
+				viewport->WorkPos = ImVec2((float)bounds.x, (float)bounds.y);
+				viewport->WorkSize = ImVec2((float)bounds.w, (float)bounds.h);
+			}
+			ImGui::DockSpaceOverViewport(0, viewport, ImGuiDockNodeFlags_PassthruCentralNode);
 			ImGui::SetNextWindowDockID(ImGui::GetCurrentContext()->DockContext.Nodes.Data[0].key, ImGuiCond_FirstUseEver); // TODO: ????????
 			ui.Render();
 			// static std::once_flag size_once;
