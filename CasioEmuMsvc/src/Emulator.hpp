@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Config.hpp"
 #include <SDL.h>
 #include <SDL_image.h>
@@ -51,8 +51,13 @@ namespace casioemu {
 		bool pause_on_mem_error;
 
 		std::atomic<bool> screenshot_requested{};
+		std::atomic<bool> screenshot_full_ui{true};
+		std::atomic<bool> screenshot_taken{false};
 		std::atomic<bool> mirroring_requested{};
+		std::atomic<bool> mirror_as_tab{true};
+		std::atomic<bool> calculator_as_tab{false};
 		std::atomic<bool> recording_requested{};
+		std::atomic<bool> recording_full_ui{true};
 		std::atomic<bool> recording_stop_requested{};
 		std::atomic<bool> recording_active{};
 		std::atomic<unsigned int> recording_frame_count{};

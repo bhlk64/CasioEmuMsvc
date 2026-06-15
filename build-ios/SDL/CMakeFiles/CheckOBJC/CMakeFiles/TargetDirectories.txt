@@ -1,0 +1,2 @@
+/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/CMakeFiles/CheckOBJC/CMakeFiles/ALL_BUILD.dir
+/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ios/SDL/CMakeFiles/CheckOBJC/CMakeFiles/ZERO_CHECK.dir

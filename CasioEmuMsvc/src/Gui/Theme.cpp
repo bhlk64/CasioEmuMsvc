@@ -40,7 +40,7 @@ public:
 			tm.SetLightMode();
 		}
 
-#if !defined(__ANDROID__) || !defined(IOS)
+#if !defined(__ANDROID__) && !defined(IOS)
 		ImGui::SameLine();
 		if (ImGui::Checkbox("Ui.LowPerformanceMode"_lc, &settings.lowPerformanceMode)) {
 			tm.SaveSettings();
