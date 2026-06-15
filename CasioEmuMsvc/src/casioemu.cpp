@@ -556,10 +556,8 @@ extern "C" void onAppForeground() {
 
 extern "C" void onAppTerminate() {
 }
-/*#include <SDL.h>
-
-int SDL_main(int argc, char *argv[])
+extern "C" int main(int argc, char* argv[])
 {
-    return main(argc, argv);
-}*/
+    return SDL_main(argc, argv);
+}
 #endif
