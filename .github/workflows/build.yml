@@ -261,42 +261,67 @@ jobs:
     - name: Signing for iOS bundle
       if: matrix.platform == 'ios'
       run: |
+        # =========================
+        # iOS KEYCHAIN + SIGN FIX
+        # =========================
+        
         security create-keychain -p "" build.keychain
-        security default-keychain -s build.keychain
         security unlock-keychain -p "" build.keychain
         
-        security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
-    
+        security set-keychain-settings -t 3600 -l build.keychain
+        security list-keychains -s build.keychain
+        security default-keychain -s build.keychain
+        
+        # import cert
         security import iOSresources/export_anar.p12 \
           -k build.keychain \
           -P "1234" \
           -A \
           -T /usr/bin/codesign
-    
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        cp iOSresources/export_anar.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-    
+        
+        # cực quan trọng: enable access cho codesign
+        security set-key-partition-list \
+          -S apple-tool:,apple: \
+          -s \
+          -k "" \
+          build.keychain
+        
+        # verify
+        security find-identity -v -p codesigning build.keychain
+        
+        # lấy app
         APP=$(find build -name "*.app" | head -n 1)
-    
-        echo "Signing: $APP"
-    
-        security find-identity -v -p codesigning
-
+        echo "APP: $APP"
+        
+        # lấy identity (an toàn nhất)
         IDENTITY=$(security find-identity -v -p codesigning build.keychain \
-          | grep "iPhone Distribution" \
+          | grep -E "iPhone|Apple Development|Apple Distribution" \
           | head -n 1 \
-          | awk '{print $2}')
+          | sed 's/.*) //')
         
-        echo "Using identity: $IDENTITY"
+        echo "IDENTITY: $IDENTITY"
         
+        # SIGN
         codesign --force --deep \
           --sign "$IDENTITY" \
           --keychain build.keychain \
           "$APP"
         
+        # VERIFY
         codesign --verify --deep --strict "$APP"
         
-        security find-identity -p codesigning build.keychain
+        # =========================
+        # EXPORT IPA
+        # =========================
+        
+        rm -rf Payload
+        mkdir Payload
+        
+        cp -R "$APP" Payload/
+        
+        zip -r app.ipa Payload
+        
+        echo "DONE: app.ipa created"
     - name: Create .ipa
       if: matrix.platform == 'ios'
       run: |
