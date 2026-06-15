@@ -439,7 +439,7 @@ int main(int argc, char* argv[]) {
 				if (event.window.windowID == SDL_GetWindowID(emulator.window)) {
 #if !defined(__ANDROID__) && !defined(IOS)
 					if (!no_dbg) {
-						emulator.calculator_as_tab.store(true);
+						//emulator.calculator_as_tab.store(true);
 						SDL_HideWindow(emulator.window);
 					} else {
 						emulator.Shutdown();
