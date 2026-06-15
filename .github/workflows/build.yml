@@ -261,31 +261,39 @@ jobs:
     - name: Signing for iOS bundle
       if: matrix.platform == 'ios'
       run: |
+        # 1. Create and unlock keychain
         security create-keychain -p "" build.keychain
         security default-keychain -s build.keychain
         security unlock-keychain -p "" build.keychain
-    
+        
+        # 2. Fix search list and import Apple Intermediate Certificate
+        security list-keychains -s build.keychain $(security list-keychains -d user | tr -d '"')
+        curl -fL https://developer.apple.com/certificationauthority/AppleWWDRCA.cer -o AppleWWDRCA.cer
+        security import AppleWWDRCA.cer -k build.keychain
+        
+        # 3. Import your identity
         security import iOSresources/export_anar.p12 \
           -k build.keychain \
           -P "1234" \
           -A
-    
+        
         security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
-    
+        
+        # 4. Provisioning profile setup
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp iOSresources/export_anar.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-    
+        
+        # 5. Locate App
         APP=$(find build -name "*.app" | head -n 1)
-    
         echo "Signing: $APP"
-    
-        IDENTITY=$(security find-identity -v -p codesigning | grep "Apple Development" | head -n 1 | sed 's/.*) //')
-
+        
+        # 6. Sign using the SHA-1 hash found in your logs
         codesign --force --deep \
-          --sign "$IDENTITY" \
+          --sign "B0BC1D62FD64D6AFFE403A9D9C785EE7A7DCF234" \
           "$APP"
-    
+        
         codesign --verify --deep --strict "$APP"
+
     - name: Create .ipa
       if: matrix.platform == 'ios'
       run: |
