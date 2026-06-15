@@ -257,7 +257,41 @@ jobs:
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGN_IDENTITY="" \
           DEVELOPMENT_TEAM=""
-          
+    
+    - name: Signing for iOS bundle
+      if: matrix.platform == 'ios'
+      run: |
+        security create-keychain -p "" build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "" build.keychain
+    
+        security import iOSresources/export_anar.p12 \
+          -k build.keychain \
+          -P "1234" \
+          -A
+    
+        security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+    
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp iOSresources/export_anar.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+    
+        APP=$(find build -name "*.app" | head -n 1)
+    
+        echo "Signing: $APP"
+    
+        codesign --force --deep \
+          --sign "Apple Development" \
+          "$APP"
+    
+        codesign --verify --deep --strict "$APP"
+    - name: Create .ipa
+      if: matrix.platform == 'ios'
+      run: |
+        mkdir build/Payload
+        APP=$(find build -name "*.app" | head -n 1)
+        mv -r "$APP" build/Payload
+        zip -r CasioEmuMsvc.ipa build/Payload
+        
     - name: upload full build ios
       if: always() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
@@ -266,7 +300,6 @@ jobs:
         path: build/*
         archive: true
         retention-days: 1
-    
     
     - name: Dump CMake error
       if: failure()
@@ -336,6 +369,11 @@ jobs:
         APP=$(find ./artifacts -name "*.app" -type d | head -n 1)
         if [ -n "$APP" ]; then
           cp -R "$APP" "release_assets/CasioEmu-macOS-${{ env.COMMIT_HASH }}.app"
+        fi
+        
+        IPA=$(find ./artifacts -name "*.ipa" -type d | head -n 1)
+        if [ -n "$IPA" ]; then
+          cp -R "$IPA" "release_assets/CasioEmu-iOS-${{ env.COMMIT_HASH }}.ipa"
         fi
         
         ls -la release_assets/
