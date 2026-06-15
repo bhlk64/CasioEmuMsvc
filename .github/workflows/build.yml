@@ -246,17 +246,26 @@ jobs:
       if: matrix.platform == 'ios'
       run: |
         cmake -S . -B build \
-        -G Xcode \
-        -DCMAKE_SYSTEM_NAME=iOS \
-        -DCMAKE_OSX_SYSROOT=iphoneos \
-        -DCMAKE_OSX_ARCHITECTURES=arm64 \
-        -DCASIOEMU_WEB=OFF \
-        -DIOS=ON \
-        -DBUILD_EXECUTABLE=ON
-      
+          -G Xcode \
+          -DCMAKE_SYSTEM_NAME=iOS \
+          -DCMAKE_OSX_SYSROOT=iphoneos \
+          -DCMAKE_OSX_ARCHITECTURES=arm64 \
+          -DCASIOEMU_WEB=OFF \
+          -DIOS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=NO \
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
+          -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=""
+        
         cmake --build build \
           --config Release \
-          -- -sdk iphoneos
+          -- \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGN_IDENTITY="" \
+          DEVELOPMENT_TEAM=""
+          
     - name: upload full build ios
       if: failure() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
