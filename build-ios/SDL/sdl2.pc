@@ -10,6 +10,5 @@ Description: Simple DirectMedia Layer is a cross-platform multimedia library des
 Version: 2.32.10
 Requires.private: 
 Conflicts:
-Libs: -L${libdir}   -lSDL2 
-Libs.private:  -lpthread  -lm -Wl,-framework,CoreVideo -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AVFoundation -Wl,-framework,CoreBluetooth -Wl,-framework,CoreGraphics -Wl,-framework,CoreMotion -Wl,-framework,Foundation -Wl,-weak_framework,GameController -Wl,-framework,Metal -Wl,-framework,OpenGLES -Wl,-framework,QuartzCore -Wl,-framework,UIKit -Wl,-weak_framework,CoreHaptics
+Libs: -L${libdir}   -lSDL2    -lpthread  -lm -Wl,-framework,CoreVideo -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AVFoundation -Wl,-framework,CoreBluetooth -Wl,-framework,CoreGraphics -Wl,-framework,CoreMotion -Wl,-framework,Foundation -Wl,-weak_framework,GameController -Wl,-framework,Metal -Wl,-framework,OpenGLES -Wl,-framework,QuartzCore -Wl,-framework,UIKit -Wl,-weak_framework,CoreHaptics
 Cflags: -I${includedir} -I${includedir}/SDL2  -D_REENTRANT

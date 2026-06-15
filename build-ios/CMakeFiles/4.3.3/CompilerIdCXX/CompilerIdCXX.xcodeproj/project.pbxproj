@@ -90,7 +90,7 @@
 				
 				
 				
-				MACOSX_DEPLOYMENT_TARGET = "11.0";
+				MACOSX_DEPLOYMENT_TARGET = "14.0";
 				SDKROOT = "iphoneos";
 			};
 			name = Debug;

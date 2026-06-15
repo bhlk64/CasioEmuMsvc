@@ -1195,7 +1195,7 @@ namespace casioemu {
 				if (pwd_op) {
 					ImGui::InputText("##input_pwd", password, 60);
 
-#if defined(__ANDROID__) || defined(IOS)
+#if defined(__ANDROID__)
 					if (ImGui::MenuItem("StartupUI.Export"_lc)) {
 						RomPackage rp{};
 						try {

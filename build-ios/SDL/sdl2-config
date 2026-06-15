@@ -9,10 +9,10 @@ exec_prefix=${prefix}
 exec_prefix_set=no
 libdir=${exec_prefix}/lib
 
-usage="\
-Usage: $0 [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cflags] [--libs]"
 #usage="\
-#Usage: $0 [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cflags] [--libs] [--static-libs]"
+#Usage: $0 [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cflags] [--libs]"
+usage="\
+Usage: $0 [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cflags] [--libs] [--static-libs]"
 
 if test $# -eq 0; then
       echo "${usage}" 1>&2
@@ -48,14 +48,14 @@ while test $# -gt 0; do
     --cflags)
       echo -I${prefix}/include/SDL2  -D_REENTRANT
       ;;
-    --libs)
-      echo -L${exec_prefix}/lib   -lSDL2
-      ;;
-#    --static-libs)
-##    --libs|--static-libs)
-#      sdl_static_libs=$(echo " -lSDL2  -lpthread  -lm -Wl,-framework,CoreVideo -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AVFoundation -Wl,-framework,CoreBluetooth -Wl,-framework,CoreGraphics -Wl,-framework,CoreMotion -Wl,-framework,Foundation -Wl,-weak_framework,GameController -Wl,-framework,Metal -Wl,-framework,OpenGLES -Wl,-framework,QuartzCore -Wl,-framework,UIKit -Wl,-weak_framework,CoreHaptics" | sed -E "s#-lSDL2[ $]#$libdir/libSDL2.a #g")
-#      echo -L${exec_prefix}/lib $sdl_static_libs
+#    --libs)
+#      echo -L${exec_prefix}/lib   -lSDL2 
 #      ;;
+#    --static-libs)
+    --libs|--static-libs)
+      sdl_static_libs=$(echo " -lSDL2   -lpthread  -lm -Wl,-framework,CoreVideo -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AVFoundation -Wl,-framework,CoreBluetooth -Wl,-framework,CoreGraphics -Wl,-framework,CoreMotion -Wl,-framework,Foundation -Wl,-weak_framework,GameController -Wl,-framework,Metal -Wl,-framework,OpenGLES -Wl,-framework,QuartzCore -Wl,-framework,UIKit -Wl,-weak_framework,CoreHaptics" | sed -E "s#-lSDL2[ $]#$libdir/libSDL2.a #g")
+      echo -L${exec_prefix}/lib $sdl_static_libs
+      ;;
     *)
       echo "${usage}" 1>&2
       exit 1

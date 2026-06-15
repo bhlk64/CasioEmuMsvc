@@ -1688,7 +1688,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 				SDL_Log("Recording started: %s", outputPath.string().c_str());
 				return true;
 			}
-#else
+#elif !defined(IOS)
 			const std::string command = BuildFfmpegCommand(outputPath);
 			std::string check_cmd = command + " -version > /dev/null 2>&1";
 			// Check if ffmpeg exists by running it with -version
@@ -1726,10 +1726,16 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 
 		void Stop() {
+#if !defined(IOS)
 			if (!recording && !encoder.IsOpen()) {
 				return;
 			}
 			encoder.Stop();
+#else
+			if (!recording) {
+				return;
+			}
+#endif
 			if (recording) {
 				if (frameSequence) {
 					SDL_Log("Recording stopped: %u frames saved to %s",
@@ -1771,8 +1777,10 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 				? SaveFrameAsPng(pixels, pitch)
 #ifdef __ANDROID__
 				: encoder.WriteRgbaFrame(pixels.data(), pitch);
-#else
+#elif !defined(IOS)
 				: encoder.Write(pixels.data(), pixels.size());
+#else
+				: false;
 #endif
 			if (!success) {
 				SDL_Log("Recording stopped because frame writing failed.");
@@ -1842,7 +1850,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 
 #ifdef __ANDROID__
 		AndroidVideoEncoder encoder;
-#else
+#elif !defined(IOS)
 		RawVideoPipe encoder;
 #endif
 		SDL_Rect captureRect{};      // physical (backing) size for buffer allocation

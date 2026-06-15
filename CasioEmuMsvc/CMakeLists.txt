@@ -160,6 +160,12 @@ if(BUILD_EXECUTABLE)
             ${APP_ICON}
         )
 
+        if(IOS)
+            set_target_properties(${TARGET_NAME} PROPERTIES
+                XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "14.0"
+            )
+        endif()
+
     else()
         if(CASIOEMU_CORE_WEB)
             set(TARGET_NAME "CasioEmuCore")
@@ -273,6 +279,7 @@ if(CASIOEMU_WEB)
     endif()
 elseif(BUILD_EXECUTABLE)
     target_link_libraries(${TARGET_NAME} PRIVATE
+        SDL2::SDL2main
         SDL2::SDL2
         SDL2_image::SDL2_image-static
         #CpuFeatures::cpu_features
@@ -289,10 +296,20 @@ elseif(BUILD_EXECUTABLE)
             imm32
         )
         set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "")
-    elseif(APPLE)
+    elseif(APPLE AND NOT IOS)
         target_link_libraries(${TARGET_NAME} PRIVATE
             "-framework Cocoa"
             "-framework OpenGL"
+        )
+    elseif(IOS)
+        target_link_libraries(${TARGET_NAME} PRIVATE
+            "-framework Foundation"
+            "-framework UIKit"
+            "-framework CoreGraphics"
+            "-framework QuartzCore"
+            "-framework Metal"
+            "-framework ImageIO"
+            "-framework MobileCoreServices"
         )
     else()
         
