@@ -505,7 +505,8 @@ int main(int argc, char* argv[]) {
   DiscordRPC::Shutdown();
 	return 0;
 };
-
+#ifdef IOS
+#include "iOSNativeBridge.h"
 #include <chrono>
 #include <thread>
 #include <atomic>
@@ -559,3 +560,4 @@ extern "C" void onAppForeground() {
 
 extern "C" void onAppTerminate() {
 }
+#endif
