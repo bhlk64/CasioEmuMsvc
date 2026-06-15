@@ -264,13 +264,14 @@ jobs:
         security create-keychain -p "" build.keychain
         security default-keychain -s build.keychain
         security unlock-keychain -p "" build.keychain
+        
+        security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
     
         security import iOSresources/export_anar.p12 \
           -k build.keychain \
           -P "1234" \
-          -A
-    
-        security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+          -A \
+          -T /usr/bin/codesign
     
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp iOSresources/export_anar.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
@@ -281,15 +282,21 @@ jobs:
     
         security find-identity -v -p codesigning
 
-        IDENTITY=$(security find-identity -v -p codesigning build.keychain | grep ")" | head -n 1 | sed 's/.*) //')
+        IDENTITY=$(security find-identity -v -p codesigning build.keychain \
+          | grep "iPhone Distribution" \
+          | head -n 1 \
+          | awk '{print $2}')
         
         echo "Using identity: $IDENTITY"
         
         codesign --force --deep \
           --sign "$IDENTITY" \
+          --keychain build.keychain \
           "$APP"
         
         codesign --verify --deep --strict "$APP"
+        
+        security find-identity -p codesigning build.keychain
     - name: Create .ipa
       if: matrix.platform == 'ios'
       run: |
