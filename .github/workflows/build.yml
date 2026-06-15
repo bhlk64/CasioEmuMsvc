@@ -251,7 +251,6 @@ jobs:
         -DCMAKE_OSX_SYSROOT=iphoneos \
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
         -DCASIOEMU_WEB=OFF
-        -DIOS=ON
         -DBUILD_EXECUTABLE=ON
       
         cmake --build build \
