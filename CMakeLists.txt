@@ -1,18 +1,34 @@
 cmake_minimum_required(VERSION 3.10...3.22)
 
+# Note: IOS variable is only available AFTER project(). Use CMAKE_SYSTEM_NAME before project().
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING "Minimum iOS deployment version" FORCE)
+elseif(APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS deployment version" FORCE)
+endif()
+
 project(GAME)
 
-set(SDL_TEST OFF CACHE BOOL "Disable building the SDL_test library" FORCE)
-option(BUILD_EXECUTABLE "Build a statically linked executable" OFF)
-
-if(NOT DEFINED BUILD_EXECUTABLE)
-    if(ANDROID OR IOS)
-        set(BUILD_EXECUTABLE OFF)
-        message(STATUS "Auto-setting BUILD_EXECUTABLE: OFF (Mobile platform)")
-    else()
-        set(BUILD_EXECUTABLE ON)
-        message(STATUS "Auto-setting BUILD_EXECUTABLE: ON (Desktop platform)")
+# After project(), set Xcode attributes so ALL targets (SDL2, SDL2_image, etc.) inherit the correct deployment target
+if(IOS)
+    set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "14.0" CACHE STRING "" FORCE)
+else()
+    if(APPLE)
+        set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "" FORCE)
     endif()
+endif()
+
+set(SDL_TEST OFF CACHE BOOL "Disable building the SDL_test library" FORCE)
+if(ANDROID)
+    set(DEFAULT_BUILD_EXECUTABLE OFF)
+else()
+    set(DEFAULT_BUILD_EXECUTABLE ON)
+endif()
+option(BUILD_EXECUTABLE "Build a statically linked executable" ${DEFAULT_BUILD_EXECUTABLE})
+
+if(IOS)
+    # let Xcode handle the team selection, remove the "-" default which causes an error.
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Automatic")
 endif()
 
 set(BUILD_EXECUTABLE ${BUILD_EXECUTABLE} CACHE BOOL "Build the project as an executable")

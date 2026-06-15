@@ -1674,10 +1674,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			}
 
 			logicalCaptureRect = logicalRect;
-			// Compute physical rect for buffer allocation
-			if (!GetPhysicalCaptureRect(renderer, logicalRect, captureRect)) {
-				captureRect = logicalRect;
-			}
+			captureRect = logicalRect;
 			fps = std::max(1, requestedFps);
 			outputWidth = (captureRect.w + 1) & ~1;
 			outputHeight = (captureRect.h + 1) & ~1;
@@ -1693,7 +1690,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 				SDL_Log("Recording started: %s", outputPath.string().c_str());
 				return true;
 			}
-#else
+#elif !defined(IOS)
 			const std::string command = BuildFfmpegCommand(outputPath);
 			std::string check_cmd = command + " -version > /dev/null 2>&1";
 			// Check if ffmpeg exists by running it with -version
@@ -1732,10 +1729,16 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		}
 
 		void Stop() {
+#if !defined(IOS)
 			if (!recording && !encoder.IsOpen()) {
 				return;
 			}
 			encoder.Stop();
+#else
+			if (!recording) {
+				return;
+			}
+#endif
 			if (recording) {
 				if (frameSequence) {
 					SDL_Log("Recording stopped: %u frames saved to %s",
@@ -1777,8 +1780,10 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 				? SaveFrameAsPng(pixels, pitch)
 #ifdef __ANDROID__
 				: encoder.WriteRgbaFrame(pixels.data(), pitch);
-#else
+#elif !defined(IOS)
 				: encoder.Write(pixels.data(), pixels.size());
+#else
+				: false;
 #endif
 			if (!success) {
 				SDL_Log("Recording stopped because frame writing failed.");
@@ -1848,7 +1853,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 
 #ifdef __ANDROID__
 		AndroidVideoEncoder encoder;
-#else
+#elif !defined(IOS)
 		RawVideoPipe encoder;
 #endif
 		SDL_Rect captureRect{};      // physical (backing) size for buffer allocation
@@ -1873,12 +1878,8 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			return;
 		}
 
-		// SDL_RenderReadPixels reads at physical (backing) resolution on HiDPI.
-		// We must allocate a buffer at the physical size.
-		SDL_Rect physicalRect{};
-		if (!GetPhysicalCaptureRect(renderer, logicalRect, physicalRect)) {
-			physicalRect = logicalRect;
-		}
+		// Use logicalRect directly because the render target is a texture without HiDPI scaling
+		SDL_Rect physicalRect = logicalRect;
 
 		int captureWidth = physicalRect.w;
 		int captureHeight = physicalRect.h;
@@ -2159,13 +2160,19 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 #endif
 		if (emulator.mirroring_requested.load()) {
 			auto p = GetSize(spriteRects, pixelRects);
-			auto sm = new ScreenMirror(p.first, p.second);
+			auto sm = new ScreenMirror(p.first, p.second, emulator.mirror_as_tab.load());
 			sm->create();
 			g_mirror = sm;
+			if (sm->is_tab) {
+				windows.push_back(sm);
+			}
 			emulator.mirroring_requested.store(false);
 		}
 		if (g_mirror) {
 			if (!g_mirror->isAlive()) {
+				if (g_mirror->is_tab) {
+					windows.erase(std::remove(windows.begin(), windows.end(), (UIWindow*)g_mirror), windows.end());
+				}
 				delete g_mirror;
 				g_mirror = nullptr;
 			} else {

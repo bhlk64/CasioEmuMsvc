@@ -56,6 +56,8 @@ namespace casioemu {
 
 		auto rom = emulator.chipset.rom_data.data();
 		auto rom_size = emulator.chipset.rom_data.size();
+		if (!rom || rom_size == 0) return 0;
+
 		switch (emulator.hardware_id) {
 		case HW_ES_PLUS:
 			if (offset < rom_size)
@@ -98,8 +100,10 @@ namespace casioemu {
 		case HW_FX_5800P:
 			if (segment_index < 2)
 				return le_read(rom[offset]);
-			if (segment_index >= 8)
+			if (segment_index >= 8) {
+				if (emulator.chipset.flash_data.empty()) return 0xFFFF;
 				return le_read(emulator.chipset.flash_data[offset & 0x7ffff]);
+			}
 			return 0xFFFF;
 		case HW_EPS6800:
 			return le_read(emulator.chipset.rom_data[offset]);

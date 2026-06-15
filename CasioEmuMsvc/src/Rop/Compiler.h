@@ -571,7 +571,7 @@ public:
         return result;
     }
 
-    vector<int> encodeString(const string& s) const {
+    static vector<int> encodeString(const string& s) {
         string processed = s;
         for (size_t i = 0; i < processed.size(); ++i) {
             if (processed[i] == ' ') processed[i] = '~';
@@ -608,7 +608,7 @@ public:
         return result;
     }
 
-    vector<int> encodeTokens(const string& content) const {
+    static vector<int> encodeTokens(const string& content) {
         vector<pair<string, string>> sortedTokens;
         for (auto& pair : tokenToHexMap())
             sortedTokens.push_back(pair);
@@ -2142,7 +2142,6 @@ public:
             },
 
             [&](const StrEmitStmt& s) {
-                if (!state_.fontTable) { state_.diag.error("No font table for string encoding"); return; }
                 string text = s.text;
                 text = regexReplaceLambda(text, regex(R"(\{([a-zA-Z_]\w*(?:\[\d+\])?)\})"), [&](const smatch& m) -> string {
                     string vn = m[1].str();
@@ -2150,8 +2149,17 @@ public:
                     return m[0].str();
                 });
                 for (char& c : text) if (c == ' ') c = '~';
-                auto bytes = state_.fontTable->encodeString(text);
-                state_.result.insert(state_.result.end(), bytes.begin(), bytes.end());
+                try {
+                    vector<int> bytes;
+                    if (state_.fontTable) {
+                        bytes = state_.fontTable->fromFont(text);
+                    } else {
+                        bytes = FontTable::encodeString(text);
+                    }
+                    state_.result.insert(state_.result.end(), bytes.begin(), bytes.end());
+                } catch (const exception& e) {
+                    state_.diag.error(e.what());
+                }
             },
 
             [&](const StrStoreStmt& s) { state_.stringVars[s.name] = s.text; },
@@ -2159,17 +2167,33 @@ public:
             [&](const StrUseStmt& s) {
                 auto it = state_.stringVars.find(s.name);
                 if (it == state_.stringVars.end()) state_.diag.error("Unknown string variable: " + s.name);
-                if (!state_.fontTable) { state_.diag.error("No font table for string encoding"); return; }
                 string text = it->second;
                 for (char& c : text) if (c == ' ') c = '~';
-                auto bytes = state_.fontTable->encodeString(text);
-                state_.result.insert(state_.result.end(), bytes.begin(), bytes.end());
+                try {
+                    vector<int> bytes;
+                    if (state_.fontTable) {
+                        bytes = state_.fontTable->fromFont(text);
+                    } else {
+                        bytes = FontTable::encodeString(text);
+                    }
+                    state_.result.insert(state_.result.end(), bytes.begin(), bytes.end());
+                } catch (const exception& e) {
+                    state_.diag.error(e.what());
+                }
             },
 
             [&](const TokenLiteralStmt& s) {
-                if (!state_.fontTable) { state_.diag.error("No font table for token encoding"); return; }
-                auto bytes = state_.fontTable->encodeTokens(s.content);
-                state_.result.insert(state_.result.end(), bytes.begin(), bytes.end());
+                try {
+                    vector<int> bytes;
+                    if (state_.fontTable) {
+                        bytes = state_.fontTable->encodeTokens(s.content);
+                    } else {
+                        bytes = FontTable::encodeTokens(s.content);
+                    }
+                    state_.result.insert(state_.result.end(), bytes.begin(), bytes.end());
+                } catch (const exception& e) {
+                    state_.diag.error(e.what());
+                }
             },
 
             [&](const CalcStmt& s) {

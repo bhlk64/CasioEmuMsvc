@@ -187,12 +187,25 @@ int main(int argc, char* argv[]) {
         }
     }
 #elif defined(IOS)
+<<<<<<< HEAD
   const char* home = getenv("HOME");
   if (home) {
       std::string path = std::string(home) + "Documents/CasioEmuMsvc";
     std::filesystem::create_directories(path);
     chdir(path.c_str());
   }
+=======
+	const char* home = getenv("HOME");
+	if (home) {
+		std::string path = std::string(home) + "/Documents/CasioEmuMsvc";
+		std::filesystem::create_directories(path);
+		std::error_code ec;
+		std::filesystem::copy("models", path + "/models", std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing, ec);
+		std::filesystem::copy("locales", path + "/locales", std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing, ec);
+		std::filesystem::copy("License.md", path + "/License.md", std::filesystem::copy_options::skip_existing, ec);
+		chdir(path.c_str());
+	}
+>>>>>>> tambeobeo/master
 #endif
 	g_local.Load();
 	ThemeManager::Instance().LoadSettings();
@@ -439,7 +452,11 @@ int main(int argc, char* argv[]) {
 				if (event.window.windowID == SDL_GetWindowID(emulator.window)) {
 #if !defined(__ANDROID__) && !defined(IOS)
 					if (!no_dbg) {
+<<<<<<< HEAD
 						//emulator.calculator_as_tab.store(true);
+=======
+						emulator.calculator_as_tab.store(true);
+>>>>>>> tambeobeo/master
 						SDL_HideWindow(emulator.window);
 					} else {
 						emulator.Shutdown();

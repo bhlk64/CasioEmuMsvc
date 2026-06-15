@@ -21,6 +21,23 @@ void HwController::RenderCore() {
 		m_emu->mirroring_requested.store(true);
 	}
 	ImGui::SameLine();
+	bool mirror_as_tab = m_emu->mirror_as_tab.load();
+	if (ImGui::Checkbox("ImGui Tab", &mirror_as_tab)) {
+		m_emu->mirror_as_tab.store(mirror_as_tab);
+	}
+
+#if !defined(__ANDROID__) && !defined(IOS)
+	bool calc_as_tab = m_emu->calculator_as_tab.load();
+	if (ImGui::Checkbox("Calculator Tab", &calc_as_tab)) {
+		m_emu->calculator_as_tab.store(calc_as_tab);
+		if (calc_as_tab) {
+			SDL_HideWindow(m_emu->window);
+		} else {
+			SDL_ShowWindow(m_emu->window);
+		}
+	}
+#endif
+
 	const bool recording = m_emu->recording_active.load();
 	if (UIHelpers::ButtonWithShortcut(recording ? "RecordStopBtn"_lc : "RecordStartBtn"_lc, "Ctrl+F12")) {
 		if (recording) {

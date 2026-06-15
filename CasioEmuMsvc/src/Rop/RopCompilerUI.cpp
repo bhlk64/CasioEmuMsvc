@@ -72,6 +72,7 @@ public:
 		static bool showDiagnostics = true;
 		float diagnosticsHeight = showDiagnostics ? 120.0f : 0.0f;
 		float mainHeight = ImGui::GetContentRegionAvail().y - (showDiagnostics ? (diagnosticsHeight + 25.0f) : 25.0f);
+		mainHeight = std::max(10.0f, mainHeight);
 
 		if (ImGui::BeginTable("##compiler_layout", 2,
 				ImGuiTableFlags_Resizable |
@@ -337,20 +338,38 @@ private:
 	// UI
 	// ============================================================
 	void drawNoDatabaseBanner() {
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.12f, 0.0f, 1.0f));
-		ImGui::BeginChild("##no_db_banner", ImVec2(-1, 50), true);
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.20f, 0.15f, 0.05f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.60f, 0.45f, 0.10f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 4.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 8.0f));
+		
+		ImGui::BeginChild("##no_db_banner", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
+		ImGui::AlignTextToFramePadding();
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.85f, 0.3f, 1.0f));
+		ImGui::TextUnformatted("\xEF\xBA\x8F"); // Fallback alert symbol or just empty space, actually better to just use text:
+		ImGui::SameLine(0, 0);
+		ImGui::TextUnformatted(" ⚠  ");
+		ImGui::SameLine(0, 0);
 		ImGui::TextUnformatted("RopCompiler.NoDatabaseWarning"_lc);
 		ImGui::PopStyleColor();
 
-		ImGui::SameLine();
-		if (ImGui::SmallButton("RopCompiler.SelectDatabase"_lc)) {
+		// Push button to right if there is enough space
+		float btn_width = 150.0f;
+		float avail = ImGui::GetContentRegionAvail().x;
+		if (avail > btn_width + 20.0f) {
+			ImGui::SameLine(ImGui::GetCursorPosX() + avail - btn_width);
+		} else {
+			ImGui::SameLine();
+		}
+		
+		if (ImGui::Button("RopCompiler.SelectDatabase"_lc, ImVec2(btn_width, 24.0f))) {
 			openDatabaseDialog();
 		}
 
 		ImGui::EndChild();
-		ImGui::PopStyleColor();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
 	}
 
 	void drawMenuBar() {
@@ -422,11 +441,25 @@ private:
 	}
 
 	void drawToolbar() {
-		ImGui::BeginChild("##toolbar", ImVec2(0, 36), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-		ImGui::AlignTextToFramePadding();
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.12f, 0.12f, 0.14f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.25f, 0.25f, 0.30f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 6.0f);
+		
+		ImGui::BeginChild("##toolbar", ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-		// ── Primary actions ──────────────────────────────────────
-		// Compile button: green tint on OK, red tint on error
+		auto WrapSameLine = [](float expected_width, float spacing = -1.0f) {
+			ImGuiStyle& style = ImGui::GetStyle();
+			float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+			float last_item_x2 = ImGui::GetItemRectMax().x;
+			float next_item_x2 = last_item_x2 + (spacing >= 0 ? spacing : style.ItemSpacing.x) + expected_width;
+			if (next_item_x2 < window_visible_x2)
+				ImGui::SameLine(0, spacing);
+		};
+
+		// ── Group 1: Primary Actions ──
+		ImGui::BeginGroup();
 		if (lastCompileOk_) {
 			ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.15f, 0.55f, 0.15f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.20f, 0.70f, 0.20f, 1.0f));
@@ -436,7 +469,7 @@ private:
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.70f, 0.18f, 0.18f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.45f, 0.08f, 0.08f, 1.0f));
 		}
-		if (ImGui::Button("RopCompiler.Compile"_lc)) {
+		if (ImGui::Button(" Compile ", ImVec2(0, 24))) {
 			compile();
 		}
 		ImGui::PopStyleColor(3);
@@ -447,139 +480,125 @@ private:
 			ImGui::EndTooltip();
 		}
 
-		ImGui::SameLine(0, 10.0f);
-
-		// Inject to RAM button (only enabled when there is output)
+		ImGui::SameLine();
 		bool canInject = !outputBytes_.empty() && n_ram_buffer != nullptr;
 		if (!canInject) ImGui::BeginDisabled();
-		if (ImGui::Button("RopCompiler.InjectToRam"_lc)) {
+		if (ImGui::Button(" Inject to RAM ", ImVec2(0, 24))) {
 			injectToRam();
 		}
 		if (!canInject) ImGui::EndDisabled();
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
 			ImGui::BeginTooltip();
-			ImGui::Text("RopCompiler.InjectToRamTooltip"_lc,
-				static_cast<unsigned>(outputBytes_.size()), baseAddress_);
+			ImGui::Text("RopCompiler.InjectToRamTooltip"_lc, static_cast<unsigned>(outputBytes_.size()), baseAddress_);
 			ImGui::EndTooltip();
 		}
+		ImGui::EndGroup();
 
-		ImGui::SameLine(0, 15.0f);
-		ImGui::TextDisabled("|");
-		ImGui::SameLine(0, 15.0f);
+		WrapSameLine(220.0f, 20.0f);
 
-		// ── Database badge ────────────────────────────────────────
-		if (databaseLoaded_) {
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.25f, 0.95f, 0.35f, 1.0f));
-			ImGui::TextUnformatted("[DB OK]");
-			ImGui::PopStyleColor();
-			if (ImGui::IsItemHovered()) {
-				ImGui::BeginTooltip();
-				auto tipText = g_local.Format("RopCompiler.DbTooltip",
-					std::filesystem::path(databasePath_).filename().string().c_str(),
-					dbCommandCount_, dbDataLabelCount_);
-				ImGui::TextUnformatted(tipText.c_str());
-				ImGui::EndTooltip();
-			}
-		} else {
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.2f, 1.0f));
-			ImGui::TextUnformatted("[No DB]");
-			ImGui::PopStyleColor();
-			if (ImGui::IsItemHovered()) {
-				ImGui::BeginTooltip();
-				ImGui::TextUnformatted("RopCompiler.NoDbTooltip"_lc);
-				ImGui::EndTooltip();
-			}
-		}
-
-		ImGui::SameLine(0, 5.0f);
-		if (ImGui::Button("RopCompiler.LoadDatabase"_lc)) {
-			openDatabaseDialog();
-		}
-
-		ImGui::SameLine(0, 15.0f);
-		ImGui::TextDisabled("|");
-		ImGui::SameLine(0, 15.0f);
-
-		// ── Base address + length ─────────────────────────────────
-		ImGui::TextUnformatted("RopCompiler.Base"_lc);
-		ImGui::SameLine(0, 5.0f);
+		// ── Group 2: Configuration ──
+		ImGui::BeginGroup();
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextDisabled("Base:");
+		ImGui::SameLine();
 		int base = static_cast<int>(baseAddress_);
-		ImGui::SetNextItemWidth(90.0f);
+		ImGui::SetNextItemWidth(80.0f);
 		if (ImGui::InputInt("##base_address", &base, 0, 0, ImGuiInputTextFlags_CharsHexadecimal)) {
 			if (base < 0) base = 0;
 			baseAddress_ = static_cast<uint32_t>(base);
 		}
-		ImGui::SameLine(0, 10.0f);
-		ImGui::TextDisabled("Len: %zu bytes", outputBytes_.size());
+		ImGui::SameLine();
+		ImGui::TextDisabled("(%zu bytes)", outputBytes_.size());
+		ImGui::EndGroup();
 
-		ImGui::SameLine(0, 15.0f);
-		ImGui::TextDisabled("|");
-		ImGui::SameLine(0, 15.0f);
+		WrapSameLine(150.0f, 20.0f);
 
-		// ── Secondary actions ─────────────────────────────────────
-		if (ImGui::Button("RopCompiler.CopyHex"_lc)) {
+		// ── Group 3: Output Management ──
+		ImGui::BeginGroup();
+		if (ImGui::Button(" Copy Hex ", ImVec2(0, 24))) {
 			copyOutputHexToClipboard();
 		}
-		ImGui::SameLine(0, 5.0f);
-		if (ImGui::Button("RopCompiler.ClearOutput"_lc)) {
+		ImGui::SameLine();
+		if (ImGui::Button(" Clear ", ImVec2(0, 24))) {
 			outputBytes_.clear();
 			diagnosticsText_.clear();
 			editor_.SetErrorMarkers({});
 			lastCompileOk_ = true;
 		}
+		ImGui::EndGroup();
 
-		// Show database load error if any (inline red badge)
-		if (!dbLoadError_.empty()) {
-			ImGui::SameLine(0, 15.0f);
-			ImGui::PushStyleColor(ImGuiCol_Text, UIHelpers::kColorError);
-			ImGui::TextUnformatted(dbLoadError_.c_str());
-			ImGui::PopStyleColor();
-		}
-
-		// Show inject feedback
-		if (injectFeedbackTimer_ > 0.0) {
-			double elapsed = ImGui::GetTime() - injectFeedbackTimer_;
-			if (elapsed < 3.0) {
-				ImGui::SameLine(0, 15.0f);
-				float alpha = (float)std::max(0.0, 1.0 - elapsed / 1.5);
-				ImGui::PushStyleColor(ImGuiCol_Text,
-					ImVec4(UIHelpers::kColorSuccess.x, UIHelpers::kColorSuccess.y,
-						UIHelpers::kColorSuccess.z, alpha));
-				ImGui::TextUnformatted(injectFeedbackText_.c_str());
-				ImGui::PopStyleColor();
-			} else {
-				injectFeedbackTimer_ = 0.0;
+		// ── Group 4: Status / Feedback ──
+		if (databaseLoaded_ || !dbLoadError_.empty() || injectFeedbackTimer_ > 0.0) {
+			WrapSameLine(180.0f, 20.0f);
+			ImGui::BeginGroup();
+			ImGui::AlignTextToFramePadding();
+			
+			if (!dbLoadError_.empty()) {
+				ImGui::TextColored(UIHelpers::kColorError, "\xE2\x9A\xA0 %s", dbLoadError_.c_str());
+			} else if (injectFeedbackTimer_ > 0.0) {
+				double elapsed = ImGui::GetTime() - injectFeedbackTimer_;
+				if (elapsed < 3.0) {
+					float alpha = (float)std::max(0.0, 1.0 - elapsed / 1.5);
+					ImGui::TextColored(ImVec4(UIHelpers::kColorSuccess.x, UIHelpers::kColorSuccess.y, UIHelpers::kColorSuccess.z, alpha), 
+						"\xE2\x9C\x93 %s", injectFeedbackText_.c_str());
+				} else {
+					injectFeedbackTimer_ = 0.0;
+				}
+			} else if (databaseLoaded_) {
+				std::filesystem::path p(databasePath_);
+				ImGui::TextColored(ImVec4(0.4f, 0.8f, 0.4f, 1.0f), "\xE2\x9C\x93 DB: %s", p.filename().string().c_str());
 			}
+			ImGui::EndGroup();
 		}
 
 		ImGui::EndChild();
+		ImGui::PopStyleVar(3);
+		ImGui::PopStyleColor(2);
 	}
 
 
 	void drawSourcePanel(float height) {
-    ImGui::BeginChild("##source_panel", ImVec2(-1, height), true);
+		ImGui::BeginChild("##source_panel", ImVec2(-1, height), true);
 
-    ImGui::TextUnformatted("RopCompiler.SourceTitle"_lc);
-    ImGui::Separator();
+		ImGui::TextUnformatted("RopCompiler.SourceTitle"_lc);
+		ImGui::Separator();
 
-    const float footerHeight = 24.0f;
+		const float footerHeight = 24.0f;
 
-    editor_.Render("##source_editor",
-        ImVec2(-1, ImGui::GetContentRegionAvail().y - footerHeight), true);
+		editor_.Render("##source_editor",
+			ImVec2(-1, ImGui::GetContentRegionAvail().y - footerHeight), true);
 
-    // 🔥 FORCE FOCUS VÀO EDITOR
-    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
-        ImGui::SetWindowFocus(); // quan trọng hơn SetKeyboardFocusHere
-    }
+		// Context menu for Copy/Paste
+		if (ImGui::BeginPopupContextItem("##source_editor_context")) {
+			if (ImGui::MenuItem("Copy")) {
+				editor_.Copy();
+			}
+			if (ImGui::MenuItem("Cut")) {
+				editor_.Cut();
+			}
+			if (ImGui::MenuItem("Paste")) {
+				editor_.Paste();
+			}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Select All")) {
+				editor_.SelectAll();
+			}
+			ImGui::EndPopup();
+		}
 
-    auto cpos = editor_.GetCursorPosition();
-    auto statusText = g_local.Format("RopCompiler.CursorStatus",
-        cpos.mLine + 1, cpos.mColumn + 1, editor_.GetTotalLines());
+		// 🔥 FORCE FOCUS VÀO EDITOR
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0)) {
+			ImGui::SetWindowFocus(); // quan trọng hơn SetKeyboardFocusHere
+		}
 
-    ImGui::TextUnformatted(statusText.c_str());
+		auto cpos = editor_.GetCursorPosition();
+		auto statusText = g_local.Format("RopCompiler.CursorStatus",
+			cpos.mLine + 1, cpos.mColumn + 1, editor_.GetTotalLines());
 
-    ImGui::EndChild();
-}
+		ImGui::TextUnformatted(statusText.c_str());
+
+		ImGui::EndChild();
+	}
 
 	void drawOutputPanel(float height) {
 		ImGui::BeginChild("##output_panel", ImVec2(-1, height), true);

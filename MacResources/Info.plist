@@ -9,6 +9,7 @@
     <string>${TARGET_NAME}</string>
 
     <key>CFBundleIdentifier</key>
+
     <string>com.bhlk64.casioemumsvc</string>
 
     <key>CFBundleName</key>
@@ -35,5 +36,20 @@
     <key>NSHighResolutionCapable</key>
     <true/>
 
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+    </array>
+
+    <key>UIFileSharingEnabled</key>
+    <true/>
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true/>
 </dict>
 </plist>

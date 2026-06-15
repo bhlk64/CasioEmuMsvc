@@ -172,17 +172,54 @@ if(BUILD_EXECUTABLE)
 
     if(APPLE)
         set(TARGET_NAME "CasioEmuMsvc")
+    
+        if(IOS)
+            # 1. Đường dẫn tới file Assets của iOS
+            set(IOS_ASSETS ${CMAKE_CURRENT_SOURCE_DIR}/iOSResources/Assets.xcassets)
+            
+            # Ép kiểu cho CMake hiểu đây là Resource cần đóng gói vào App Bundle
+            set_source_files_properties(${IOS_ASSETS} PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+    
+            set(LAUNCH_SCREEN ${CMAKE_SOURCE_DIR}/MacResources/LaunchScreen.storyboard)
+            set_source_files_properties(${LAUNCH_SCREEN} PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+    
+            # Thêm IOS_ASSETS vào danh sách source để Xcode biên dịch nó thành Assets.car
+            add_executable(${TARGET_NAME}
+                MACOSX_BUNDLE
+                ${MAIN_SOURCES}
+                ${IOS_ASSETS}
+                ${LAUNCH_SCREEN}
+            )
+    
+            # 2. Cấu hình Xcode Attribute để chỉ định tên của App Icon Set
+            set_target_properties(${TARGET_NAME} PROPERTIES
+                XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "14.0"
+                XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon" # Tên thư mục AppIcon.appiconset bỏ đuôi
+            )
+    
+        else()
+            # Đây là cấu hình cũ cho macOS của bạn
+            set(APP_ICON ${CMAKE_SOURCE_DIR}/MacResources/AppIcon.icns)
+            set_source_files_properties(${APP_ICON} PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+            set(LAUNCH_SCREEN ${CMAKE_SOURCE_DIR}/MacResources/LaunchScreen.storyboard)
+            set_source_files_properties(${LAUNCH_SCREEN} PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+    
+            add_executable(${TARGET_NAME}
+                MACOSX_BUNDLE
+                ${MAIN_SOURCES}
+                ${APP_ICON}
+                ${LAUNCH_SCREEN}
+            )
+        endif()
 
-        set(APP_ICON ${CMAKE_SOURCE_DIR}/MacResources/AppIcon.icns)
-        set_source_files_properties(${APP_ICON} PROPERTIES
-            MACOSX_PACKAGE_LOCATION "Resources"
-        )
-
-        add_executable(${TARGET_NAME}
-            MACOSX_BUNDLE
-            ${MAIN_SOURCES}
-            ${APP_ICON}
-        )
 
     else()
         if(CASIOEMU_CORE_WEB)
@@ -207,12 +244,22 @@ else()
     add_library(${TARGET_NAME} SHARED ${MAIN_SOURCES})
 endif()
 
-if(APPLE)
+if(APPLE AND NOT IOS)
     set_target_properties(${TARGET_NAME} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST
         ${CMAKE_SOURCE_DIR}/MacResources/Info.plist
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.luongtam.casioemu"
 
         INSTALL_RPATH "@executable_path/../Frameworks"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
+elseif(IOS)
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST
+        ${CMAKE_SOURCE_DIR}/iOSResources/Info.plist
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.luongtam.casioemu"
+
+        INSTALL_RPATH "@executable_path/Frameworks"
         BUILD_WITH_INSTALL_RPATH TRUE
     )
 endif()
@@ -297,6 +344,7 @@ if(CASIOEMU_WEB)
     endif()
 elseif(BUILD_EXECUTABLE)
     target_link_libraries(${TARGET_NAME} PRIVATE
+        SDL2::SDL2main
         SDL2::SDL2
         SDL2_image::SDL2_image-static
         #CpuFeatures::cpu_features
@@ -313,18 +361,27 @@ elseif(BUILD_EXECUTABLE)
             imm32
         )
         set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "")
-    elseif(IOS)
-        target_link_libraries(${TARGET_NAME} PRIVATE
-            "-framework UIKit"
-            "-framework Foundation"
-            "-framework AudioToolbox"
-            "-framework ImageIO"
-            "-framework MobileCoreServices"
-        )
-    elseif(APPLE)
+    elseif(APPLE AND NOT IOS)
         target_link_libraries(${TARGET_NAME} PRIVATE
             "-framework Cocoa"
             "-framework OpenGL"
+        )
+    elseif(IOS)
+        target_link_libraries(${TARGET_NAME} PRIVATE
+            "-framework Foundation"
+            "-framework UIKit"
+            "-framework CoreGraphics"
+            "-framework QuartzCore"
+            "-framework Metal"
+            "-framework ImageIO"
+            "-framework MobileCoreServices"
+        )
+
+        # Compile SysDialog.cpp as Objective-C++ for iOS native file picker
+        set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/Ext/SysDialog.cpp PROPERTIES COMPILE_FLAGS "-x objective-c++")
+
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
         )
     else()
         
@@ -360,8 +417,10 @@ file(GLOB LOCALE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/locales/*.lc")
 
 if(ANDROID)
     set(ASSET_DIR ${CMAKE_SOURCE_DIR}/app/src/main/assets)
-elseif(APPLE AND BUILD_EXECUTABLE)
+elseif(APPLE AND BUILD_EXECUTABLE AND NOT IOS)
     set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources)
+elseif(IOS AND BUILD_EXECUTABLE)
+    set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>)
 elseif(BUILD_EXECUTABLE AND NOT CASIOEMU_WEB)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${TARGET_NAME}>/locales)
@@ -412,7 +471,7 @@ if(NOT ANDROID AND NOT IOS AND NOT CASIOEMU_WEB)
     endif()
 endif()
 
-if(APPLE AND BUILD_EXECUTABLE)
+if(APPLE AND BUILD_EXECUTABLE AND NOT IOS)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
         $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
@@ -422,6 +481,17 @@ if(APPLE AND BUILD_EXECUTABLE)
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/locales
         $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
+    )
+elseif(IOS AND BUILD_EXECUTABLE)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/locales
+    )
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/locales
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/locales
     )
 endif()
 

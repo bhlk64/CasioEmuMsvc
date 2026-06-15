@@ -56,7 +56,7 @@
 #endif 
 
 // #define SINGLE_WINDOW
-#if !defined(SINGLE_WINDOW) && defined(__ANDROID__)
+#if !defined(SINGLE_WINDOW) && (defined(__ANDROID__) || defined(IOS))
 #define SINGLE_WINDOW
 #endif
 
