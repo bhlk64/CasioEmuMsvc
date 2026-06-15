@@ -137,7 +137,7 @@ static bool IsPointInImGuiWindow(float x, float y) {
 	return false;
 }
 
-int main(int argc, char* argv[]) {
+int real_main(int argc, char* argv[]) {
 #ifdef _WIN32
 	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
 	timeBeginPeriod(1);
@@ -501,7 +501,12 @@ int main(int argc, char* argv[]) {
   DiscordRPC::Shutdown();
 	return 0;
 };
-#ifdef IOS
+#ifndef IOS
+extern "C" int main(int argc, char* argv[])
+{
+    return real_main(argc, argv);
+}
+#else
 #include <chrono>
 #include <thread>
 #include <atomic>
@@ -510,9 +515,9 @@ static std::atomic<bool> is_in_background(false);
 static std::thread* background_timer_thread = nullptr;
 static std::atomic<bool> exit_timer_thread(false);
 
-extern "C" void onAppCreate() {
+/*extern "C" void onAppCreate() {
     main(1, nullptr);
-}
+}*/
 
 extern "C" void onAppResume() {
     is_in_background.store(false);
@@ -556,8 +561,8 @@ extern "C" void onAppForeground() {
 
 extern "C" void onAppTerminate() {
 }
-extern "C" int main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
-    return SDL_main(argc, argv);
+    return SDL_UIKitRunApp(argc, argv, real_main);
 }
 #endif
