@@ -41,9 +41,13 @@ struct HexEditor : public UIWindow, public MemoryEditor {
 			ImGui::EndPopup();
 		}
 	}
-	void GotoMemoryAddress(uint32_t addr) override {
-		BringToFront();
-		GotoAddrAndHighlight(addr, addr + 1);
+	bool GotoMemoryAddress(uint32_t addr) override {
+		if (addr >= display_base && addr < display_base + size) {
+			BringToFront();
+			GotoAddrAndHighlight(addr - display_base, addr - display_base + 1);
+			return true;
+		}
+		return false;
 	}
 };
 struct SpansHexEditor : public UIWindow, public MemoryEditor {
@@ -80,9 +84,13 @@ struct SpansHexEditor : public UIWindow, public MemoryEditor {
 			ImGui::EndPopup();
 		}
 	}
-	void GotoMemoryAddress(uint32_t addr) override {
-		BringToFront();
-		GotoAddrAndHighlight(addr, addr + 1);
+	bool GotoMemoryAddress(uint32_t addr) override {
+		if (addr >= display_base && addr < display_base + size) {
+			BringToFront();
+			GotoAddrAndHighlight(addr - display_base, addr - display_base + 1);
+			return true;
+		}
+		return false;
 	}
 };
 inline auto MMU_Hex(auto he) {

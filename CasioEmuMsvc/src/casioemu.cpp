@@ -1,6 +1,7 @@
 #include "Config.hpp"
 #include "Ui.hpp"
 #include "imgui_impl_sdl2.h"
+#include "Gui/PopUpDisplay.h"
 
 #include "Emulator.hpp"
 #include "Localization.h"
@@ -186,12 +187,16 @@ int main(int argc, char* argv[]) {
         }
     }
 #elif defined(IOS)
-  const char* home = getenv("HOME");
-  if (home) {
-    std::string path = std::string(home) + "Documents/CasioEmuMsvc"
-    std::filesystem::create_directories(path);
-    chdir(path.c_str());
-  }
+	const char* home = getenv("HOME");
+	if (home) {
+		std::string path = std::string(home) + "/Documents/CasioEmuMsvc";
+		std::filesystem::create_directories(path);
+		std::error_code ec;
+		std::filesystem::copy("models", path + "/models", std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing, ec);
+		std::filesystem::copy("locales", path + "/locales", std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing, ec);
+		std::filesystem::copy("License.md", path + "/License.md", std::filesystem::copy_options::skip_existing, ec);
+		chdir(path.c_str());
+	}
 #endif
 	g_local.Load();
 	ThemeManager::Instance().LoadSettings();
@@ -199,7 +204,7 @@ int main(int argc, char* argv[]) {
 	DiscordRPC::Init();
   DiscordRPC::UpdatePresence("");
 
-#if !defined(__ANDROID__) || !defined(IOS)
+#if !defined(__ANDROID__) && !defined(IOS)
 	std::string rendererDriver = ReadRendererHint();
 	bool previouslyCrashed = std::filesystem::exists(kCrashLockFile);
 	if (previouslyCrashed) {
@@ -254,7 +259,9 @@ int main(int argc, char* argv[]) {
 	if (headless && argv_map["model"].empty()) {
 		PANIC("No model path supplied.\n");
 	}
-	if (argv_map["model"].empty()) {
+	
+	while (true) {
+		if (argv_map["model"].empty()) {
 		auto s = sui_loop();
 		argv_map["model"] = std::move(s);
 		if (argv_map["model"].empty()) {
@@ -278,6 +285,8 @@ int main(int argc, char* argv[]) {
 	// static std::atomic<bool> running(true);
 	
 	DiscordRPC::UpdatePresence(emulator.ModelDefinition.model_name);
+
+	bool guiCreated = false;
 
 #if defined(__ANDROID__) || defined(IOS)
 	TouchMouseTranslator touchTranslator(
@@ -306,7 +315,6 @@ int main(int argc, char* argv[]) {
 #endif
 		});
 #endif
-	bool guiCreated = false;
 	auto frame_event = SDL_RegisterEvents(1);
 	bool busy = false;
 	bool running = true;
@@ -327,7 +335,7 @@ int main(int argc, char* argv[]) {
 #endif
 		}
 	});
-	t3.detach();
+	// t3.detach(); removed to allow joining
 #ifdef DBG
 	if (!no_dbg) {
 		test_gui(&guiCreated, emulator.window, emulator.renderer);
@@ -396,9 +404,9 @@ int main(int argc, char* argv[]) {
 
 			SDL_RenderPresent(emulator.renderer);
 #else
+			emulator.Frame();
 			if (!no_dbg)
 				gui_loop();
-			emulator.Frame();
 			SDL_RenderPresent(emulator.renderer);
 #endif
 			if (!no_dbg) {
@@ -422,15 +430,32 @@ int main(int argc, char* argv[]) {
 		}
 
 	hld:
+		if (g_mirror && g_mirror->handleEvent(event)) {
+			continue;
+		}
 		int wid, hei;
 		SDL_GetWindowSize(window, &wid, &hei);
 		switch (event.type) {
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
-			case SDL_WINDOWEVENT_CLOSE:
-				emulator.Shutdown();
-				std::exit(0);
+			case SDL_WINDOWEVENT_CLOSE: {
+				extern SDL_Window* window; // This is the debugger window
+				if (event.window.windowID == SDL_GetWindowID(emulator.window)) {
+#if !defined(__ANDROID__) && !defined(IOS)
+					if (!no_dbg) {
+						emulator.calculator_as_tab.store(true);
+						SDL_HideWindow(emulator.window);
+					} else {
+						emulator.Shutdown();
+					}
+#else
+					emulator.Shutdown();
+#endif
+				} else if (window && event.window.windowID == SDL_GetWindowID(window)) {
+					std::exit(0);
+				}
 				break;
+			}
 			case SDL_WINDOWEVENT_RESIZED:
 				break;
 			}
@@ -475,9 +500,66 @@ int main(int argc, char* argv[]) {
 	if (bg_txt) {
 		SDL_DestroyTexture(bg_txt);
 	}
+	break;
+	} // end while(true)
+	
 #ifdef ENABLE_SENTRY
 	sentry_close();
 #endif
   DiscordRPC::Shutdown();
 	return 0;
 };
+
+#include <chrono>
+#include <thread>
+#include <atomic>
+
+static std::atomic<bool> is_in_background(false);
+static std::thread* background_timer_thread = nullptr;
+static std::atomic<bool> exit_timer_thread(false);
+
+extern "C" void onAppCreate() {
+}
+
+extern "C" void onAppResume() {
+    is_in_background.store(false);
+}
+
+extern "C" void onAppPause() {
+}
+
+extern "C" void onAppBackground() {
+    is_in_background.store(true);
+    if (background_timer_thread) {
+        exit_timer_thread.store(true);
+        background_timer_thread->join();
+        delete background_timer_thread;
+        background_timer_thread = nullptr;
+    }
+    
+    exit_timer_thread.store(false);
+    background_timer_thread = new std::thread([]() {
+        for (int i = 0; i < 300; ++i) { // 5 minutes
+            if (exit_timer_thread.load()) return;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            if (!is_in_background.load()) return;
+        }
+        
+        if (is_in_background.load() && !exit_timer_thread.load()) {
+            exit(0);
+        }
+    });
+}
+
+extern "C" void onAppForeground() {
+    is_in_background.store(false);
+    if (background_timer_thread) {
+        exit_timer_thread.store(true);
+        background_timer_thread->join();
+        delete background_timer_thread;
+        background_timer_thread = nullptr;
+    }
+}
+
+extern "C" void onAppTerminate() {
+}

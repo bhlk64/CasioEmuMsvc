@@ -30,7 +30,7 @@ set(ASMJIT_STATIC ON CACHE BOOL "Build AsmJit as a static library")
 set(ASMJIT_BUILD_TEST OFF CACHE BOOL "Disable AsmJit tests")
 set(ASMJIT_BUILD_EXAMPLES OFF CACHE BOOL "Disable AsmJit examples")
 
-if(NOT CASIOEMU_WEB)
+if(NOT CASIOEMU_WEB AND NOT IOS AND NOT ANDROID)
     message(STATUS "Attempting to add subdirectory: ${ASMJIT_DIR}")
     if(EXISTS "${ASMJIT_DIR}/CMakeLists.txt")
         message(STATUS "Found ${ASMJIT_DIR}/CMakeLists.txt")
@@ -46,7 +46,7 @@ if(NOT CASIOEMU_WEB)
         message(WARNING "Target asmjit::asmjit NOT FOUND after add_subdirectory")
     endif()
 else()
-    message(STATUS "Web build: skipping AsmJit; the browser target uses the interpreter")
+    message(STATUS "Web/Mobile build: skipping AsmJit")
 endif()
 
 if(NOT ANDROID AND NOT IOS AND NOT CASIOEMU_WEB)
@@ -153,12 +153,23 @@ if(BUILD_EXECUTABLE)
         set_source_files_properties(${APP_ICON} PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources"
         )
+        set(LAUNCH_SCREEN ${CMAKE_SOURCE_DIR}/MacResources/LaunchScreen.storyboard)
+        set_source_files_properties(${LAUNCH_SCREEN} PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources"
+        )
 
         add_executable(${TARGET_NAME}
             MACOSX_BUNDLE
             ${MAIN_SOURCES}
             ${APP_ICON}
+            ${LAUNCH_SCREEN}
         )
+
+        if(IOS)
+            set_target_properties(${TARGET_NAME} PROPERTIES
+                XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "14.0"
+            )
+        endif()
 
     else()
         if(CASIOEMU_CORE_WEB)
@@ -183,12 +194,22 @@ else()
     add_library(${TARGET_NAME} SHARED ${MAIN_SOURCES})
 endif()
 
-if(APPLE)
+if(APPLE AND NOT IOS)
     set_target_properties(${TARGET_NAME} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST
         ${CMAKE_SOURCE_DIR}/MacResources/Info.plist
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.luongtam.casioemu"
 
         INSTALL_RPATH "@executable_path/../Frameworks"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
+elseif(IOS)
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST
+        ${CMAKE_SOURCE_DIR}/MacResources/Info.plist
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.luongtam.casioemu"
+
+        INSTALL_RPATH "@executable_path/Frameworks"
         BUILD_WITH_INSTALL_RPATH TRUE
     )
 endif()
@@ -196,8 +217,11 @@ endif()
 # Apply include dirs to target (scoped) to reduce global includes and compiler parsing
 target_include_directories(${TARGET_NAME} PRIVATE ${PROJECT_INCLUDE_DIRS})
 
-if(CASIOEMU_WEB)
-    target_compile_definitions(${TARGET_NAME} PRIVATE DISABLE_SENTRY ASMJIT_NO_JIT CASIOEMU_WEB)
+if(CASIOEMU_WEB OR IOS OR ANDROID)
+    target_compile_definitions(${TARGET_NAME} PRIVATE DISABLE_SENTRY ASMJIT_NO_JIT)
+    if(CASIOEMU_WEB)
+        target_compile_definitions(${TARGET_NAME} PRIVATE CASIOEMU_WEB)
+    endif()
 else()
     target_compile_definitions(${TARGET_NAME} PRIVATE ASMJIT_STATIC)
 endif()
@@ -270,11 +294,14 @@ if(CASIOEMU_WEB)
     endif()
 elseif(BUILD_EXECUTABLE)
     target_link_libraries(${TARGET_NAME} PRIVATE
+        SDL2::SDL2main
         SDL2::SDL2
         SDL2_image::SDL2_image-static
         #CpuFeatures::cpu_features
-        asmjit::asmjit
     )
+    if(NOT IOS AND NOT ANDROID)
+        target_link_libraries(${TARGET_NAME} PRIVATE asmjit::asmjit)
+    endif()
     if(WIN32)
         target_link_libraries(${TARGET_NAME} PRIVATE
             SDL2::SDL2main
@@ -284,10 +311,27 @@ elseif(BUILD_EXECUTABLE)
             imm32
         )
         set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "")
-    elseif(APPLE)
+    elseif(APPLE AND NOT IOS)
         target_link_libraries(${TARGET_NAME} PRIVATE
             "-framework Cocoa"
             "-framework OpenGL"
+        )
+    elseif(IOS)
+        target_link_libraries(${TARGET_NAME} PRIVATE
+            "-framework Foundation"
+            "-framework UIKit"
+            "-framework CoreGraphics"
+            "-framework QuartzCore"
+            "-framework Metal"
+            "-framework ImageIO"
+            "-framework MobileCoreServices"
+        )
+
+        # Compile SysDialog.cpp as Objective-C++ for iOS native file picker
+        set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/Ext/SysDialog.cpp PROPERTIES COMPILE_FLAGS "-x objective-c++")
+
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
         )
     else()
         
@@ -305,8 +349,10 @@ else()
         SDL2::SDL2
         SDL2_image::SDL2_image
         #CpuFeatures::cpu_features
-        asmjit::asmjit
     )
+    if(NOT IOS AND NOT ANDROID)
+        target_link_libraries(${TARGET_NAME} PRIVATE asmjit::asmjit)
+    endif()
     if(ANDROID)
         target_link_libraries(${TARGET_NAME} PRIVATE log mediandk)
     endif()
@@ -321,8 +367,10 @@ file(GLOB LOCALE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/locales/*.lc")
 
 if(ANDROID)
     set(ASSET_DIR ${CMAKE_SOURCE_DIR}/app/src/main/assets)
-elseif(APPLE AND BUILD_EXECUTABLE)
+elseif(APPLE AND BUILD_EXECUTABLE AND NOT IOS)
     set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources)
+elseif(IOS AND BUILD_EXECUTABLE)
+    set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>)
 elseif(BUILD_EXECUTABLE AND NOT CASIOEMU_WEB)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${TARGET_NAME}>/locales)
@@ -373,7 +421,7 @@ if(NOT ANDROID AND NOT IOS AND NOT CASIOEMU_WEB)
     endif()
 endif()
 
-if(APPLE AND BUILD_EXECUTABLE)
+if(APPLE AND BUILD_EXECUTABLE AND NOT IOS)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
         $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
@@ -383,6 +431,17 @@ if(APPLE AND BUILD_EXECUTABLE)
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/locales
         $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources/locales
+    )
+elseif(IOS AND BUILD_EXECUTABLE)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/locales
+    )
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/locales
+        $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/locales
     )
 endif()
 

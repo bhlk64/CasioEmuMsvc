@@ -56,11 +56,11 @@
 #endif 
 
 // #define SINGLE_WINDOW
-#if !defined(SINGLE_WINDOW) && defined(__ANDROID__)
+#if !defined(SINGLE_WINDOW) && (defined(__ANDROID__) || defined(IOS))
 #define SINGLE_WINDOW
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
 #include <TargetConditionals.h>
 
 #if TARGET_OS_IPHONE

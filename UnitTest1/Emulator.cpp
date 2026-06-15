@@ -1,1 +1,0 @@
-../CasioEmuMsvc/Emulator.cpp

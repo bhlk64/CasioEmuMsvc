@@ -20,11 +20,13 @@
 #include "Rop/RopCompilerUI.h"
 #include "PluginLogWindow.hpp"
 #include "SnapshotWindow.h"
+#include "CalculatorWindow.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer2.h"
 #include <Gui.h>
 #include <SDL.h>
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -83,39 +85,102 @@ void SaveUIState() {
     std::filesystem::rename(tmp, ui_state_fn);
 }
 
+static float screenshot_toast_timer = 0.0f;
 void RenderDebuggerToolbar() {
     if (ImGui::BeginMainMenuBar()) {
-        if (ImGui::BeginMenu("Debugger Windows")) {
-            for (auto* w : windows) {
-                if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
-                    SaveUIState();
+        if (ImGui::BeginTabBar("ToolbarTabs", ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip)) {
+            
+            if (ImGui::TabItemButton("Debugger Windows")) {
+                ImGui::OpenPopup("DebuggerMenuPopup");
+            }
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
+            if (ImGui::BeginPopup("DebuggerMenuPopup")) {
+                for (auto* w : windows) {
+                    if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
+                        SaveUIState();
+                    }
+                }
+                ImGui::EndPopup();
+            }
+
+            if (std::any_of(windows.begin(), windows.end(), [](UIWindow* w){ return !w->open; })) {
+                if (ImGui::TabItemButton("Open All")) {
+                    for (auto* w : windows) if (w) w->open = true;
                 }
             }
-            ImGui::EndMenu();
-        }
-        
-        if (ImGui::Button("Close All")) {
-            for (auto* w : windows) if (w) w->open = false;
+            else {
+                if (ImGui::TabItemButton("Close All")) {
+                    for (auto* w : windows) if (w) w->open = false;
+                }
+            }
+
+            bool isPaused = m_emu->GetPaused();
+            if (ImGui::TabItemButton(isPaused ? "[>] Resume" : "[||] Pause")) {
+                m_emu->SetPaused(!isPaused);
+            }
+
+            if (ImGui::TabItemButton("[C] Screenshot")) {
+                ImGui::OpenPopup("ScreenshotMenuPopup");
+            }
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
+            if (ImGui::BeginPopup("ScreenshotMenuPopup")) {
+                if (ImGui::MenuItem("Full Calculator")) {
+                    m_emu->screenshot_full_ui = true;
+                    m_emu->screenshot_requested = true;
+                }
+                if (ImGui::MenuItem("Screen Only")) {
+                    m_emu->screenshot_full_ui = false;
+                    m_emu->screenshot_requested = true;
+                }
+                ImGui::EndPopup();
+            }
+
+            if (m_emu->recording_active.load()) {
+                if (ImGui::TabItemButton("[ ] Stop Rec")) {
+                    m_emu->recording_stop_requested = true;
+                }
+            } else {
+                if (ImGui::TabItemButton("[O] Record")) {
+                    ImGui::OpenPopup("RecordMenuPopup");
+                }
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
+                if (ImGui::BeginPopup("RecordMenuPopup")) {
+                    if (ImGui::MenuItem("Full Calculator")) {
+                        m_emu->recording_full_ui = true;
+                        m_emu->recording_requested = true;
+                    }
+                    if (ImGui::MenuItem("Screen Only")) {
+                        m_emu->recording_full_ui = false;
+                        m_emu->recording_requested = true;
+                    }
+                    ImGui::EndPopup();
+                }
+            }
+
+            if (ImGui::TabItemButton(ThemeManager::Instance().Settings().isDarkMode ? "Light Theme" : "Dark Theme")) {
+                if (ThemeManager::Instance().Settings().isDarkMode)
+                    ThemeManager::Instance().SetLightMode();
+                else
+                    ThemeManager::Instance().SetDarkMode();
+            }
+
+            ImGui::EndTabBar();
         }
 
-		// Spacer
-		ImGui::Dummy(ImVec2(10.0f, 0.0f));
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(10.0f, 0.0f));
-        
-		// Add Quick Actions
-        bool isPaused = m_emu->GetPaused();
-		if (ImGui::MenuItem(isPaused ? "\xe2\x96\xb6 Resume" : "\xe2\x8f\xb8 Pause")) {
-			m_emu->SetPaused(!isPaused);
+
+		if (m_emu->screenshot_taken.exchange(false)) {
+			screenshot_toast_timer = 3.0f;
 		}
-		if (ImGui::MenuItem("\xf0\x9f\x93\xb8 Screenshot")) {
-			m_emu->screenshot_requested = true;
+
+		if (screenshot_toast_timer > 0.0f) {
+			ImGui::SameLine(ImGui::GetWindowWidth() - 250.0f);
+			ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "[C] Screenshot Saved!");
+			screenshot_toast_timer -= ImGui::GetIO().DeltaTime;
 		}
-		if (ImGui::MenuItem(ThemeManager::Instance().Settings().isDarkMode ? "\xe2\x98\x80 Light" : "\xe1\x8c\x99 Dark")) {
-			if (ThemeManager::Instance().Settings().isDarkMode)
-				ThemeManager::Instance().SetLightMode();
-			else
-				ThemeManager::Instance().SetDarkMode();
+
+		if (m_emu->recording_active.load()) {
+			ImGui::SameLine(ImGui::GetWindowWidth() - (screenshot_toast_timer > 0.0f ? 450.0f : 200.0f));
+			ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "[O] Recording: %u frames", m_emu->recording_frame_count.load());
 		}
 
         ImGui::EndMainMenuBar();
@@ -163,9 +228,9 @@ void RenderStatusBar() {
 		
 		// Run/Pause state status indicator
 		if (m_emu->GetPaused()) {
-			ImGui::TextColored(UIHelpers::kColorWarning, "\xe2\x8f\xb8 %s", "StatusBar.Paused"_lc);  // ⏸
+			ImGui::TextColored(UIHelpers::kColorWarning, "[||] %s", "StatusBar.Paused"_lc);  // ⏸
 		} else {
-			ImGui::TextColored(UIHelpers::kColorSuccess, "\xe2\x96\xb6 %s", "StatusBar.Running"_lc); // ▶
+			ImGui::TextColored(UIHelpers::kColorSuccess, "[>] %s", "StatusBar.Running"_lc); // ▶
 		}
 		
 		ImGui::SameLine(0.0f, 20.0f);
@@ -202,12 +267,17 @@ void gui_loop() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
     
-    #if !defined(__ANDROID__) || !defined(IOS)
+    #if !defined(__ANDROID__) && !defined(IOS)
     
       // --- BẮT ĐẦU DOCKSPACE ---
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
+    
+    ImVec2 dockSize = viewport->WorkSize;
+    float barHeight = ImGui::GetFrameHeight() + 4.0f;
+    dockSize.y -= barHeight;
+    ImGui::SetNextWindowSize(dockSize);
+    
     ImGui::SetNextWindowViewport(viewport->ID);
 
     ImGuiWindowFlags host_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | 
@@ -310,7 +380,7 @@ void gui_loop() {
     //    }
     // #endif
     top_bar_size = ImGui::GetCursorPosY();
-#if !defined(__ANDROID__) || !defined(IOS)
+#if !defined(__ANDROID__) && !defined(IOS)
 	RenderStatusBar();
 #endif
 
@@ -459,6 +529,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     }
 
     for (auto item : std::initializer_list<UIWindow*>{
+             new CalculatorWindow(),
              new VariableWindow(),
              new HwController(),
              new LabelViewer(),
@@ -507,22 +578,21 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 namespace UIHelpers {
 
 	void JumpToMemory(uint32_t addr) {
-		// Prefer the "Ram" window; fall back to any window that overrides GotoMemoryAddress.
-		UIWindow* fallback = nullptr;
+		// Try Ram first
 		for (auto* win : windows) {
-			const char* n = win->name;
-			if (n && strcmp(n, "Ram") == 0) {
-				win->GotoMemoryAddress(addr);
-				return;
-			}
-			// Track first editor-like window as fallback
-			if (!fallback && n && (strcmp(n, "Rom") == 0 || strcmp(n, "All") == 0
-				|| strcmp(n, "PRam") == 0 || strcmp(n, "Flash") == 0)) {
-				fallback = win;
+			if (win->name && strcmp(win->name, "Ram") == 0) {
+				if (win->GotoMemoryAddress(addr)) return;
 			}
 		}
-		if (fallback) {
-			fallback->GotoMemoryAddress(addr);
+		// Try PRam next
+		for (auto* win : windows) {
+			if (win->name && strcmp(win->name, "PRam") == 0) {
+				if (win->GotoMemoryAddress(addr)) return;
+			}
+		}
+		// Try any remaining
+		for (auto* win : windows) {
+			if (win->GotoMemoryAddress(addr)) return;
 		}
 	}
 
