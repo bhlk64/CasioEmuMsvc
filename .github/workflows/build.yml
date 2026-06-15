@@ -279,8 +279,10 @@ jobs:
     
         echo "Signing: $APP"
     
+        IDENTITY=$(security find-identity -v -p codesigning | grep "Apple Development" | head -n 1 | sed 's/.*) //')
+
         codesign --force --deep \
-          --sign "Apple Development" \
+          --sign "$IDENTITY" \
           "$APP"
     
         codesign --verify --deep --strict "$APP"
