@@ -272,7 +272,7 @@ jobs:
       if: matrix.platform == 'ios'
       run: |
         
-        cmake -S . -B build -G ninja -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
+        cmake -S . -B build -G Ninja -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
           -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=YES \
           -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=YES \
           -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="Apple Distribution" \
