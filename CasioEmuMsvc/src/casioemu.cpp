@@ -1,6 +1,7 @@
 #include "Config.hpp"
 #include "Ui.hpp"
 #include "imgui_impl_sdl2.h"
+#include "Gui/PopUpDisplay.h"
 
 #include "Emulator.hpp"
 #include "Localization.h"
@@ -9,11 +10,8 @@
 #include "SDL_keyboard.h"
 #include "SDL_mouse.h"
 #include "SDL_video.h"
-#ifdef IOS
-#define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <SDL_image.h>
-#endif
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
@@ -137,7 +135,7 @@ static bool IsPointInImGuiWindow(float x, float y) {
 	return false;
 }
 
-int real_main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
 #ifdef _WIN32
 	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
 	timeBeginPeriod(1);
@@ -191,7 +189,7 @@ int real_main(int argc, char* argv[]) {
 #elif defined(IOS)
   const char* home = getenv("HOME");
   if (home) {
-    std::string path = std::string(home) + "Documents/CasioEmuMsvc";
+      std::string path = std::string(home) + "Documents/CasioEmuMsvc";
     std::filesystem::create_directories(path);
     chdir(path.c_str());
   }
@@ -285,6 +283,7 @@ int real_main(int argc, char* argv[]) {
 	DiscordRPC::UpdatePresence(emulator.ModelDefinition.model_name);
 
 	bool guiCreated = false;
+
 #if defined(__ANDROID__) || defined(IOS)
 	TouchMouseTranslator touchTranslator(
 		SDL_GetWindowID(emulator.window),
@@ -427,16 +426,27 @@ int real_main(int argc, char* argv[]) {
 		}
 
 	hld:
+		if (g_mirror && g_mirror->handleEvent(event)) {
+			continue;
+		}
 		int wid, hei;
 		SDL_GetWindowSize(window, &wid, &hei);
 		switch (event.type) {
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
-						case SDL_WINDOWEVENT_CLOSE: {
+			case SDL_WINDOWEVENT_CLOSE: {
 				extern SDL_Window* window; // This is the debugger window
 				if (event.window.windowID == SDL_GetWindowID(emulator.window)) {
-					emulator.return_to_home_requested = true;
+#if !defined(__ANDROID__) && !defined(IOS)
+					if (!no_dbg) {
+						emulator.calculator_as_tab.store(true);
+						SDL_HideWindow(emulator.window);
+					} else {
+						emulator.Shutdown();
+					}
+#else
 					emulator.Shutdown();
+#endif
 				} else if (window && event.window.windowID == SDL_GetWindowID(window)) {
 					std::exit(0);
 				}
@@ -486,13 +496,7 @@ int real_main(int argc, char* argv[]) {
 	if (bg_txt) {
 		SDL_DestroyTexture(bg_txt);
 	}
-	
-	if (emulator.return_to_home_requested) {
-		argv_map["model"] = "";
-		continue;
-	} else {
-		break;
-	}
+	break;
 	} // end while(true)
 	
 #ifdef ENABLE_SENTRY
@@ -501,12 +505,7 @@ int real_main(int argc, char* argv[]) {
   DiscordRPC::Shutdown();
 	return 0;
 };
-#ifndef IOS
-extern "C" int main(int argc, char* argv[])
-{
-    return real_main(argc, argv);
-}
-#else
+
 #include <chrono>
 #include <thread>
 #include <atomic>
@@ -515,9 +514,8 @@ static std::atomic<bool> is_in_background(false);
 static std::thread* background_timer_thread = nullptr;
 static std::atomic<bool> exit_timer_thread(false);
 
-/*extern "C" void onAppCreate() {
-    main(1, nullptr);
-}*/
+extern "C" void onAppCreate() {
+}
 
 extern "C" void onAppResume() {
     is_in_background.store(false);
@@ -561,8 +559,3 @@ extern "C" void onAppForeground() {
 
 extern "C" void onAppTerminate() {
 }
-int main(int argc, char* argv[])
-{
-    return SDL_UIKitRunApp(argc, argv, real_main);
-}
-#endif
