@@ -286,7 +286,7 @@ jobs:
         mkdir build/Payload
         APP=$(find build -name "*.app" | head -n 1)
         mv "$APP" build/Payload
-        zip -r CasioEmuMsvc.ipa build/Payload
+        zip -r build/CasioEmuMsvc.ipa build/Payload
         
     - name: upload full build ios
       if: always() && matrix.platform == 'ios'
