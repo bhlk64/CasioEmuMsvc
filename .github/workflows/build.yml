@@ -24,12 +24,12 @@ jobs:
           #  platform_arch: x86
           #  os: windows-latest
           #  name: "Windows-x86"
-          #- platform: android
-          #  os: ubuntu-latest
-          #  name: "Android"
-          #- platform: mac
-          #  os: macos-latest
-          #  name: "macOS"
+          - platform: android
+            os: ubuntu-latest
+            name: "Android"
+          - platform: mac
+            os: macos-latest
+            name: "macOS"
           #- platform: linux
           #  os: ubuntu-latest
           #  name: "Linux-x64"
@@ -171,7 +171,7 @@ jobs:
         name: CasioEmuMsvc-macOS
         path: |
           build/CasioEmuMsvc.dmg
-        compression-level: 6
+        # compression-level: 6
         retention-days: 1
     
 
@@ -287,13 +287,12 @@ jobs:
         mv "$APP" build/Payload
         zip -r build/CasioEmuMsvc.ipa build/Payload
         
-    - name: upload full build ios
+    - name: upload build ios
       if: always() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
       with:
-        name: Test-upload-ios-build
+        name: Upload-ios-build
         path: build/CasioEmuMsvc.ipa
-        archive: true
         retention-days: 1
     
     - name: Dump CMake error
