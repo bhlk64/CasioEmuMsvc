@@ -1,7 +1,8 @@
+#ifdef IOS
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 // Include the header we just made
 #include "iOSNativeBridge.h"
@@ -61,17 +62,31 @@
     onAppTerminate();
 }
 
+
+
 // Get the root view controller to present dialogs
 - (UIViewController*)rootViewController {
-    UIWindowScene *windowScene = (UIWindowScene*)[[UIApplication sharedApplication].connectedScenes.allObjects firstObject];
-    UIWindow *keyWindow = windowScene.keyWindow;
-    if (!keyWindow) {
-        keyWindow = [[UIApplication sharedApplication].keyWindow]; // Fallback for older iOS
+    UIWindowScene *scene = (UIWindowScene *)UIApplication.sharedApplication.connectedScenes.allObjects.firstObject;
+    
+    for (UIWindow *window in scene.windows) {
+        if (window.isKeyWindow) {
+            return window.rootViewController;
+        }
     }
-    return keyWindow.rootViewController;
+    
+    return scene.windows.firstObject.rootViewController;
 }
 
 #pragma mark - System Dialogs (File & Folder Pickers)
+
+
+float getSafeTop() {
+    if (@available(iOS 11.0, *)) {
+        UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+        return window.safeAreaInsets.top;
+    }
+    return 20.0f;
+}
 
 - (void)openFileDialog {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -86,7 +101,7 @@
 - (void)saveFileDialog:(NSString*)preferredName {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSArray *documentTypes = @[(NSString *)kUTTypeItem];
-        UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeMoveToService];
+        UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeExportToService];
         picker.delegate = self;
         if (@available(iOS 11.0, *)) {
             picker.allowsContentCreation = YES;
@@ -217,3 +232,4 @@ void openFolderDialog() {
 void saveFolderDialog() {
     [[iOSNativeBridge sharedInstance] saveFolderDialog];
 }
+#endif

@@ -11,6 +11,10 @@
 #include <sstream>
 #include <string>
 
+#ifdef IOS
+#include "iOSNativeBridge.h"
+#endif
+
 namespace casioemu {
 	Emulator::Emulator(std::map<std::string, std::string>& _argv_map, bool _paused) : Paused(_paused), argv_map(_argv_map), chipset(*new Chipset(*this)), m_step_requested(false) {
 		// std::lock_guard<decltype(access_mx)> access_lock(access_mx);
@@ -81,7 +85,8 @@ namespace casioemu {
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			width, height,
-			SDL_WINDOW_SHOWN | (SDL_WINDOW_RESIZABLE));
+			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+			);
 		if (!window)
 			PANIC("SDL_CreateWindow failed: %s\n", SDL_GetError());
 		//renderer = SDL_CreateRenderer(window, -1, 0);
@@ -438,8 +443,7 @@ namespace casioemu {
 		dest.w = interface_background.src.w * uf;
 		dest.h = interface_background.src.h * uf;
 		dest.x = (w - dest.w) / 2;
-		dest.y = (h - dest.h) / 2; // Centre it
-
+		dest.y = (h - dest.h) / 2;
 		if (!calculator_as_tab.load()) {
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);

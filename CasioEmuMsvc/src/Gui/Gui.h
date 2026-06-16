@@ -177,8 +177,8 @@ inline void RebuildFont(float scale = 0.0f) {
 
 	io.Fonts->Clear();
 
-#if defined(__ANDROID__) || defined(IOS)
-	constexpr float defaultscale = 3.5f;
+#ifdef __ANDROID__
+	constexpr float defaultscale = 3.0f;
 #else
 	constexpr float defaultscale = 1.0f;
 #endif

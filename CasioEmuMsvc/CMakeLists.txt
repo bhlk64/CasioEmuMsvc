@@ -5,6 +5,10 @@ project(CasioEmuMsvc)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
+set(HAVE_ITOA 0 CACHE BOOL "" FORCE)
+set(HAVE_UI64TOA 0 CACHE BOOL "" FORCE)
+set(HAVE_I64TOA 0 CACHE BOOL "" FORCE)
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU" AND NOT MSVC)
     add_compile_options(-Wno-error=implicit-function-declaration)
 endif()
@@ -19,6 +23,20 @@ if(EMSCRIPTEN OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     set(BUILD_EXECUTABLE ON CACHE BOOL "Web builds produce an executable html/js/wasm bundle" FORCE)
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    set(IOS TRUE)
+endif()
+
+if(IOS)
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO")
+
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_GUI_IDENTIFIER com.
+        XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "13.0"
+    )
+endif()
+
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fms-extensions")
 # set(CMAKE_CXX_EXTENSIONS OFF)
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -30,7 +48,7 @@ set(ASMJIT_STATIC ON CACHE BOOL "Build AsmJit as a static library")
 set(ASMJIT_BUILD_TEST OFF CACHE BOOL "Disable AsmJit tests")
 set(ASMJIT_BUILD_EXAMPLES OFF CACHE BOOL "Disable AsmJit examples")
 
-if(NOT CASIOEMU_WEB AND NOT IOS AND NOT ANDROID)
+if(NOT CASIOEMU_WEB AND NOT IOS)
     message(STATUS "Attempting to add subdirectory: ${ASMJIT_DIR}")
     if(EXISTS "${ASMJIT_DIR}/CMakeLists.txt")
         message(STATUS "Found ${ASMJIT_DIR}/CMakeLists.txt")
@@ -103,6 +121,7 @@ file(GLOB MAIN_SOURCES_PERIPHERAL "${SOURCE_DIR}/Peripheral/*.cpp")
 file(GLOB MAIN_SOURCES_PLUGIN "${SOURCE_DIR}/Plugin/*.cpp")
 file(GLOB MAIN_SOURCES_STARTUP "${SOURCE_DIR}/StartupUi/*.cpp")
 file(GLOB MAIN_SOURCES_WEB "${SOURCE_DIR}/Web/*.cpp")
+file(GLOB MAIN_SOURCES_EXT_MM "${SOURCE_DIR}/Ext/*.mm")
 
 if(CASIOEMU_WEB)
     list(FILTER MAIN_SOURCES_ROOT EXCLUDE REGEX "casioemu\\.cpp$")
@@ -130,6 +149,7 @@ else()
         ${MAIN_SOURCES_CRASH}
         ${MAIN_SOURCES_EXT}
         ${MAIN_SOURCES_EXT_CAM}
+        ${MAIN_SOURCES_EXT_MM}
         ${MAIN_SOURCES_GUI}
         ${MAIN_SOURCES_ROP}
         ${MAIN_SOURCES_IMGUI}
@@ -145,31 +165,67 @@ endif()
 if(BUILD_EXECUTABLE)
     message(STATUS "Building executable")
     set(TARGET_NAME "CasioEmuMsvc")
+    if(NOT MAIN_SOURCES)
+        message(FATAL_ERROR "MAIN_SOURCES is EMPTY on this platform 💀")
+    endif()
 
     if(APPLE)
         set(TARGET_NAME "CasioEmuMsvc")
-
-        set(APP_ICON ${CMAKE_SOURCE_DIR}/MacResources/AppIcon.icns)
-        set_source_files_properties(${APP_ICON} PROPERTIES
-            MACOSX_PACKAGE_LOCATION "Resources"
-        )
-        set(LAUNCH_SCREEN ${CMAKE_SOURCE_DIR}/MacResources/LaunchScreen.storyboard)
-        set_source_files_properties(${LAUNCH_SCREEN} PROPERTIES
-            MACOSX_PACKAGE_LOCATION "Resources"
-        )
-
-        add_executable(${TARGET_NAME}
-            MACOSX_BUNDLE
-            ${MAIN_SOURCES}
-            ${APP_ICON}
-            ${LAUNCH_SCREEN}
-        )
-
+    
         if(IOS)
+            # 1. Thu thập TẤT CẢ các file bên trong Assets.xcassets (bao gồm .json và .png)
+            file(GLOB_RECURSE IOS_ASSETS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/iOSResources/Assets.xcassets/*")
+            
+            # 2. Định nghĩa vị trí đóng gói cho các file asset này trong App Bundle
+            set_source_files_properties(${IOS_ASSETS_FILES} PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+    
+            # Cấu hình tương tự cho LaunchScreen nếu có
+            set(LAUNCH_SCREEN ${CMAKE_SOURCE_DIR}/MacResources/LaunchScreen.storyboard)
+            set_source_files_properties(${LAUNCH_SCREEN} PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+    
+            # Kiểm tra khẩn cấp xem MAIN_SOURCES có bị trống do filter trước đó không
+            if(NOT MAIN_SOURCES)
+                message(FATAL_ERROR "MAIN_SOURCES is empty before creating iOS executable!")
+            endif()
+    
+            # 3. Tạo executable bằng cách truyền danh sách file asset cụ thể thay vì folder
+            add_executable(${TARGET_NAME}
+                MACOSX_BUNDLE
+                ${MAIN_SOURCES}
+                ${IOS_ASSETS_FILES}
+                ${LAUNCH_SCREEN}
+            )
+    
+            # 4. Chỉ định cho Xcode biết tên của AppIcon set nằm trong .xcassets
             set_target_properties(${TARGET_NAME} PROPERTIES
                 XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "14.0"
+                XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon"
+            )
+    
+        else()
+            # Cấu hình giữ nguyên cho macOS
+            set(APP_ICON ${CMAKE_SOURCE_DIR}/MacResources/AppIcon.icns)
+            set_source_files_properties(${APP_ICON} PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+            set(LAUNCH_SCREEN ${CMAKE_SOURCE_DIR}/MacResources/LaunchScreen.storyboard)
+            set_source_files_properties(${LAUNCH_SCREEN} PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+    
+            add_executable(${TARGET_NAME}
+                MACOSX_BUNDLE
+                ${MAIN_SOURCES}
+                ${APP_ICON}
+                ${LAUNCH_SCREEN}
             )
         endif()
+
+
 
     else()
         if(CASIOEMU_CORE_WEB)
@@ -206,7 +262,7 @@ if(APPLE AND NOT IOS)
 elseif(IOS)
     set_target_properties(${TARGET_NAME} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST
-        ${CMAKE_SOURCE_DIR}/MacResources/Info.plist
+        ${CMAKE_SOURCE_DIR}/iOSResources/Info.plist
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.luongtam.casioemu"
 
         INSTALL_RPATH "@executable_path/Frameworks"
@@ -217,13 +273,10 @@ endif()
 # Apply include dirs to target (scoped) to reduce global includes and compiler parsing
 target_include_directories(${TARGET_NAME} PRIVATE ${PROJECT_INCLUDE_DIRS})
 
-if(CASIOEMU_WEB OR IOS OR ANDROID)
+if(CASIOEMU_WEB OR IOS)
     target_compile_definitions(${TARGET_NAME} PRIVATE DISABLE_SENTRY ASMJIT_NO_JIT)
     if(CASIOEMU_WEB)
         target_compile_definitions(${TARGET_NAME} PRIVATE CASIOEMU_WEB)
-    endif()
-    if(IOS)
-        target_compile_definitions(${TARGET_NAME} PRIVATE IOS)
     endif()
 else()
     target_compile_definitions(${TARGET_NAME} PRIVATE ASMJIT_STATIC)
@@ -302,7 +355,7 @@ elseif(BUILD_EXECUTABLE)
         SDL2_image::SDL2_image-static
         #CpuFeatures::cpu_features
     )
-    if(NOT IOS AND NOT ANDROID)
+    if(NOT IOS)
         target_link_libraries(${TARGET_NAME} PRIVATE asmjit::asmjit)
     endif()
     if(WIN32)
@@ -353,7 +406,7 @@ else()
         SDL2_image::SDL2_image
         #CpuFeatures::cpu_features
     )
-    if(NOT IOS AND NOT ANDROID)
+    if(NOT IOS)
         target_link_libraries(${TARGET_NAME} PRIVATE asmjit::asmjit)
     endif()
     if(ANDROID)

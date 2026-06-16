@@ -1,4 +1,15 @@
 #pragma once
+
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
+    #define IOS
+#elif TARGET_OS_MAC
+    #define MACOS
+#endif
+#endif
+
 #include "Containers/ConcurrentObject.h"
 #include <cstdint>
 #include <cstdio>
@@ -54,16 +65,6 @@
 #ifdef max
 #undef max
 #endif 
-
-#if defined(__APPLE__)
-#include <TargetConditionals.h>
-
-#if TARGET_OS_IPHONE
-    #define IOS
-#elif TARGET_OS_MAC
-    #define MACOS
-#endif
-#endif
 
 // #define SINGLE_WINDOW
 #if !defined(SINGLE_WINDOW) && (defined(__ANDROID__) || defined(IOS))

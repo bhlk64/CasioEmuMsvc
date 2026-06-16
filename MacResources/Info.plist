@@ -9,13 +9,14 @@
     <string>${TARGET_NAME}</string>
 
     <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
+    <string>com.bhlk64.casioemumsvc</string>
 
     <key>CFBundleName</key>
-    <string>CasioEmu</string>
+    <string>CasioEmuMsvc</string>
 
     <key>CFBundleDisplayName</key>
-    <string>CasioEmu</string>
+    <string>CasioEmuMsvc</string>
 
     <key>CFBundleVersion</key>
     <string>1.0</string>
@@ -50,14 +51,5 @@
     <true/>
     <key>LSSupportsOpeningDocumentsInPlace</key>
     <true/>
-    <key>UIApplicationSupportsIndirectInputEvents</key>
-    <true/>
-    <key>UIApplicationSceneManifest</key>
-    <dict>
-        <key>UIApplicationSupportsMultipleScenes</key>
-        <false/>
-        <key>UISceneConfigurations</key>
-        <dict/>
-    </dict>
 </dict>
 </plist>

@@ -1,4 +1,3 @@
-#include "../Config.hpp"
 #include "Ui.hpp"
 #include "hex.hpp"
 #include "5800FileSystem.h"
@@ -85,22 +84,21 @@ void SaveUIState() {
     f.close();
     std::filesystem::rename(tmp, ui_state_fn);
 }
-
+#ifdef __IOS__
+#include "iOSNativeBridge.h"
+#endif
 static float screenshot_toast_timer = 0.0f;
 void RenderDebuggerToolbar() {
     bool isCustom = false;
-#if defined(IOS) || defined(__ANDROID__)
+#if defined(IOS)
     isCustom = true;
 #endif
 
     bool opened = false;
     if (isCustom) {
-#if defined(IOS) || defined(__ANDROID__)
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
-        float headerY = viewport->WorkPos.y;
 #if defined(IOS)
-        headerY = std::max(headerY, 55.0f);
-#endif
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        float headerY = std::max(viewport->WorkPos.y, 55.0f);
         ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, headerY));
         ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, ImGui::GetFrameHeight() + 8.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0));
@@ -111,7 +109,7 @@ void RenderDebuggerToolbar() {
         opened = ImGui::Begin("##DebuggerToolbar", nullptr, 
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
             ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
-            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking);
+            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking);
 #endif
     } else {
         opened = ImGui::BeginMainMenuBar();
@@ -120,139 +118,7 @@ void RenderDebuggerToolbar() {
     if (opened) {
         bool showMenu = true;
         if (isCustom) {
-#if defined(IOS) || defined(__ANDROID__)
-            ImGuiViewport* viewport = ImGui::GetMainViewport();
-            float touchScale = ThemeManager::Instance().buttonHeight / 38.0f;
-            
-            // Draw toasts on mobile outside of scrollable child
-            if (m_emu->screenshot_taken.exchange(false)) {
-                screenshot_toast_timer = 3.0f;
-            }
-            
-            float childWidth = viewport->WorkSize.x;
-            bool hasToast = (screenshot_toast_timer > 0.0f || m_emu->recording_active.load());
-            if (hasToast) {
-                childWidth -= 210.0f * touchScale;
-            }
-            
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6.0f * touchScale, 0));
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10.0f * touchScale, 6.0f * touchScale));
-            
-            ImGui::BeginChild("##ToolbarScroll", ImVec2(childWidth, 0), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_HorizontalScrollbar);
-            
-            // Smooth drag scroll (horizontal swipe)
-            if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
-                float dragX = ImGui::GetIO().MouseDelta.x;
-                if (dragX != 0.0f) {
-                    ImGui::SetScrollX(ImGui::GetScrollX() - dragX);
-                }
-            }
-            
-            // Buttons
-            if (ImGui::Button("Debugger Windows")) {
-                ImGui::OpenPopup("DebuggerMenuPopup");
-            }
-            ImGui::SameLine();
-            
-            // Debugger Windows options popup - styled larger for touch targets
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12.0f * touchScale, 12.0f * touchScale));
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(16.0f * touchScale, 10.0f * touchScale));
-            if (ImGui::BeginPopup("DebuggerMenuPopup")) {
-                for (auto* w : windows) {
-                    if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
-                        SaveUIState();
-                    }
-                }
-                ImGui::EndPopup();
-            }
-            ImGui::PopStyleVar(2);
-            
-            bool anyClosed = std::any_of(windows.begin(), windows.end(), [](UIWindow* w){ return w && !w->open; });
-            if (ImGui::Button(anyClosed ? "Open All" : "Close All")) {
-                for (auto* w : windows) if (w) w->open = anyClosed;
-            }
-            ImGui::SameLine();
-            
-            if (ImGui::Button("[v] Hide KB")) {
-                SDL_StopTextInput();
-                ImGui::SetWindowFocus(nullptr);
-            }
-            ImGui::SameLine();
-            
-            bool isPaused = m_emu->GetPaused();
-            if (ImGui::Button(isPaused ? "[>] Resume" : "[||] Pause")) {
-                m_emu->SetPaused(!isPaused);
-            }
-            ImGui::SameLine();
-            
-            if (ImGui::Button("[C] Screenshot")) {
-                ImGui::OpenPopup("ScreenshotMenuPopup");
-            }
-            ImGui::SameLine();
-            
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12.0f * touchScale, 10.0f * touchScale));
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(16.0f * touchScale, 10.0f * touchScale));
-            if (ImGui::BeginPopup("ScreenshotMenuPopup")) {
-                if (ImGui::MenuItem("Full Calculator")) {
-                    m_emu->screenshot_full_ui = true;
-                    m_emu->screenshot_requested = true;
-                }
-                if (ImGui::MenuItem("Screen Only")) {
-                    m_emu->screenshot_full_ui = false;
-                    m_emu->screenshot_requested = true;
-                }
-                ImGui::EndPopup();
-            }
-            ImGui::PopStyleVar(2);
-            
-            if (m_emu->recording_active.load()) {
-                if (ImGui::Button("[ ] Stop Rec")) {
-                    m_emu->recording_stop_requested = true;
-                }
-            } else {
-                if (ImGui::Button("[O] Record")) {
-                    ImGui::OpenPopup("RecordMenuPopup");
-                }
-                
-                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12.0f * touchScale, 10.0f * touchScale));
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(16.0f * touchScale, 10.0f * touchScale));
-                if (ImGui::BeginPopup("RecordMenuPopup")) {
-                    if (ImGui::MenuItem("Full Calculator")) {
-                        m_emu->recording_full_ui = true;
-                        m_emu->recording_requested = true;
-                    }
-                    if (ImGui::MenuItem("Screen Only")) {
-                        m_emu->recording_full_ui = false;
-                        m_emu->recording_requested = true;
-                    }
-                    ImGui::EndPopup();
-                }
-                ImGui::PopStyleVar(2);
-            }
-            ImGui::SameLine();
-            
-            if (ImGui::Button(ThemeManager::Instance().Settings().isDarkMode ? "Light Theme" : "Dark Theme")) {
-                if (ThemeManager::Instance().Settings().isDarkMode)
-                    ThemeManager::Instance().SetLightMode();
-                else
-                    ThemeManager::Instance().SetDarkMode();
-            }
-            
-            ImGui::EndChild();
-            ImGui::PopStyleVar(2);
-            
-            if (hasToast) {
-                ImGui::SameLine(childWidth + 8.0f);
-                if (screenshot_toast_timer > 0.0f) {
-                    ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "Saved!");
-                    screenshot_toast_timer -= ImGui::GetIO().DeltaTime;
-                } else if (m_emu->recording_active.load()) {
-                    ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Rec:%u", m_emu->recording_frame_count.load());
-                }
-            }
-            
-            showMenu = false;
-#endif
+            showMenu = ImGui::BeginMenuBar();
         }
         
         if (showMenu) {
@@ -358,17 +224,13 @@ void RenderDebuggerToolbar() {
             }
 
             if (isCustom) {
-#if defined(IOS) || defined(__ANDROID__)
                 ImGui::EndMenuBar();
-#endif
             }
         }
         
         if (isCustom) {
-#if defined(IOS) || defined(__ANDROID__)
             ImGui::End();
             ImGui::PopStyleVar(4);
-#endif
         } else {
             ImGui::EndMainMenuBar();
         }
@@ -404,21 +266,9 @@ void RenderStatusBar() {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	float barHeight = ImGui::GetFrameHeight() + 4.0f;
 	
-#if defined(IOS)
-	// Place closer to the bottom edge on modern notch devices to decrease safeBottom padding
-	float safeBottom = (viewport->WorkPos.y > 20) ? (viewport->WorkPos.y + viewport->WorkSize.y + 16.0f) : viewport->Size.y;
-	ImGui::SetNextWindowPos(ImVec2(0, safeBottom - barHeight));
-#else
 	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - barHeight));
-#endif
 	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, barHeight));
-
-#if defined(IOS) || defined(__ANDROID__)
-	float touchScale = ThemeManager::Instance().buttonHeight / 38.0f;
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f * touchScale, 4.0f * touchScale));
-#else
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 2.0f));
-#endif
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.08f, 0.12f, 1.0f));
 	
 	if (ImGui::Begin("##StatusBar", nullptr, 
@@ -454,14 +304,8 @@ void RenderStatusBar() {
 }
 
 void gui_loop() {
-    if (!m_emu->Running() || ImGui::GetCurrentContext() == nullptr)
+    if (!m_emu->Running())
         return;
-
-    static bool logged_gui_loop = false;
-    if (!logged_gui_loop) {
-        SDL_Log("[Ui][Debug] gui_loop entered, context = %p", (void*)ImGui::GetCurrentContext());
-        logged_gui_loop = true;
-    }
 
     ImGuiIO& io = ImGui::GetIO();
 
@@ -472,10 +316,6 @@ void gui_loop() {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-
-    if (ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered()) {
-        ImGui::ClearActiveID();
-    }
     
     #if !defined(__ANDROID__) && !defined(IOS)
     
@@ -587,8 +427,12 @@ void gui_loop() {
     //            ImGui::CloseCurrentPopup();
     //        }
     //        ImGui::EndPopup();
-    top_bar_size = ImGui::GetFrameHeight();
+    //    }
+    // #endif
+    top_bar_size = ImGui::GetCursorPosY();
+#if !defined(__ANDROID__) && !defined(IOS)
 	RenderStatusBar();
+#endif
 
 	//	ImGui::Begin("Testing");
 	//	if (ImGui::Button("Crash"_lc)) {
@@ -654,7 +498,6 @@ void gui_loop() {
 }
 
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
-    SDL_Log("[Ui][Debug] test_gui entered");
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
     
     if (window || renderer) {
@@ -722,7 +565,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     
     if (!me_mmu) {
-        SDL_Log("[Ui][Debug] test_gui: MMU not ready!");
+        SDL_Log("MMU not ready!");
         return nullptr;
     }
     auto label_file = m_emu->GetModelFilePath("labels.txt");
@@ -765,7 +608,6 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     }
     LoadUIState();
     ui_ready = true;
-    SDL_Log("[Ui][Debug] test_gui: success, ui_ready = true");
     /*for (auto* w : windows) {
         if (!w) continue;
     

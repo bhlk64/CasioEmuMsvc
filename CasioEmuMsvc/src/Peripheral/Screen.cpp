@@ -1658,6 +1658,8 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 	};
 #endif
 
+#ifndef IOS
+
 	class ScreenRecorder {
 	public:
 		~ScreenRecorder() {
@@ -1695,7 +1697,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			std::string ffmpeg_path = "ffmpeg";
 			if (std::filesystem::exists("/opt/homebrew/bin/ffmpeg")) ffmpeg_path = "/opt/homebrew/bin/ffmpeg";
 			else if (std::filesystem::exists("/usr/local/bin/ffmpeg")) ffmpeg_path = "/usr/local/bin/ffmpeg";
-
+#ifndef IOS
 			if (std::system((ffmpeg_path + " -version > /dev/null 2>&1").c_str()) == 0) {
 				if (encoder.Start(command)) {
 					frameSequence = false;
@@ -1704,6 +1706,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 					return true;
 				}
 			}
+#endif
 #endif
 
 			frameSequence = true;
@@ -1865,7 +1868,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		std::filesystem::path outputPath;
 		std::filesystem::path frameDirectory;
 	};
-
+#endif
 	// Function to capture the current screen, save as PNG file and copy to clipboard
 	void CaptureScreenshot(SDL_Renderer* renderer, const std::vector<SDL_Rect>& spriteRects, const std::vector<SDL_Rect>& pixelRects) {
 		std::string filename = MakeTimestampedName("screenshot-", ".png");
@@ -2124,6 +2127,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 			emulator.screenshot_requested.store(false);
 			emulator.screenshot_taken.store(true);
 		}
+#ifndef IOS
 		static ScreenRecorder recorder;
 		if (emulator.recording_requested.exchange(false) && !recorder.IsRecording()) {
 			SDL_Rect captureRect{};
@@ -2153,6 +2157,7 @@ n为行扫描计数，[0xF03B] = ( ( n / ( [0xF036] == 0 ? 64 : [0xF035] ) ) % 2
 		else {
 			emulator.recording_active.store(false);
 		}
+#endif
 		if (emulator.mirroring_requested.load()) {
 			auto p = GetSize(spriteRects, pixelRects);
 			auto sm = new ScreenMirror(p.first, p.second, emulator.mirror_as_tab.load());

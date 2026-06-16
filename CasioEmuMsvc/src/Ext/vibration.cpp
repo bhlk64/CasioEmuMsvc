@@ -52,6 +52,16 @@ extern "C"
 		env->CallStaticVoidMethod(activityClass, vibrateMethod, milliseconds);
 	}
 }
+#elif defined(IOS)
+#include "iOSNativeBridge.h"
+
+void Vibration::vibrate(long milliseconds)
+{
+    if (setting_DisableVibration)
+        return;
+
+    nativeVibrate(milliseconds);
+}
 #else
 void Vibration::vibrate(long milliseconds) {
 }

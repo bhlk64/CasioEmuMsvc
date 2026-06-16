@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+trash/*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -388,4 +389,3 @@ build-parent-check/
 app/src/main/assets/
 
 build-ios/
-build-ninja-ios/
