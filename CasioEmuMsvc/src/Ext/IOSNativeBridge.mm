@@ -162,16 +162,6 @@
 
 #pragma mark - C++ Bridge Functions
 
-extern "C" float getSafeTop()
-{
-    UIWindow* window = UIApplication.sharedApplication.keyWindow;
-
-    if (@available(iOS 11.0, *))
-        return window ? (float)window.safeAreaInsets.top : 0.0f;
-
-    return 0.0f;
-}
-
 void nativeVibrate(long milliseconds) {
     dispatch_async(dispatch_get_main_queue(), ^{
         // iOS doesn't support exact ms vibration like Android.

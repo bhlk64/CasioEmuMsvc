@@ -305,6 +305,13 @@ jobs:
         path: build/CasioEmuMsvc.ipa
         retention-days: 1
         archive: false
+    - name: upload build failed ios
+      if: failed() && matrix.platform == 'ios'
+      uses: actions/upload-artifact@v7
+      with:
+        path: build/CasioEmuMsvc.ipa
+        retention-days: 1
+        archive: false
     
     - name: Dump CMake error
       if: failure()
