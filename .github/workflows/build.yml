@@ -172,6 +172,7 @@ jobs:
           build/CasioEmuMsvc.dmg
         # compression-level: 6
         retention-days: 1
+        archive: false
     
 
     - name: Set up JDK 21
@@ -292,6 +293,7 @@ jobs:
       with:
         path: build/CasioEmuMsvc.ipa
         retention-days: 1
+        archive: false
     
     - name: Dump CMake error
       if: failure()
