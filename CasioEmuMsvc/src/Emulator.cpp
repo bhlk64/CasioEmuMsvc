@@ -81,7 +81,11 @@ namespace casioemu {
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			width, height,
-			SDL_WINDOW_SHOWN | (SDL_WINDOW_RESIZABLE));
+			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+#ifdef IOS
+			| SDL_WINDOW_ALLOW_HIGHDPI
+#endif
+			);
 		if (!window)
 			PANIC("SDL_CreateWindow failed: %s\n", SDL_GetError());
 		//renderer = SDL_CreateRenderer(window, -1, 0);
@@ -437,9 +441,15 @@ namespace casioemu {
 		SDL_Rect dest{};
 		dest.w = interface_background.src.w * uf;
 		dest.h = interface_background.src.h * uf;
+#ifdef IOS
+		#include "iOSNativeBridge.h"
+		float safeTop = getSafeTop();
+		dest.x = (w - dest.w) / 2;
+		dest.y = ((h - safeTop) - dest.h) / 2 + safeTop;
+#else
 		dest.x = (w - dest.w) / 2;
 		dest.y = (h - dest.h) / 2; // Centre it
-
+#endif
 		if (!calculator_as_tab.load()) {
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);

@@ -62,6 +62,8 @@
     onAppTerminate();
 }
 
+
+
 // Get the root view controller to present dialogs
 - (UIViewController*)rootViewController {
     UIWindowScene *scene = (UIWindowScene *)UIApplication.sharedApplication.connectedScenes.allObjects.firstObject;
@@ -159,6 +161,16 @@
 @end
 
 #pragma mark - C++ Bridge Functions
+
+float getSafeTop()
+{
+    UIWindow* window = UIApplication.sharedApplication.keyWindow;
+
+    if (@available(iOS 11.0, *))
+        return window ? (float)window.safeAreaInsets.top : 0.0f;
+
+    return 0.0f;
+}
 
 void nativeVibrate(long milliseconds) {
     dispatch_async(dispatch_get_main_queue(), ^{
