@@ -162,7 +162,7 @@
 
 #pragma mark - C++ Bridge Functions
 
-float getSafeTop()
+extern "C" float getSafeTop()
 {
     UIWindow* window = UIApplication.sharedApplication.keyWindow;
 
