@@ -24,12 +24,12 @@ jobs:
           #  platform_arch: x86
           #  os: windows-latest
           #  name: "Windows-x86"
-          - platform: android
-            os: ubuntu-latest
-            name: "Android"
-          - platform: mac
-            os: macos-latest
-            name: "macOS"
+          #- platform: android
+          #  os: ubuntu-latest
+          #  name: "Android"
+          #- platform: mac
+          #  os: macos-latest
+          #  name: "macOS"
           #- platform: linux
           #  os: ubuntu-latest
           #  name: "Linux-x64"
@@ -361,6 +361,15 @@ jobs:
         if [ -f "./artifacts/CasioEmuMsvc.ipa" ]; then
           mv "./artifacts/CasioEmuMsvc.ipa" "./release_assets/iOS-build-${{ env.COMMIT_HASH }}.ipa"
         fi
+        
+        echo "=== ARTIFACTS ==="
+        ls -R ./artifacts
+        
+        echo "=== IPA SEARCH ==="
+        find ./artifacts -name "*.ipa"
+        
+        echo "=== DMG SEARCH ==="
+        find ./artifacts -name "*.dmg"
         
         ls -la release_assets/
 
