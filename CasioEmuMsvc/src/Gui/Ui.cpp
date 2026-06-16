@@ -518,15 +518,31 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         (int)ThemeManager::Instance().windowHeight,
         SDL_WINDOW_RESIZABLE);
 #else
-    SDL_DisplayMode dm;
-    SDL_GetCurrentDisplayMode(0, &dm);
-    
-    window = SDL_CreateWindow("CasioEmuMsvc Debugger",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        dm.w * 0.8,
-        dm.h * 0.8,
-        SDL_WINDOW_RESIZABLE);
+	int winX = ThemeManager::Instance().Settings().windowX;
+	int winY = ThemeManager::Instance().Settings().windowY;
+	int winW = ThemeManager::Instance().Settings().windowW;
+	int winH = ThemeManager::Instance().Settings().windowH;
+
+	SDL_Rect bounds;
+	if (SDL_GetDisplayUsableBounds(0, &bounds) == 0) {
+		if (winW > bounds.w) winW = bounds.w;
+		if (winH > bounds.h) winH = bounds.h;
+
+		if (winX != SDL_WINDOWPOS_CENTERED) {
+			if (winX < bounds.x) winX = bounds.x;
+			if (winX + winW > bounds.x + bounds.w) winX = bounds.x + bounds.w - winW;
+		}
+		if (winY != SDL_WINDOWPOS_CENTERED) {
+			if (winY < bounds.y) winY = bounds.y;
+			if (winY + winH > bounds.y + bounds.h) winY = bounds.y + bounds.h - winH;
+		}
+	}
+
+	window = SDL_CreateWindow("CasioEmuMsvc Debugger",
+		winX,
+		winY,
+		winW, winH,
+		SDL_WINDOW_RESIZABLE);
 #endif
 #ifdef _WIN32
     EnableDarkTitleBar(GetSDLWindowHandle(window));
@@ -706,11 +722,27 @@ namespace UIHelpers {
 
 
 void gui_cleanup() {
-    ImGui_ImplSDLRenderer2_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
-    SaveUIState();
-    windows.clear();
+#ifndef __ANDROID__
+#ifndef SINGLE_WINDOW
+	if (window) {
+		int x, y, w, h;
+		SDL_GetWindowPosition(window, &x, &y);
+		SDL_GetWindowSize(window, &w, &h);
+
+		ThemeManager::Instance().Settings().windowX = x;
+		ThemeManager::Instance().Settings().windowY = y;
+		ThemeManager::Instance().Settings().windowW = w;
+		ThemeManager::Instance().Settings().windowH = h;
+		ThemeManager::Instance().SaveSettings();
+	}
+#endif
+#endif
+
+	ImGui_ImplSDLRenderer2_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+	SaveUIState();
+	windows.clear();
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
