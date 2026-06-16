@@ -168,7 +168,6 @@ jobs:
       if: matrix.platform == 'mac'
       uses: actions/upload-artifact@v7
       with:
-        name: CasioEmuMsvc-macOS
         path: |
           build/CasioEmuMsvc.dmg
         # compression-level: 6
@@ -291,7 +290,6 @@ jobs:
       if: always() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
       with:
-        name: Upload-ios-build
         path: build/CasioEmuMsvc.ipa
         retention-days: 1
     
