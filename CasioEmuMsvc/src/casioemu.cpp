@@ -50,6 +50,10 @@
 
 #include "TouchMouseTranslator.h"
 
+#ifdef IOS
+#include "iOSNativeBridge.h"
+#endif
+
 using namespace casioemu;
 SDL_Surface* background;
 SDL_Texture* bg_txt;

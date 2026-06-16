@@ -442,7 +442,6 @@ namespace casioemu {
 		dest.w = interface_background.src.w * uf;
 		dest.h = interface_background.src.h * uf;
 #ifdef IOS
-		#include "iOSNativeBridge.h"
 		float safeTop = getSafeTop();
 		dest.x = (w - dest.w) / 2;
 		dest.y = ((h - safeTop) - dest.h) / 2 + safeTop;
