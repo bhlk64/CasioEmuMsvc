@@ -1,2 +1,0 @@
-/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ninja-ios/SDL/CMakeFiles/CheckOBJC/CMakeFiles/edit_cache.dir
-/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ninja-ios/SDL/CMakeFiles/CheckOBJC/CMakeFiles/rebuild_cache.dir

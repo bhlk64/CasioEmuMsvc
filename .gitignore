@@ -388,3 +388,4 @@ build-parent-check/
 app/src/main/assets/
 
 build-ios/
+build-ninja-ios/

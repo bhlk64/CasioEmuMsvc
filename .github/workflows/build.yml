@@ -33,9 +33,9 @@ jobs:
           #- platform: linux
           #  os: ubuntu-latest
           #  name: "Linux-x64"
-          - platform: ios
-            os: macos-latest
-            name: "iOS"
+          #- platform: ios
+          #  os: macos-latest
+          #  name: "iOS"
     
     runs-on: ${{ matrix.os }}
     name: Build ${{ matrix.name }}
@@ -168,6 +168,7 @@ jobs:
       if: matrix.platform == 'mac'
       uses: actions/upload-artifact@v7
       with:
+        name: macOS-artifact
         path: |
           build/CasioEmuMsvc.dmg
         # compression-level: 6
@@ -205,6 +206,7 @@ jobs:
       if: matrix.platform == 'android'
       uses: actions/upload-artifact@v7
       with:
+        name: android-universal
         path: app/build/outputs/apk/release/*-universal-*.apk
         archive: false
 
@@ -212,6 +214,7 @@ jobs:
       if: matrix.platform == 'android'
       uses: actions/upload-artifact@v7
       with:
+        name: android-arm64
         path: app/build/outputs/apk/release/*-arm64-v8a-*.apk
         archive: false
 
@@ -219,6 +222,7 @@ jobs:
       if: matrix.platform == 'android'
       uses: actions/upload-artifact@v7
       with:
+        name: android-armv7
         path: app/build/outputs/apk/release/*-armeabi-v7a-*.apk
         archive: false
 
@@ -242,76 +246,96 @@ jobs:
           build/CasioEmuMsvc/roms.db
         if-no-files-found: error
     
-    - name: Setup certficate for iOS build
-      if: matrix.platform == 'ios'
-      run: |
-        security create-keychain -p "" build.keychain
-        security unlock-keychain -p "" build.keychain
-    
-        security set-keychain-settings -lut 21600 build.keychain
-        security list-keychains -d user -s build.keychain
-        security default-keychain -s build.keychain
-    
-        security import iOSresources/export_anar.p12 \
-          -k build.keychain \
-          -P "1234" \
-          -A \
-          -T /usr/bin/codesign
-    
-        security set-key-partition-list \
-          -S apple-tool:,apple: \
-          -s \
-          -k "" \
-          build.keychain
-        
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        cp iOSresources/export_anar.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-    
-    - name: Build for iOS
-      if: matrix.platform == 'ios'
-      run: |
-        
-        cmake -S . -B build -G Ninja -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
-          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=YES \
-          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=YES \
-          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="Apple Distribution" \
-          -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="4Z7V3V3G9R" \
-          -DCMAKE_CXX_STANDARD=20
-        
-        cmake --build build --config Release 
-    - name: Create .ipa
-      if: matrix.platform == 'ios'
-      run: |
-        set -e
-
-        mkdir -p build/Payload
-        
-        APP=$(find build -type d -name "*.app" | head -n 1)
-        
-        echo "Found app: $APP"
-        
-        rm -rf build/Payload/*
-        cp -R "$APP" build/Payload/
-        
-        cd build
-        zip -r CasioEmuMsvc.ipa Payload
-        
-        cd ..
-        
-    - name: upload build ios
-      if: always() && matrix.platform == 'ios'
-      uses: actions/upload-artifact@v7
-      with:
-        path: build/CasioEmuMsvc.ipa
-        retention-days: 1
-        archive: false
-    - name: upload build failed ios
-      if: failure() && matrix.platform == 'ios'
-      uses: actions/upload-artifact@v7
-      with:
-        path: build/CasioEmuMsvc.ipa
-        retention-days: 1
-        archive: false
+#    - name: Setup certficate for iOS build
+#      if: matrix.platform == 'ios'
+#      env:
+#        IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+#        IOS_PROVISION_BASE64: ${{ secrets.IOS_PROVISION_BASE64 }}
+#        IOS_CERT_PASSWORD: ${{ secrets.IOS_CERT_PASSWORD }}
+#      run: |
+#        # Create temp folder for build resources
+#        mkdir -p iOSresources
+#        
+#        # Decode p12 and mobileprovision from GitHub Secrets
+#        echo "$IOS_CERTIFICATE_BASE64" | base64 --decode > iOSresources/export.p12
+#        echo "$IOS_PROVISION_BASE64" | base64 --decode > iOSresources/export.mobileprovision
+#        
+#        # Setup temporary keychain
+#        security create-keychain -p "" build.keychain
+#        security unlock-keychain -p "" build.keychain
+#        security set-keychain-settings -lut 21600 build.keychain
+#        security list-keychains -d user -s build.keychain
+#        security default-keychain -s build.keychain
+#        
+#        # Download Apple Intermediate CAs to build the required certificate trust chain
+#        curl -s -f -o AppleWWDRCA.cer https://developer.apple.com/certificationauthority/AppleWWDRCA.cer
+#        curl -s -f -o AppleWWDRCAG3.cer https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer
+#        curl -s -f -o AppleWWDRCAG6.cer https://www.apple.com/certificateauthority/AppleWWDRCAG6.cer
+#        curl -s -f -o DeveloperIDCA.cer https://www.apple.com/certificateauthority/DeveloperIDCA.cer
+#        
+#        # Import intermediate certificates into the temporary keychain
+#        security import AppleWWDRCA.cer -k build.keychain -A
+#        security import AppleWWDRCAG3.cer -k build.keychain -A
+#        security import AppleWWDRCAG6.cer -k build.keychain -A
+#        security import DeveloperIDCA.cer -k build.keychain -A
+#        
+#        # Import the developer signing certificate
+#        security import iOSresources/export_anar.p12 \
+#          -k build.keychain \
+#          -P "$IOS_CERT_PASSWORD" \
+#          -A \
+#          -T /usr/bin/codesign
+#    
+#        security set-key-partition-list \
+#          -S apple-tool:,apple: \
+#          -s \
+#          -k "" \
+#          build.keychain
+#        
+#        # Install provisioning profile
+#        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+#        cp iOSresources/export_anar.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+#    
+#    - name: Build for iOS
+#      if: matrix.platform == 'ios'
+#      run: |
+#        cmake -S . -B build -G Ninja -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 -DCMAKE_CXX_STANDARD=20
+#        cmake --build build --config Release 
+#
+#    - name: Sign App and Create .ipa
+#      if: matrix.platform == 'ios'
+#      run: |
+#        set -e
+#        APP=$(find build -type d -name "*.app" | head -n 1)
+#        echo "Found app: $APP"
+#        
+#        # Copy provisioning profile into the app bundle as embedded.mobileprovision
+#        cp iOSresources/export_anar.mobileprovision "$APP/embedded.mobileprovision"
+#        
+#        # Extract entitlements from provisioning profile
+#        security cms -D -i "$APP/embedded.mobileprovision" > build/provision.plist
+#        plutil -extract Entitlements xml1 -o build/entitlements.plist build/provision.plist
+#        
+#        # Manually codesign the .app bundle using imported Apple Distribution cert and extracted entitlements
+#        codesign --force --sign "Apple Distribution" --entitlements build/entitlements.plist --timestamp=none "$APP"
+#        
+#        # Package into IPA
+#        mkdir -p build/Payload
+#        rm -rf build/Payload/*
+#        cp -R "$APP" build/Payload/
+#        
+#        cd build
+#        zip -r CasioEmuMsvc.ipa Payload
+#        cd ..
+#
+#    - name: upload build ios
+#      if: always() && matrix.platform == 'ios'
+#      uses: actions/upload-artifact@v7
+#      with:
+#        name: iOS-artifact
+#        path: build/CasioEmuMsvc.ipa
+#        retention-days: 1
+#        archive: false
     
     - name: Dump CMake error
       if: failure()
@@ -355,6 +379,24 @@ jobs:
     - name: Prepare Release Assets
       run: |
         mkdir -p release_assets
+        
+        # Decompress any zipped artifacts if skip-decompress is enabled
+        # if [ -f "./artifacts/iOS-artifact.zip" ]; then
+        #   unzip "./artifacts/iOS-artifact.zip" -d ./artifacts/
+        # fi
+        if [ -f "./artifacts/macOS-artifact.zip" ]; then
+          unzip "./artifacts/macOS-artifact.zip" -d ./artifacts/
+        fi
+        if [ -f "./artifacts/android-universal.zip" ]; then
+          unzip "./artifacts/android-universal.zip" -d ./artifacts/
+        fi
+        if [ -f "./artifacts/android-arm64.zip" ]; then
+          unzip "./artifacts/android-arm64.zip" -d ./artifacts/
+        fi
+        if [ -f "./artifacts/android-armv7.zip" ]; then
+          unzip "./artifacts/android-armv7.zip" -d ./artifacts/
+        fi
+
         if ls ./artifacts/*.apk 1> /dev/null 2>&1; then
           cp ./artifacts/*.apk release_assets/
         fi
@@ -375,9 +417,9 @@ jobs:
           mv "./artifacts/CasioEmuMsvc.dmg" "./release_assets/macOS-universal-${{ env.COMMIT_HASH }}.dmg"
         fi
         
-        if [ -f "./artifacts/CasioEmuMsvc.ipa" ]; then
-          mv "./artifacts/CasioEmuMsvc.ipa" "./release_assets/iOS-build-${{ env.COMMIT_HASH }}.ipa"
-        fi
+        # if [ -f "./artifacts/CasioEmuMsvc.ipa" ]; then
+        #   mv "./artifacts/CasioEmuMsvc.ipa" "./release_assets/iOS-build-${{ env.COMMIT_HASH }}.ipa"
+        # fi
         
         echo "=== ARTIFACTS ==="
         ls -R ./artifacts
