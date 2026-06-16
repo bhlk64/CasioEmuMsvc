@@ -171,7 +171,6 @@ jobs:
         name: CasioEmuMsvc-macOS
         path: |
           build/CasioEmuMsvc.dmg
-          build/CasioEmuMsvc/*
         compression-level: 6
         retention-days: 1
     
@@ -293,7 +292,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: Test-upload-ios-build
-        path: build/*
+        path: build/CasioEmuMsvc.ipa
         archive: true
         retention-days: 1
     
