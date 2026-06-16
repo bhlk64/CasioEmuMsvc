@@ -519,7 +519,7 @@ int main(int argc, char* argv[]) {
 #include <atomic>
 
 static std::atomic<bool> is_in_background(false);
-static std::thread* background_timer_thread = nullptr;<
+static std::thread* background_timer_thread = nullptr;
 static std::atomic<bool> exit_timer_thread(false);
 
 extern "C" void onAppCreate() {
