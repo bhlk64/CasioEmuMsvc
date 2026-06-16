@@ -89,111 +89,151 @@ void SaveUIState() {
 #endif
 static float screenshot_toast_timer = 0.0f;
 void RenderDebuggerToolbar() {
-    float safeTop = 0.0f;
-    
-    #ifdef __IOS__
-    safeTop = getSafeTop();
-    #endif
-    
-    ImGui::SetNextWindowPos(ImVec2(0.0f, safeTop));
-    ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 0.0f));
-    if (ImGui::BeginMainMenuBar()) {
-        if (ImGui::BeginTabBar("ToolbarTabs", ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip)) {
-            
-            if (ImGui::TabItemButton("Debugger Windows")) {
-                ImGui::OpenPopup("DebuggerMenuPopup");
-            }
-            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
-            if (ImGui::BeginPopup("DebuggerMenuPopup")) {
-                for (auto* w : windows) {
-                    if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
-                        SaveUIState();
-                    }
-                }
-                ImGui::EndPopup();
-            }
+    bool isCustom = false;
+#if defined(IOS)
+    isCustom = true;
+#endif
 
-            if (std::any_of(windows.begin(), windows.end(), [](UIWindow* w){ return !w->open; })) {
-                if (ImGui::TabItemButton("Open All")) {
-                    for (auto* w : windows) if (w) w->open = true;
-                }
-            }
-            else {
-                if (ImGui::TabItemButton("Close All")) {
-                    for (auto* w : windows) if (w) w->open = false;
-                }
-            }
+    bool opened = false;
+    if (isCustom) {
+#if defined(IOS)
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        float headerY = std::max(viewport->WorkPos.y, 55.0f);
+        ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, headerY));
+        ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, ImGui::GetFrameHeight() + 8.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, ImGui::GetStyle().FramePadding.y + 4.0f));
+        
+        opened = ImGui::Begin("##DebuggerToolbar", nullptr, 
+            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking);
+#endif
+    } else {
+        opened = ImGui::BeginMainMenuBar();
+    }
 
-            bool isPaused = m_emu->GetPaused();
-            if (ImGui::TabItemButton(isPaused ? "[>] Resume" : "[||] Pause")) {
-                m_emu->SetPaused(!isPaused);
-            }
-
-            if (ImGui::TabItemButton("[C] Screenshot")) {
-                ImGui::OpenPopup("ScreenshotMenuPopup");
-            }
-            ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
-            if (ImGui::BeginPopup("ScreenshotMenuPopup")) {
-                if (ImGui::MenuItem("Full Calculator")) {
-                    m_emu->screenshot_full_ui = true;
-                    m_emu->screenshot_requested = true;
-                }
-                if (ImGui::MenuItem("Screen Only")) {
-                    m_emu->screenshot_full_ui = false;
-                    m_emu->screenshot_requested = true;
-                }
-                ImGui::EndPopup();
-            }
-
-            if (m_emu->recording_active.load()) {
-                if (ImGui::TabItemButton("[ ] Stop Rec")) {
-                    m_emu->recording_stop_requested = true;
-                }
-            } else {
-                if (ImGui::TabItemButton("[O] Record")) {
-                    ImGui::OpenPopup("RecordMenuPopup");
+    if (opened) {
+        bool showMenu = true;
+        if (isCustom) {
+            showMenu = ImGui::BeginMenuBar();
+        }
+        
+        if (showMenu) {
+            if (ImGui::BeginTabBar("ToolbarTabs", ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip)) {
+                
+                if (ImGui::TabItemButton("Debugger Windows")) {
+                    ImGui::OpenPopup("DebuggerMenuPopup");
                 }
                 ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
-                if (ImGui::BeginPopup("RecordMenuPopup")) {
-                    if (ImGui::MenuItem("Full Calculator")) {
-                        m_emu->recording_full_ui = true;
-                        m_emu->recording_requested = true;
-                    }
-                    if (ImGui::MenuItem("Screen Only")) {
-                        m_emu->recording_full_ui = false;
-                        m_emu->recording_requested = true;
+                if (ImGui::BeginPopup("DebuggerMenuPopup")) {
+                    for (auto* w : windows) {
+                        if (w && ImGui::MenuItem(w->name, nullptr, &w->open)) {
+                            SaveUIState();
+                        }
                     }
                     ImGui::EndPopup();
                 }
+
+                if (std::any_of(windows.begin(), windows.end(), [](UIWindow* w){ return !w->open; })) {
+                    if (ImGui::TabItemButton("Open All")) {
+                        for (auto* w : windows) if (w) w->open = true;
+                    }
+                }
+                else {
+                    if (ImGui::TabItemButton("Close All")) {
+                        for (auto* w : windows) if (w) w->open = false;
+                    }
+                }
+
+#if defined(__ANDROID__) || defined(IOS)
+                if (ImGui::TabItemButton("[v] Hide KB")) {
+                    SDL_StopTextInput();
+                    ImGui::SetWindowFocus(nullptr);
+                }
+#endif
+
+                bool isPaused = m_emu->GetPaused();
+                if (ImGui::TabItemButton(isPaused ? "[>] Resume" : "[||] Pause")) {
+                    m_emu->SetPaused(!isPaused);
+                }
+
+                if (ImGui::TabItemButton("[C] Screenshot")) {
+                    ImGui::OpenPopup("ScreenshotMenuPopup");
+                }
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
+                if (ImGui::BeginPopup("ScreenshotMenuPopup")) {
+                    if (ImGui::MenuItem("Full Calculator")) {
+                        m_emu->screenshot_full_ui = true;
+                        m_emu->screenshot_requested = true;
+                    }
+                    if (ImGui::MenuItem("Screen Only")) {
+                        m_emu->screenshot_full_ui = false;
+                        m_emu->screenshot_requested = true;
+                    }
+                    ImGui::EndPopup();
+                }
+
+                if (m_emu->recording_active.load()) {
+                    if (ImGui::TabItemButton("[ ] Stop Rec")) {
+                        m_emu->recording_stop_requested = true;
+                    }
+                } else {
+                    if (ImGui::TabItemButton("[O] Record")) {
+                        ImGui::OpenPopup("RecordMenuPopup");
+                    }
+                    ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
+                    if (ImGui::BeginPopup("RecordMenuPopup")) {
+                        if (ImGui::MenuItem("Full Calculator")) {
+                            m_emu->recording_full_ui = true;
+                            m_emu->recording_requested = true;
+                        }
+                        if (ImGui::MenuItem("Screen Only")) {
+                            m_emu->recording_full_ui = false;
+                            m_emu->recording_requested = true;
+                        }
+                        ImGui::EndPopup();
+                    }
+                }
+
+                if (ImGui::TabItemButton(ThemeManager::Instance().Settings().isDarkMode ? "Light Theme" : "Dark Theme")) {
+                    if (ThemeManager::Instance().Settings().isDarkMode)
+                        ThemeManager::Instance().SetLightMode();
+                    else
+                        ThemeManager::Instance().SetDarkMode();
+                }
+
+                ImGui::EndTabBar();
             }
 
-            if (ImGui::TabItemButton(ThemeManager::Instance().Settings().isDarkMode ? "Light Theme" : "Dark Theme")) {
-                if (ThemeManager::Instance().Settings().isDarkMode)
-                    ThemeManager::Instance().SetLightMode();
-                else
-                    ThemeManager::Instance().SetDarkMode();
+            if (m_emu->screenshot_taken.exchange(false)) {
+                screenshot_toast_timer = 3.0f;
             }
 
-            ImGui::EndTabBar();
+            if (screenshot_toast_timer > 0.0f) {
+                ImGui::SameLine(ImGui::GetWindowWidth() - 250.0f);
+                ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "[C] Screenshot Saved!");
+                screenshot_toast_timer -= ImGui::GetIO().DeltaTime;
+            }
+
+            if (m_emu->recording_active.load()) {
+                ImGui::SameLine(ImGui::GetWindowWidth() - (screenshot_toast_timer > 0.0f ? 450.0f : 200.0f));
+                ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "[O] Recording: %u frames", m_emu->recording_frame_count.load());
+            }
+
+            if (isCustom) {
+                ImGui::EndMenuBar();
+            }
         }
-
-
-		if (m_emu->screenshot_taken.exchange(false)) {
-			screenshot_toast_timer = 3.0f;
-		}
-
-		if (screenshot_toast_timer > 0.0f) {
-			ImGui::SameLine(ImGui::GetWindowWidth() - 250.0f);
-			ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "[C] Screenshot Saved!");
-			screenshot_toast_timer -= ImGui::GetIO().DeltaTime;
-		}
-
-		if (m_emu->recording_active.load()) {
-			ImGui::SameLine(ImGui::GetWindowWidth() - (screenshot_toast_timer > 0.0f ? 450.0f : 200.0f));
-			ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "[O] Recording: %u frames", m_emu->recording_frame_count.load());
-		}
-
-        ImGui::EndMainMenuBar();
+        
+        if (isCustom) {
+            ImGui::End();
+            ImGui::PopStyleVar(4);
+        } else {
+            ImGui::EndMainMenuBar();
+        }
     }
 }
 
