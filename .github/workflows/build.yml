@@ -306,7 +306,7 @@ jobs:
         retention-days: 1
         archive: false
     - name: upload build failed ios
-      if: failed() && matrix.platform == 'ios'
+      if: failure() && matrix.platform == 'ios'
       uses: actions/upload-artifact@v7
       with:
         path: build/CasioEmuMsvc.ipa
