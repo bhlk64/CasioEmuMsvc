@@ -1472,7 +1472,6 @@ std::string sui_loop() {
 	}
 	if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
 		SDL_Log("IMG_Init failed in StartupUI: %s", IMG_GetError());
-		SDL_Quit();
 		return "";
 	}
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
@@ -1505,8 +1504,6 @@ std::string sui_loop() {
 		SDL_Log("Error creating SDL_Renderer!");
 		if (window2)
 			SDL_DestroyWindow(window2);
-		IMG_Quit();
-		SDL_Quit();
 		return "";
 	}
 	IMGUI_CHECKVERSION();
@@ -1679,7 +1676,5 @@ std::string sui_loop() {
 	else {
 		std::cout << "[Warn] Cannot write to recent.bin.\n";
 	}
-	IMG_Quit();
-	SDL_Quit();
 	return ui.selected_path.string();
 }

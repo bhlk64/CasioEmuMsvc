@@ -55,11 +55,6 @@
 #undef max
 #endif 
 
-// #define SINGLE_WINDOW
-#if !defined(SINGLE_WINDOW) && (defined(__ANDROID__) || defined(IOS))
-#define SINGLE_WINDOW
-#endif
-
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
 
@@ -68,6 +63,11 @@
 #elif TARGET_OS_MAC
     #define MACOS
 #endif
+#endif
+
+// #define SINGLE_WINDOW
+#if !defined(SINGLE_WINDOW) && (defined(__ANDROID__) || defined(IOS))
+#define SINGLE_WINDOW
 #endif
 
 #if defined(_MSC_VER) || (defined(__clang__) && defined(_WIN32))

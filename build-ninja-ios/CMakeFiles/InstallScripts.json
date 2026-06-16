@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ninja-ios/cmake_install.cmake",
+		"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ninja-ios/SDL/cmake_install.cmake",
+		"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ninja-ios/SDL_image/cmake_install.cmake",
+		"/Users/luongtoi/Documents/Projects/CasioEmuMsvc/CasioEmuMsvc/build-ninja-ios/CasioEmuMsvc/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

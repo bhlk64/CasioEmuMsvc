@@ -107,8 +107,29 @@ static bool IsPointInImGuiWindow(float x, float y) {
 	if (io.WantCaptureMouse || ImGui::IsAnyItemActive()) {
 		return true;
 	}
-	if (y < top_bar_size)
-		return true;
+
+	// Calculate top bar and bottom bar boundaries using active viewport
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	if (viewport) {
+		float frameHeight = ImGui::GetFrameHeight();
+		float headerY = viewport->WorkPos.y;
+#if defined(IOS)
+		headerY = std::max(headerY, 55.0f);
+#endif
+		// Top bar Y range: [headerY, headerY + frameHeight + 8.0f]
+		if (y >= headerY && y <= (headerY + frameHeight + 8.0f)) {
+			return true;
+		}
+
+		// Bottom bar (Status bar) Y range
+		float barHeight = frameHeight + 12.0f;
+		float bottomBarY = viewport->Pos.y + viewport->Size.y - barHeight;
+		float bottomBarMaxY = viewport->Pos.y + viewport->Size.y;
+
+		if (y >= bottomBarY && y <= bottomBarMaxY) {
+			return true;
+		}
+	}
 
 	for (int i = g.Windows.Size - 1; i >= 0; --i) {
 		ImGuiWindow* window = g.Windows[i];
@@ -195,6 +216,7 @@ int main(int argc, char* argv[]) {
 		std::filesystem::copy("models", path + "/models", std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing, ec);
 		std::filesystem::copy("locales", path + "/locales", std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing, ec);
 		std::filesystem::copy("License.md", path + "/License.md", std::filesystem::copy_options::skip_existing, ec);
+		std::filesystem::copy("background.jpg", path + "/background.jpg", std::filesystem::copy_options::skip_existing, ec);
 		chdir(path.c_str());
 	}
 #endif
@@ -298,6 +320,12 @@ int main(int argc, char* argv[]) {
 				return;
 			}
 
+			if (translatedEvent.type == SDL_FINGERDOWN || translatedEvent.type == SDL_MOUSEBUTTONDOWN) {
+				if (ImGui::GetCurrentContext() != nullptr) {
+					ImGui::ClearActiveID();
+				}
+			}
+
 			emulator.UIEvent(translatedEvent);
 		},
 
@@ -337,8 +365,10 @@ int main(int argc, char* argv[]) {
 	});
 	// t3.detach(); removed to allow joining
 #ifdef DBG
+	SDL_Log("[casioemu][Debug] DBG is defined, no_dbg = %d", no_dbg);
 	if (!no_dbg) {
 		test_gui(&guiCreated, emulator.window, emulator.renderer);
+		SDL_Log("[casioemu][Debug] test_gui called, guiCreated = %d", guiCreated);
 		background = IMG_Load("background.jpg");
 		bg_txt = 0;
 		if (background) {
@@ -346,6 +376,8 @@ int main(int argc, char* argv[]) {
 			ThemeManager::Instance().ExtractAndApplyAutoTint(bg_txt, renderer);
 		}
 	}
+#else
+	SDL_Log("[casioemu][Debug] DBG is NOT defined!");
 #endif
 #ifdef _WIN32
 	EnableDarkTitleBar(GetSDLWindowHandle(emulator.window));
@@ -396,7 +428,7 @@ int main(int argc, char* argv[]) {
 			SDL_RenderFillRect(renderer, 0);
 #ifdef SINGLE_WINDOW
 			emulator.Frame();
-			gui_loop();
+			if (guiCreated) gui_loop();
 
 #if defined(__ANDROID__) || defined(IOS)
 			touchTranslator.RenderDebug(renderer);
@@ -405,7 +437,7 @@ int main(int argc, char* argv[]) {
 			SDL_RenderPresent(emulator.renderer);
 #else
 			emulator.Frame();
-			if (!no_dbg)
+			if (!no_dbg && guiCreated)
 				gui_loop();
 			SDL_RenderPresent(emulator.renderer);
 #endif
@@ -471,14 +503,27 @@ int main(int argc, char* argv[]) {
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEMOTION:
 #endif
+#if defined(IOS)
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
 		case SDL_TEXTINPUT:
+			if (guiCreated) {
+				ImGui_ImplSDL2_ProcessEvent(&event);
+			}
+			break;
+#endif
 		case SDL_MOUSEWHEEL:
+#if !defined(IOS)
+		case SDL_KEYDOWN:
+		case SDL_KEYUP:
+		case SDL_TEXTINPUT:
+#endif
 #ifdef SINGLE_WINDOW
-			ImGui_ImplSDL2_ProcessEvent(&event);
-			if (ImGui::GetIO().WantCaptureMouse) {
-				break;
+			if (guiCreated) {
+				ImGui_ImplSDL2_ProcessEvent(&event);
+				if (ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard) {
+					break;
+				}
 			}
 #else
 			if (!no_dbg)
