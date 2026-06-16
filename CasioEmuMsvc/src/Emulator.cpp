@@ -445,21 +445,8 @@ namespace casioemu {
 		SDL_Rect dest{};
 		dest.w = interface_background.src.w * uf;
 		dest.h = interface_background.src.h * uf;
-#ifdef IOS
-		float safeTop = 0.0f;
-		
 		dest.x = (w - dest.w) / 2;
 		dest.y = (h - dest.h) / 2;
-		
-		// simple notch tweak (no UIKit)
-		if ((float)w / (float)h > 1.9f)
-		    safeTop = 44.0f;
-		
-		dest.y += safeTop;
-		#else
-		dest.x = (w - dest.w) / 2;
-		dest.y = (h - dest.h) / 2;
-#endif
 		if (!calculator_as_tab.load()) {
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);
