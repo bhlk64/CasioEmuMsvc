@@ -84,13 +84,14 @@ void SaveUIState() {
     f.close();
     std::filesystem::rename(tmp, ui_state_fn);
 }
-
+#ifdef __IOS__
+#include "iOSNativeBridge.h"
+#endif
 static float screenshot_toast_timer = 0.0f;
 void RenderDebuggerToolbar() {
     float safeTop = 0.0f;
     
     #ifdef __IOS__
-    #include "iOSNativeBridge.h"
     safeTop = getSafeTop();
     #endif
     
@@ -102,7 +103,6 @@ void RenderDebuggerToolbar() {
             if (ImGui::TabItemButton("Debugger Windows")) {
                 ImGui::OpenPopup("DebuggerMenuPopup");
             }
-            offset
             ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
             if (ImGui::BeginPopup("DebuggerMenuPopup")) {
                 for (auto* w : windows) {
