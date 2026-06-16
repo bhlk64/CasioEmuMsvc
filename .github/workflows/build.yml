@@ -282,10 +282,21 @@ jobs:
     - name: Create .ipa
       if: matrix.platform == 'ios'
       run: |
-        mkdir build/Payload
-        APP=$(find build -name "*.app" | head -n 1)
-        mv "$APP" build/Payload
-        zip -r build/CasioEmuMsvc.ipa Payload
+        set -e
+
+        mkdir -p build/Payload
+        
+        APP=$(find build -type d -name "*.app" | head -n 1)
+        
+        echo "Found app: $APP"
+        
+        rm -rf build/Payload/*
+        cp -R "$APP" build/Payload/
+        
+        cd build
+        zip -r CasioEmuMsvc.ipa Payload
+        
+        cd ..
         
     - name: upload build ios
       if: always() && matrix.platform == 'ios'
