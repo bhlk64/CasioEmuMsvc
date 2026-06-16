@@ -86,9 +86,6 @@ namespace casioemu {
 			SDL_WINDOWPOS_UNDEFINED,
 			width, height,
 			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
-#ifdef IOS
-			| SDL_WINDOW_ALLOW_HIGHDPI
-#endif
 			);
 		if (!window)
 			PANIC("SDL_CreateWindow failed: %s\n", SDL_GetError());

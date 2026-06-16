@@ -79,6 +79,15 @@
 
 #pragma mark - System Dialogs (File & Folder Pickers)
 
+
+float getSafeTop() {
+    if (@available(iOS 11.0, *)) {
+        UIWindow *window = UIApplication.sharedApplication.windows.firstObject;
+        return window.safeAreaInsets.top;
+    }
+    return 20.0f;
+}
+
 - (void)openFileDialog {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSArray *documentTypes = @[(NSString *)kUTTypeItem]; // Equivalent to setType("/")

@@ -87,12 +87,22 @@ void SaveUIState() {
 
 static float screenshot_toast_timer = 0.0f;
 void RenderDebuggerToolbar() {
+    float safeTop = 0.0f;
+    
+    #ifdef __IOS__
+    #include "iOSNativeBridge.h"
+    safeTop = getSafeTop();
+    #endif
+    
+    ImGui::SetNextWindowPos(ImVec2(0.0f, safeTop));
+    ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 0.0f));
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginTabBar("ToolbarTabs", ImGuiTabBarFlags_FittingPolicyScroll | ImGuiTabBarFlags_NoTooltip)) {
             
             if (ImGui::TabItemButton("Debugger Windows")) {
                 ImGui::OpenPopup("DebuggerMenuPopup");
             }
+            offset
             ImGui::SetNextWindowPos(ImVec2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y));
             if (ImGui::BeginPopup("DebuggerMenuPopup")) {
                 for (auto* w : windows) {
