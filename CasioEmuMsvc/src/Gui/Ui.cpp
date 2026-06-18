@@ -565,30 +565,29 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     ThemeManager::Instance().UpdateUIScale();
 #endif
 
-    RebuildFont();
-    // SetupDefaultTheme();
+	// RebuildFont();
+	// SetupDefaultTheme();
 
     io.IniFilename = "imgui.ini";
     io.WantCaptureKeyboard = true;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-    ImGui_ImplSDLRenderer2_Init(renderer);
-    if (guiCreated)
-        *guiCreated = true;
-    for (int i = 0; i < 5000 && !me_mmu; i++)
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    
-    if (!me_mmu) {
-        SDL_Log("MMU not ready!");
-        return nullptr;
-    }
-    auto label_file = m_emu->GetModelFilePath("labels.txt");
-    if (std::filesystem::exists(label_file))
-        g_labels = parseFile(label_file);
-    else
-        std::cout << "[Warning] labels.txt doesn't exist. You can consider create one for better debugging experiences. Format: address(0x1234),func name(can be quoted)\n";
+	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+	ImGui_ImplSDLRenderer2_Init(renderer);
+
+	ThemeManager::Instance().RequestFontRebuild();
+	ThemeManager::Instance().ProcessFontRebuild();
+
+	if (guiCreated)
+		*guiCreated = true;
+	while (!me_mmu)
+		std::this_thread::sleep_for(std::chrono::microseconds(1));
+	auto label_file = m_emu->GetModelFilePath("labels.txt");
+	if (std::filesystem::exists(label_file))
+		g_labels = parseFile(label_file);
+	else
+		std::cout << "[Warning] labels.txt doesn't exist. You can consider create one for better debugging experiences. Format: address(0x1234),func name(can be quoted)\n";
 
     if (m_emu->hardware_id == casioemu::HW_FX_5800P) {
         windows.push_back(CreateFx5800FileSystem());
