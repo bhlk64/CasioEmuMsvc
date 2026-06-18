@@ -84,7 +84,7 @@ void SaveUIState() {
     f.close();
     std::filesystem::rename(tmp, ui_state_fn);
 }
-#ifdef __IOS__
+#ifdef IOS
 #include "iOSNativeBridge.h"
 #endif
 static float screenshot_toast_timer = 0.0f;
