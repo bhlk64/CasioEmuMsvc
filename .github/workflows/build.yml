@@ -16,14 +16,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: windows
-            platform_arch: x64
-            os: windows-latest
-            name: "Windows-x64"
-          - platform: windows
-            platform_arch: x86
-            os: windows-latest
-            name: "Windows-x86"
+          #- platform: windows
+          #  platform_arch: x64
+          #  os: windows-latest
+          #  name: "Windows-x64"
+          #- platform: windows
+          #  platform_arch: x86
+          #  os: windows-latest
+          #  name: "Windows-x86"
           - platform: android
             os: ubuntu-latest
             name: "Android"

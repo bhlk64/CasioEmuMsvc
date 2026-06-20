@@ -84,6 +84,7 @@ void SaveUIState() {
     f.close();
     std::filesystem::rename(tmp, ui_state_fn);
 }
+
 #ifdef IOS
 #include "iOSNativeBridge.h"
 #endif
