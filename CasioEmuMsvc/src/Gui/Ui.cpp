@@ -99,7 +99,7 @@ void RenderDebuggerToolbar() {
     if (isCustom) {
 #if defined(IOS)
         ImGuiViewport* viewport = ImGui::GetMainViewport();
-        float headerY = viewport->WorkPos.y;
+        float headerY = viewport->WorkPos.y+getSafeTop();
         ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, headerY));
         ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, ImGui::GetFrameHeight() + 8.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0));
