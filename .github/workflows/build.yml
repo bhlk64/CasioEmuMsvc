@@ -46,16 +46,29 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Setup MSVC x86
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
+    
+    - name: Setup MSVC x64
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x64'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: amd64
+    
     - name: Configure CMake
       if: matrix.platform == 'windows'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: cmake -S . -B build -G Ninja -A ${{ matrix.platform_arch == 'x86' && 'Win32' || 'x64' }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_CONFIGURATION }} -DBUILD_EXECUTABLE=ON
+      run: |
+        cmake -S . -B build ^
+          -G Ninja ^
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_CONFIGURATION }} ^
+          -DBUILD_EXECUTABLE=ON
 
-    - name: Build with CMake
+    - name: Build
       if: matrix.platform == 'windows'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: cmake --build build --config ${{ env.BUILD_CONFIGURATION }} --parallel
-
+      run: cmake --build build --parallel
     # - name: Upload PDBs to Sentry
     #   if: matrix.platform == 'windows'
     #   env:
