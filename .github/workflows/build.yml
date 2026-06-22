@@ -16,14 +16,14 @@ jobs:
     strategy:
       matrix:
         include:
-          #- platform: windows
-          #  platform_arch: x64
-          #  os: windows-latest
-          #  name: "Windows-x64"
-          #- platform: windows
-          #  platform_arch: x86
-          #  os: windows-latest
-          #  name: "Windows-x86"
+          - platform: windows
+            platform_arch: x64
+            os: windows-latest
+            name: "Windows-x64"
+          - platform: windows
+            platform_arch: x86
+            os: windows-latest
+            name: "Windows-x86"
           - platform: android
             os: ubuntu-latest
             name: "Android"
@@ -49,7 +49,7 @@ jobs:
     - name: Configure CMake
       if: matrix.platform == 'windows'
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: cmake -S . -B build -A ${{ matrix.platform_arch == 'x86' && 'Win32' || 'x64' }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_CONFIGURATION }} -DBUILD_EXECUTABLE=ON
+      run: cmake -S . -B build -G Ninja -A ${{ matrix.platform_arch == 'x86' && 'Win32' || 'x64' }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_CONFIGURATION }} -DBUILD_EXECUTABLE=ON
 
     - name: Build with CMake
       if: matrix.platform == 'windows'
