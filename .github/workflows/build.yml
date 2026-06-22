@@ -90,7 +90,7 @@ jobs:
       if: matrix.platform == 'windows'
       uses: actions/upload-artifact@v4
       with:
-        name: Release-x64/*
+        name: build-x64/*
         path: Release-x64.zip
         archive: true
     
@@ -98,7 +98,7 @@ jobs:
       if: matrix.platform == 'windows'
       uses: actions/upload-artifact@v4
       with:
-        name: Release-x86/*
+        name: build-x86/*
         path: Release-x86.zip
         archive: true
     
