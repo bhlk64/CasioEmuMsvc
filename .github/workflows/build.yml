@@ -58,17 +58,17 @@ jobs:
       with:
         arch: amd64
     
-    - name: Configure CMake
-      if: matrix.platform == 'windows'
-      run: |
-        cmake -S . -B build ^
-          -G Ninja ^
-          -DCMAKE_BUILD_TYPE=${{ env.BUILD_CONFIGURATION }} ^
-          -DBUILD_EXECUTABLE=ON
-
-    - name: Build
-      if: matrix.platform == 'windows'
-      run: cmake --build build --parallel
+    - name: Configure x64
+      run: cmake -S . -B build-x64 -G Ninja
+    
+    - name: Build x64
+      run: cmake --build build-x64 --parallel
+    
+    - name: Configure x86
+      run: cmake -S . -B build-x86 -G Ninja -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
+    
+    - name: Build x86
+      run: cmake --build build-x86 --parallel
     # - name: Upload PDBs to Sentry
     #   if: matrix.platform == 'windows'
     #   env:
@@ -82,12 +82,20 @@ jobs:
     #         $sentry_cli = "${{ github.workspace }}\CasioEmuMsvc\sentry-cli.exe"
     #         & $sentry_cli debug-files upload -o $env:SENTRY_ORG -p $env:SENTRY_PROJECT .
 
-    - name: Upload ${{ matrix.platform_arch }} Build Artifact
+    - name: Upload x64 Build Artifact
       if: matrix.platform == 'windows'
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v4
       with:
-        name: Release-${{ matrix.platform_arch }}
-        path: build/CasioEmuMsvc/${{ env.BUILD_CONFIGURATION }}
+        name: Release-x64
+        path: build-x64/CasioEmuMsvc/Release
+        if-no-files-found: error
+    
+    - name: Upload x86 Build Artifact
+      if: matrix.platform == 'windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Release-x86
+        path: build-x86/CasioEmuMsvc/Release
         if-no-files-found: error
     
     # ================= MACOS =================
