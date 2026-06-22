@@ -59,15 +59,19 @@ jobs:
         arch: amd64
     
     - name: Configure x64
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x64'
       run: cmake -S . -B build-x64 -G Ninja
     
     - name: Build x64
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x64'
       run: cmake --build build-x64 --parallel
     
     - name: Configure x86
-      run: cmake -S . -B build-x86 -G Ninja -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
+      run: cmake -S . -B build-x86 -G Ninja
     
     - name: Build x86
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
       run: cmake --build build-x86 --parallel
     # - name: Upload PDBs to Sentry
     #   if: matrix.platform == 'windows'
@@ -86,17 +90,17 @@ jobs:
       if: matrix.platform == 'windows'
       uses: actions/upload-artifact@v4
       with:
-        name: Release-x64
-        path: build-x64/CasioEmuMsvc/Release
-        if-no-files-found: error
+        name: Release-x64/*
+        path: Release-x64.zip
+        archive: true
     
     - name: Upload x86 Build Artifact
       if: matrix.platform == 'windows'
       uses: actions/upload-artifact@v4
       with:
-        name: Release-x86
-        path: build-x86/CasioEmuMsvc/Release
-        if-no-files-found: error
+        name: Release-x86/*
+        path: Release-x86.zip
+        archive: true
     
     # ================= MACOS =================
     - name: Install dependencies (macOS)
