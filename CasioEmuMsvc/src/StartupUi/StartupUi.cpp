@@ -1539,6 +1539,7 @@ std::string sui_loop() {
 	std::vector<std::string> languages;
 	int selected_language_index = 0;
 	bool needs_render = true;
+	#include "ThemeManager.h"
 	auto check_zoom_hotkeys = [](const SDL_Event& ev) {
 		if (ev.type == SDL_KEYDOWN) {
 			SDL_Keymod mod = SDL_GetModState();
