@@ -27,6 +27,7 @@
 #include <ostream>
 #include <string>
 #include <thread>
+#include <algorithm>
 #if _WIN32
 #include <Windows.h>
 #include <combaseapi.h>
