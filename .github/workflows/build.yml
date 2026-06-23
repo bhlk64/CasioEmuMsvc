@@ -46,12 +46,6 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Setup MSVC x86
-      if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: x86
-    
     - name: Setup MSVC x64
       if: matrix.platform == 'windows' && matrix.platform_arch == 'x64'
       uses: ilammy/msvc-dev-cmd@v1
@@ -65,14 +59,30 @@ jobs:
     - name: Build x64
       if: matrix.platform == 'windows' && matrix.platform_arch == 'x64'
       run: cmake --build build-x64 --parallel
-    
+
+    - name: Upload x64 Build Artifact
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x64'
+      uses: actions/upload-artifact@v7
+      with:
+        name: build-x64/*
+        path: Release-x64.zip
+        archive: true
+
+
+    - name: Setup MSVC x86
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x86
+
     - name: Configure x86
       if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
       run: cmake -S . -B build-x86 -G Ninja
-    
+
     - name: Build x86
       if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
       run: cmake --build build-x86 --parallel
+
     # - name: Upload PDBs to Sentry
     #   if: matrix.platform == 'windows'
     #   env:
@@ -86,17 +96,9 @@ jobs:
     #         $sentry_cli = "${{ github.workspace }}\CasioEmuMsvc\sentry-cli.exe"
     #         & $sentry_cli debug-files upload -o $env:SENTRY_ORG -p $env:SENTRY_PROJECT .
 
-    - name: Upload x64 Build Artifact
-      if: matrix.platform == 'windows'
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-x64/*
-        path: Release-x64.zip
-        archive: true
-    
     - name: Upload x86 Build Artifact
-      if: matrix.platform == 'windows'
-      uses: actions/upload-artifact@v4
+      if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
+      uses: actions/upload-artifact@v7
       with:
         name: build-x86/*
         path: Release-x86.zip
