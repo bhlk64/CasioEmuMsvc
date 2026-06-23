@@ -1547,10 +1547,10 @@ std::string sui_loop() {
 				float currentScale = tm.GetFontScale();
 				bool handled = false;
 				if (ev.key.keysym.sym == SDLK_EQUALS || ev.key.keysym.sym == SDLK_PLUS || ev.key.keysym.sym == SDLK_KP_PLUS) {
-					currentScale = std::min(currentScale + 0.10f, 3.0f);
+					currentScale = (std::min)(currentScale + 0.10f, 3.0f);
 					handled = true;
 				} else if (ev.key.keysym.sym == SDLK_MINUS || ev.key.keysym.sym == SDLK_KP_MINUS) {
-					currentScale = std::max(currentScale - 0.10f, 0.5f);
+					currentScale = (std::max)(currentScale - 0.10f, 0.5f);
 					handled = true;
 				} else if (ev.key.keysym.sym == SDLK_0 || ev.key.keysym.sym == SDLK_KP_0) {
 					currentScale = 1.0f;
