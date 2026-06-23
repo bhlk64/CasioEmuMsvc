@@ -29,6 +29,8 @@
 #include <shellapi.h>
 #include <shlobj.h>
 #include <shobjidl.h>
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 
 #pragma comment(lib, "ole32.lib")

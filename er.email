@@ -1,0 +1,5140 @@
+[33mcommit 38176871ac2617fc97253d1b6c8ecd76fcf235de[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mstable[m[33m, [m[1;31morigin/stable[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 23 22:18:44 2026 +0700
+
+    fix macro min max when include windows.h
+
+[33mcommit cec5ca531a4c67f2a5e575e9da6493a2eb2e787c[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 23 20:03:35 2026 +0700
+
+    add missing header <algorithm>
+
+[33mcommit 3c0aeb80f3f3f46b4c6d13e3c3f2e4da521b55f7[m
+Merge: 1a2825c eec6264
+Author: bhlk64 <mahoangquyet@gmail.com>
+Date:   Tue Jun 23 19:22:44 2026 +0700
+
+    Merge pull request #3 from tahoangphuc111/stable
+    
+    feat: support retina display & zoom scaling
+
+[33mcommit eec6264a8c9043a4ddf554ad2b19fbdf29b38c1e[m
+Author: tahoangphuc <tahoangphuc111@gmail.com>
+Date:   Tue Jun 23 16:35:40 2026 +0700
+
+    feat: support retina display & zoom scaling
+
+[33mcommit 1a2825cac03f941157c2122795cffd51829c3bf8[m[33m ([m[1;33mtag: [m[1;33mstable-20260623041849-1a2825c[m[33m)[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 23 11:09:42 2026 +0700
+
+    好了
+
+[33mcommit f35e1a0a2ab3ad9e91ea6ad8e70310ee592cac11[m[33m ([m[1;33mtag: [m[1;33mstable-20260622175608-f35e1a0[m[33m)[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 23 00:45:43 2026 +0700
+
+    fix build windows with Ninja
+
+[33mcommit a578559562321ac18fade262329ee691b48baa5a[m[33m ([m[1;33mtag: [m[1;33mstable-20260622053915-a578559[m[33m)[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 22 12:31:09 2026 +0700
+
+    ó
+
+[33mcommit f1aeefa949ca0c90ce65bb48269dfd16c5ab8610[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 22 12:11:12 2026 +0700
+
+    att2
+
+[33mcommit ab9d17d176b42fbc36c69202557ac0c1f0a5dcb3[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 22 12:02:57 2026 +0700
+
+    optimize bừa
+
+[33mcommit 08c79fad652b9665177be8761f8f500f73d038ae[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 22 11:48:10 2026 +0700
+
+    gas gas gas
+
+[33mcommit 73ea67ac0e3b08c975c5142f253840b58b6fe742[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat Jun 20 12:17:08 2026 +0700
+
+    topbar 1
+
+[33mcommit ca27ea37d928a927c0b862f9454e6ff268d01a4d[m[33m ([m[1;33mtag: [m[1;33mstable-20260620045006-ca27ea3[m[33m)[m
+Merge: af6a605 56cc884
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat Jun 20 11:42:56 2026 +0700
+
+    Merge remote-tracking branch 'tambeobeo' into stable
+
+[33mcommit af6a6054765f5d87f4ae3eb0ac604c87ad2507b3[m[33m ([m[1;33mtag: [m[1;33mstable-20260618065340-af6a605[m[33m)[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu Jun 18 13:42:33 2026 +0700
+
+    trying fix delay? single tap broken on mobile
+
+[33mcommit c4c29bc5925688149f7fa688fe1c1691fefff328[m[33m ([m[1;33mtag: [m[1;33mstable-20260618051720-c4c29bc[m[33m)[m
+Merge: bb3514e df6e85d
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu Jun 18 11:57:16 2026 +0700
+
+    Merge upstream
+
+[33mcommit df6e85da5d9817cbeffbf12fc1eae86fb64f99e7[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Jun 17 15:59:10 2026 +0700
+
+    refactor(gui): redesign ThemeManager and fix startup crash
+
+[33mcommit bb3514e4bc175dd8966046d3c7b500762bfb64f3[m[33m ([m[1;33mtag: [m[1;33mstable-20260616235923-bb3514e[m[33m)[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 17 06:47:20 2026 +0700
+
+    end
+
+[33mcommit 071f9019a0874714cbc477c929b645e370762673[m
+Merge: 859556b e63d196
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 17 06:45:53 2026 +0700
+
+    Merge "telecomadm1145/stable" => "bhlk64/stable"
+
+[33mcommit 56cc8844d19e8f309ed5996e1ea873ed41e20a63[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 22:34:56 2026 +0700
+
+    build ios for luongvantam
+
+[33mcommit 0d30d434a7e4c4cef708621e8232a93f8173e699[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Tue Jun 16 22:20:12 2026 +0700
+
+    update
+
+[33mcommit 859556baa04011b839238e60d1b1fc2b5b39a874[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 22:04:07 2026 +0700
+
+    trying luongvantam's Ui.cpp
+
+[33mcommit fdbeef625d47f6ada407d47f63aeefaab860c940[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Tue Jun 16 21:42:10 2026 +0700
+
+    update
+
+[33mcommit 5476997a72b4c09d834782552900684f01757433[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 21:41:08 2026 +0700
+
+    ok sure
+
+[33mcommit 9ee45a6447203b8a62c5348261ec619ff330aaac[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Tue Jun 16 21:36:36 2026 +0700
+
+    update for ios
+
+[33mcommit 405f1ae01289cefe91e9a278d667eab2234b296d[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 21:05:07 2026 +0700
+
+    goback
+
+[33mcommit d75dbcb5e5ea131f254e6707bf5cac6b1185efd1[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 20:28:25 2026 +0700
+
+    wth dpi
+
+[33mcommit 9ce1015bbac36e6c3110a3fc883683aed56315c2[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 19:07:28 2026 +0700
+
+    bruh
+
+[33mcommit a3681dbc603212c319d48b75e2f42793fe4d458f[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 19:00:24 2026 +0700
+
+    idk
+
+[33mcommit 8730f0aaf7d8ae6e7dbf9894daa3ced45b5bcf18[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 18:20:08 2026 +0700
+
+    build voi niem tin
+
+[33mcommit 8bbdac604c94d77a9de5634d5de905ed25d103b3[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 17:52:58 2026 +0700
+
+    build typo <
+
+[33mcommit a34c8a8684a4bec82a4938e387567afc2500497d[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 17:42:06 2026 +0700
+
+    i change place time three bro
+
+[33mcommit 6fc2ff0d66e8d2dec2a59f27ab65d6f3445945c3[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 17:35:14 2026 +0700
+
+    i put nativebridge another place
+
+[33mcommit e56c0396428b59f4631a9822b98963f92c9b8abc[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 17:27:46 2026 +0700
+
+    fix header and blur imgui
+
+[33mcommit 685a120d0c14c2a1d290c7f9b253e4fd3bff2093[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 12:07:19 2026 +0700
+
+    no bundle exxvuteabl3
+
+[33mcommit ed8726fc4c6bc1e6ac5c9e6ff3d289ac2c145447[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 11:52:13 2026 +0700
+
+    fin
+
+[33mcommit d9407c6a7a13beebc2d39ef8207e591975dfcf64[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 11:17:18 2026 +0700
+
+    fix path ipa
+
+[33mcommit f19e5de56e89af4c5a5a820315fc1af2f0d485d7[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 10:53:12 2026 +0700
+
+    ok arrchive
+
+[33mcommit 95b3bf2b15de938dbb7048c0de164e691392f309[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 10:41:03 2026 +0700
+
+    yes name:
+
+[33mcommit b6eac16aa066a723a51757cb2b7fc050e9eb67f1[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 10:29:02 2026 +0700
+
+    finenow
+
+[33mcommit 316ec69520db6338bca93d71a7665307a4ca500e[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 09:54:42 2026 +0700
+
+    bro
+
+[33mcommit 615081cba0dbc03c6b86ae0321191c980b42e4de[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 09:44:30 2026 +0700
+
+    arediusureaboutdat?
+
+[33mcommit 3155c72c345dc9b1f6bee8edc7aa6e11dfb5e99e[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 09:33:09 2026 +0700
+
+    build only Android/macOS/iOS
+
+[33mcommit 2513f89ea89c595a3ffc64b00a5b20200aade3df[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 09:29:44 2026 +0700
+
+    yesyesuploadshjt
+
+[33mcommit 8ff2e566303412693a2069a8df3721fc7220aaf2[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 00:35:39 2026 +0700
+
+    releasejokingwithme?
+
+[33mcommit 83c388873b5638c0b80ea4f369163e3b84a8b2a7[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 00:16:52 2026 +0700
+
+    bro
+
+[33mcommit 53390bb751a8471bbb208fd120a64e47ab336ce6[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Tue Jun 16 00:07:57 2026 +0700
+
+    holyninjasrylastnamecommit
+
+[33mcommit c75cdddf86c6bfd989e93b9a7feef69b703bb86e[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 23:56:10 2026 +0700
+
+    ok 'N'inja sir
+
+[33mcommit 95a2462a5cce9df15f9fa046e3fa96cb38888288[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 23:52:19 2026 +0700
+
+    test
+
+[33mcommit c0a62b7ac7dedcdf54c80ca89f608a6b05ecb3da[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 23:47:02 2026 +0700
+
+    prayforbuildios
+
+[33mcommit e8f7120f8a464a2a88e18c980aeb98dcda2a4b36[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 23:06:20 2026 +0700
+
+    bro sign
+
+[33mcommit b95ec2e3e808a23507ec4ff809b0798bebb852a2[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 22:36:52 2026 +0700
+
+    ok
+
+[33mcommit 73569725b40e0dd9e18fb289c73644828a35e305[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 22:14:44 2026 +0700
+
+    bruh gpt
+
+[33mcommit 7e25782ca953e81225fa44ab29536be0ab70146a[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Mon Jun 15 22:12:22 2026 +0700
+
+    Update Injector.cpp
+
+[33mcommit 9d8bb995f6671b912b51e02c41e9043667e1238a[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 22:02:11 2026 +0700
+
+    bruh chstgpr
+
+[33mcommit bad604673396d6f16730d6eb1c34c8facbfbfbf7[m
+Merge: a863117 1f85016
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Mon Jun 15 21:53:42 2026 +0700
+
+    Merge pull request #1 from luongvantam/master
+    
+    Master
+
+[33mcommit 11533cf2dfc3a1cb9b7ec972982c4399da1679a7[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 21:47:52 2026 +0700
+
+    oh my identity
+
+[33mcommit c0b2b88fc09ae8ccd65897903a130c93ac071176[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 21:36:11 2026 +0700
+
+    da real ipa build:v
+
+[33mcommit f1fa9d875a98dad2d5059fa1151ded2dfd4fbb77[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 19:59:09 2026 +0700
+
+    i forgorupdate
+
+[33mcommit c8d065e94b86c5553a42afce38cb7038955e1645[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 19:46:12 2026 +0700
+
+    idk so let ai coook
+
+[33mcommit c362f4235d0f80d24d519b9edea33afc74715588[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 19:29:46 2026 +0700
+
+    iforgotconflict
+
+[33mcommit 78ff121d4d5f9a831092a016b7b475eab2cf2c11[m
+Merge: 940335d 1f85016
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 19:12:23 2026 +0700
+
+    Respect for luongvantam because build iOS sigmatech
+
+[33mcommit 1f850168afeff98ad8fa8db8f8ca3887e6ce131a[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Mon Jun 15 18:54:26 2026 +0700
+
+    update
+
+[33mcommit fdb1cd01d4ed7e638604de6fd0321486bc8eb452[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Mon Jun 15 18:29:04 2026 +0700
+
+    update
+
+[33mcommit 940335dfd3e86c4df1327ec5951cf1d22f2a65f0[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 17:47:22 2026 +0700
+
+    without executable
+
+[33mcommit bcccecf0af3d2ea8ab90c79df931beab5c4a46c4[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 15:09:29 2026 +0700
+
+    bruhatambeobeo
+
+[33mcommit 86d5d34a407bd0b1f20f664a777acdcdc33a67a4[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 15:03:24 2026 +0700
+
+    build bừa
+
+[33mcommit 881c34bdc24878faac2567997242abb069b036dd[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 14:32:35 2026 +0700
+
+    bro i love link main
+
+[33mcommit 73a93292406b9ff4c0fc68a30d70402a40a6b229[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Mon Jun 15 14:24:03 2026 +0700
+
+    update
+
+[33mcommit 245777c06e77d000d09e10a670f9cf3c47294468[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Mon Jun 15 11:44:15 2026 +0700
+
+    update ui
+
+[33mcommit d6ca347c678539b39771e579f48286b7c3bed0c7[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 09:47:08 2026 +0700
+
+    help
+
+[33mcommit 5568b58c537dffb38a290d438c1b159889b11cc4[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 09:22:14 2026 +0700
+
+    manualentrypoint
+
+[33mcommit 04f1f63d53b8b78c0daaac9c30adcf740bf062a7[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 08:54:30 2026 +0700
+
+    hmmsdl
+
+[33mcommit 7398c88c1c201227e661000cca15bbe94beab3eb[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 08:39:11 2026 +0700
+
+    build
+
+[33mcommit b2cc5d832db811343cf8494c22eca5e27622efb8[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 08:15:52 2026 +0700
+
+    bruh /
+
+[33mcommit 6a6f11b7e678ad350b18a7d5f0a7d44c2b134d4a[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 08:03:29 2026 +0700
+
+    thisis TOUGH
+
+[33mcommit 5600e3d986fef0d33f6c56dc08ae386eebeffba2[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 00:16:19 2026 +0700
+
+    idk
+
+[33mcommit 5fcce4a0d1b4ed3ff7deb9cde78b32620533a2b1[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 15 00:04:13 2026 +0700
+
+    ohmyeye
+
+[33mcommit e63d19661d09a3189194cff3c20bee2af9cadb84[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Mon Jun 15 01:02:43 2026 +0800
+
+    feat: Detect screen size and persist debugger window state (#73)
+    
+    - Added `windowX`, `windowY`, `windowW`, and `windowH` to `ThemeSettings` for state persistence.
+    - Updated `ThemeSettings::Read` and `ThemeSettings::Write` with backward compatibility checks (`stm.peek()`).
+    - Updated `test_gui` to query display boundaries (`SDL_GetDisplayUsableBounds`) and initialize the window size/position, safely clamping them within the visible screen.
+    - Updated `gui_cleanup` to fetch the final window coordinates (`SDL_GetWindowPosition`, `SDL_GetWindowSize`) and save them into `ThemeSettings` before shutdown.
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit 820dd388ac6231cc22e583851b8f272114e28706[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 23:50:36 2026 +0700
+
+    fix2
+
+[33mcommit 03b5a989fd80039e1e535a98a27816c8d9ac8e61[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 23:34:08 2026 +0700
+
+    idkwhatfixing
+
+[33mcommit c9e036632a56ece4ab8eaf6c737e197a57f96367[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 23:17:46 2026 +0700
+
+    yesindents
+
+[33mcommit 7a91d4bb23321da97de4110600c09ec4b9beb518[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 23:15:03 2026 +0700
+
+    okgaybuild ois
+
+[33mcommit 2e52ccaa3138e2985f69b127ae712e5b0c6702cb[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 22:35:05 2026 +0700
+
+    off build ios
+
+[33mcommit 9a94c3d9e4854a30aaa761e7b94d73fe66470886[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 21:12:20 2026 +0700
+
+    upload **2
+
+[33mcommit c1e99200007acdd08a006874175eaf2f1f4c45ba[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 21:05:33 2026 +0700
+
+    upload *
+
+[33mcommit 4371a4fa6518dbff11f9ec3cd3464dc9b67f51c2[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 21:00:26 2026 +0700
+
+    bruhcmon
+
+[33mcommit eda0bc9c91915318e93ead227d968fa32e07f195[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 20:56:50 2026 +0700
+
+    okman
+
+[33mcommit 2f16524157effdc3ea86ff1d5200082cc3a00a02[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 20:48:41 2026 +0700
+
+    edit build.yml
+
+[33mcommit 228b4eed80471207cbdc9470151e827c9d875775[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 20:44:50 2026 +0700
+
+    edit build.yml
+
+[33mcommit 706e17d9b9a9c66d502d4ec381e27509f463acf7[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 20:29:42 2026 +0700
+
+    bruh
+
+[33mcommit 8a6c678e49bda1a971c169801175ec8aeeebabf7[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 16:35:06 2026 +0700
+
+    i no include neeeded lib
+
+[33mcommit d182b3b0e745eb269ac231c663e420084be62a17[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 16:29:29 2026 +0700
+
+    remove screenrecord from ios
+
+[33mcommit 2c71177177ead5c65f416160c1c6810362ded17e[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 16:23:09 2026 +0700
+
+    screen again
+
+[33mcommit 86113c4e02194b8b5c2816a54d880ebf549db8e2[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 16:17:07 2026 +0700
+
+    fixscreen
+
+[33mcommit b2816ee6443dcd9adce650bd7e8f01e967a0c651[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 15:56:28 2026 +0700
+
+    ok.mm
+
+[33mcommit ceb306681e38aefbf259270206410c95c5d26c53[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 15:50:44 2026 +0700
+
+    ohmystupidcmake
+
+[33mcommit 78c666cee70f15c5bf55ed6f24667ec25110e1e9[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 15:46:11 2026 +0700
+
+    holy ios
+
+[33mcommit 891db7ead6cf2be1ac8eab4dcca53913a59c02c0[m
+Merge: a8f9f5b 663b80a
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 15:12:08 2026 +0700
+
+    Merge tambeobeo/master UI and ASMjit fix
+
+[33mcommit 663b80ae56f8e4e2e6b919c78d79d85ff737da37[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 15:11:28 2026 +0700
+
+    update
+
+[33mcommit a8f9f5b453ab58c3de4b12f0fda53bbea18d3b9f[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 14:55:44 2026 +0700
+
+    iOS build/yes workflow syntax
+
+[33mcommit d8ab4dab12aebb62ec722c4e0d23159b07c1aa8a[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 14:45:40 2026 +0700
+
+    iOS build
+
+[33mcommit 1ffb916a14dd40a58f093c1494089cf325c33225[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 14:38:31 2026 +0700
+
+    update
+
+[33mcommit d159e478ce96fa659418c4f7c2fd13982b723838[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 14:14:42 2026 +0700
+
+    update
+
+[33mcommit 30136568e60a48c03e4904d19dd28c9756059bae[m
+Merge: 09c13a7 fc23b54
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 14:11:02 2026 +0700
+
+    Merge remote-tracking branch 'tambeobeo/master' into stable
+
+[33mcommit fc23b54c3effae8a346be7e6971d95b064582b2b[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 14:08:54 2026 +0700
+
+    update
+
+[33mcommit 09c13a7c00b82ee1d41c7b136f40a68b5a145e53[m
+Merge: 87a82d5 c5d8bf2
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 13:56:04 2026 +0700
+
+    Merge remote-tracking branch 'tambeobeo/master' into stable
+
+[33mcommit 87a82d5112c7c9e07ec37ca35c5d3dec89afa27b[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 13:55:49 2026 +0700
+
+    iforgot tocommit
+
+[33mcommit aa1931bb8fab3f388458fe4ca844a9b0c9aa0dbe[m
+Merge: ed060ea cab1c69
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 13:53:28 2026 +0700
+
+    Merge remote-tracking branch 'origin/master' into stable
+
+[33mcommit c5d8bf20e5552fdeffa2ba382e95ed0d37065aa5[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 13:49:26 2026 +0700
+
+    update ios
+
+[33mcommit 77b1c25401b5054eb6f9f31890de45ea1167aef7[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 13:48:58 2026 +0700
+
+    update ios
+
+[33mcommit ae09ee71b2ce1ec18a0d3fe017631055ce646152[m
+Merge: bc2d9a6 ed060ea
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 13:07:47 2026 +0700
+
+    Merge upstream/stable
+
+[33mcommit bc2d9a6b2bd09a7fc8336050b7879887ceaeb870[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 13:02:14 2026 +0700
+
+    update
+
+[33mcommit ed060ea979a105cfd771e6e259700a57349c643a[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 00:32:55 2026 +0700
+
+    oknow Ui.cpp
+
+[33mcommit c3e4bd1338619bf6cad5aa847c52934cacc87c06[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 00:27:25 2026 +0700
+
+    ohmyconditions
+
+[33mcommit 1a10fc1eff9888af254ece6caf96675d5e2350cf[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 00:13:25 2026 +0700
+
+    ohmyblindness
+
+[33mcommit a8631177c1d23c0b4752f6720bf1b0c0e03df3d1[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 00:10:32 2026 +0700
+
+    Delete .github/workflows/cmake-multi-platform.yml
+
+[33mcommit 8ca3a5934f5509abdbe748637665780759170140[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sun Jun 14 00:08:10 2026 +0700
+
+    Create cmake-multi-platform.yml
+
+[33mcommit 08689aacd8fe889fd2f18e0838bb4a3a2eb35f4b[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun Jun 14 00:03:56 2026 +0700
+
+    ok ifdef
+
+[33mcommit 41dedd79ef4f56550f9091c61a8ef609af91f6a9[m
+Merge: 701785c c36b032
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat Jun 13 23:23:52 2026 +0700
+
+    mergeandreadyforiosbuild
+
+[33mcommit cab1c692003fe5500335be9101d5db2c5f66e8b1[m
+Author: luongvantam <luongtammc11@gmail.com>
+Date:   Sat Jun 13 20:58:41 2026 +0700
+
+    update by taam
+
+[33mcommit 701785c745f75fea5c77491afa5300af791aba79[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat Jun 13 12:38:57 2026 +0700
+
+    merge3
+
+[33mcommit c36b032f5c699967fd5bf433083eb8ee18689b69[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Jun 13 10:47:18 2026 +0800
+
+    Enhance notification handling for emulation status
+
+[33mcommit fc6b1d1fa15167512f127e4bdc214203f84c29de[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat Jun 13 09:00:10 2026 +0700
+
+    merge2
+
+[33mcommit c85138419269c4ad6458ba763eee23c92c5d626f[m
+Merge: 7b4dbf4 941c958
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat Jun 13 01:59:29 2026 +0700
+
+    sync
+
+[33mcommit 941c958e8e15a0b4abbb4108fd84dd7160e1b74f[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sat Jun 13 01:10:07 2026 +0700
+
+    feat(DiscordRPC): update
+
+[33mcommit df63ea36036032c0a0df9e0cad60305fe377bb3d[m
+Author: CalcWorld <119807873+CalcWorld@users.noreply.github.com>
+Date:   Thu Jun 11 23:55:46 2026 +0800
+
+    Port web core (#72)
+    
+    * Port CasioEmu core to web
+    
+    * Remove unused web alpha screen API
+    
+    * Rename web core init exports
+    
+    * Disable keyboard bindings for web core
+    
+    * Rom
+    
+    * chore
+
+[33mcommit 7b4dbf4c08c724f9ab0848d15c09fb7dae8c4860[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 16:39:28 2026 +0700
+
+    bro init
+
+[33mcommit 8ca56feae663f687aaa00af35d707faccf42bbbe[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 16:34:32 2026 +0700
+
+    att2
+
+[33mcommit 7603dcd2cd03b0d34985cc7dbd1081dd4dc10bce[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 16:22:57 2026 +0700
+
+    no auto ui?
+
+[33mcommit f0a6bff5114e47799829c46c3d05b2983a6a7913[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 15:55:36 2026 +0700
+
+    fix size/save ui
+
+[33mcommit bff9677c6c983e20c03d80c3450aae0e49952fcb[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 09:58:39 2026 +0700
+
+    ok screen ifelse
+
+[33mcommit fa2fae4f8081d59b83c15c8f8b6263674dec6ec8[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 09:36:41 2026 +0700
+
+    cmakeelseif
+
+[33mcommit 6b15ce25bc491760089b8b5158c84d06ee3fccce[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 09:24:33 2026 +0700
+
+    Cmake is hadr
+
+[33mcommit f025f3b4b8de2460583936a239dea5d7f54fd568[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 09:07:51 2026 +0700
+
+    ohmysubdomule
+
+[33mcommit 6ebdb9c8ab4c1d234202e71c9d1cf7348e73f84f[m
+Merge: 04056f0 426ad45
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 10 00:20:56 2026 +0700
+
+    sync
+
+[33mcommit 426ad45eb19d32bd9532f1d672e5baacd3dbb65c[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Tue Jun 9 15:34:06 2026 +0700
+
+    fix: move asmjit back to the submodule (latest commit), update the github actions, change the cmake version for android
+
+[33mcommit b9a23fa7edf2b69fd53ea7e010f3591408557e74[m
+Merge: 14077ca 2d12258
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Tue Jun 9 11:32:52 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 14077ca175a6a26eaae710a8e9fafd064468f590[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Tue Jun 9 11:32:44 2026 +0800
+
+    feat: web
+
+[33mcommit 04056f07080cf11f2b25472b01f9d3e9a675a72d[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat Jun 6 23:13:19 2026 +0700
+
+    nah
+
+[33mcommit 2d122584c2f8cd628c8cd933b7c1f30b3e56a30d[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Thu Jun 4 00:06:42 2026 +0800
+
+    Fix CI build errors by updating GitHub action versions and fixing format security warning (#71)
+    
+    * Update outdated GitHub Action versions (v6 -> v4, v7 -> v4, etc.) in .github/workflows/build.yml
+    * Fix `-Wformat-security` warning in CasioEmuMsvc/Gui/Ui.cpp by passing localized string as a format argument to ImGui::TextDisabled
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit 53a3b580887a8d2ce179e2d48509a33cf19577fc[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 3 11:25:25 2026 +0700
+
+    vibe build-macos and build all supported
+
+[33mcommit 98d4c19bb633b106b8967cba8f7db0e6c762625b[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 3 10:55:15 2026 +0700
+
+    build all
+
+[33mcommit 9350d58ed816c739999ef9a616e1fdf8e3dc4d6c[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 3 10:37:17 2026 +0700
+
+    sync3
+
+[33mcommit b87bfdb7104f0bb99e78dd9f218994e283250e20[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 3 10:25:11 2026 +0700
+
+    sync2
+
+[33mcommit 3957ff23a2977bee6782c25739e8f04655a07ffb[m
+Merge: 9920fad 4e8c482
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Wed Jun 3 10:14:46 2026 +0700
+
+    sync
+
+[33mcommit 4e8c48223aef676a9ec5071ae5deb8f67c44e925[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Wed Jun 3 07:59:20 2026 +0800
+
+    ui
+
+[33mcommit b024b7e303d35a7980046aa614c615a76e1e4fb5[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Wed Jun 3 07:28:05 2026 +0800
+
+    chore: UI/UX improvement
+
+[33mcommit abc0550a9588f6130649b8281081653717aae254[m
+Merge: ada71e0 3eeae38
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Tue Jun 2 21:41:18 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit ada71e0b76510cc1e4718237722de1a71de4aba5[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Tue Jun 2 21:41:08 2026 +0800
+
+    feat: 更强的加密逻辑
+    
+    在 `RomPackage.h` 中：
+    - 引入 `crypto` 命名空间，新增 SHA256、HMAC-SHA256、PBKDF2 和 ChaCha20 加密功能。
+    - 为 `RomPackage` 类添加加密相关成员变量和方法。
+    - 重构 `Encrypt` 和 `Decrypt` 方法，支持加密版本 2，增强安全性。
+    - 删除旧的 XOR 加密逻辑，增加 HMAC 验证和异常处理。
+
+[33mcommit 9920fad34251c057afdbc64a4682fb4f75865a69[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 1 09:31:44 2026 +0700
+
+    ok var
+
+[33mcommit 368a04542f757998a7f0b35b59c211bee2c9c31e[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 1 09:10:47 2026 +0700
+
+    bruh _
+
+[33mcommit 770f755a5c85316dcd63b099a893fe72a4933cd9[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 1 09:01:17 2026 +0700
+
+    att2
+
+[33mcommit 98bc3f15cb51fc5ba43fbd6abb7f6135b87bf697[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 1 08:51:14 2026 +0700
+
+    fix scrolling outside or any window focus on all scrolling
+
+[33mcommit 6a6be31ac4df0dbf96d4eb3bc44b752172cde791[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 1 08:26:44 2026 +0700
+
+    fix scrolling on multiple window when scrolling on one window by using unique id
+
+[33mcommit b04c82cff0cdf7edad367ec0b440e061c19ab245[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 1 08:11:27 2026 +0700
+
+    att3
+
+[33mcommit 4313d2e494e5f1019b3bd6948cf03e6fa8136dff[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 1 07:53:34 2026 +0700
+
+    att2
+
+[33mcommit 12cd85a8d75aca01b6cad594f47169cc81824140[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Mon Jun 1 07:39:05 2026 +0700
+
+    fixing old scroll hex.hpp drag velocity fail when get out of window
+
+[33mcommit 0c668aeee18e2d19646c8b4828cd7cb3888a0bf0[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 31 22:25:52 2026 +0700
+
+    disable testbuild
+
+[33mcommit eb2e37db20c0fc3ed3cc5259b3e7b0e124b6567a[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 31 20:52:21 2026 +0700
+
+    i understand it now. ~ImVec4 is just modifing Color through ThemeManager.
+
+[33mcommit b07b57836b0dc6731d3006d9bd4296e0cc6ef9f3[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 31 20:09:58 2026 +0700
+
+    oh damn i forgot to save the file
+
+[33mcommit a6b25dd7c48dfb0594c92083abb3a14bc1b58a53[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 31 17:03:00 2026 +0700
+
+    fix crash on macos when open the seconds time caused by copy resources to its foldr
+
+[33mcommit 4a8d389a13679d5862668ea796bbec0c5c2db0d7[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 31 09:31:58 2026 +0700
+
+    hmm copy resources to ~/CasioEmuMsvc/
+
+[33mcommit d7a285a00f77167e5dd1623451b044eee70ad65c[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 31 09:05:37 2026 +0700
+
+    macddbug
+
+[33mcommit 6a9252b3c738159f13e819352e008ed00caf70eb[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 31 08:55:54 2026 +0700
+
+    hmm
+
+[33mcommit eb6a207dc47bce03b7e55cfd92a5333c9eb9b70f[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 20:22:19 2026 +0700
+
+    da scrolling
+
+[33mcommit 1625fa4424b81fea84bcc3b226f31ca85de722c4[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 15:41:20 2026 +0700
+
+    ohno
+
+[33mcommit 63632ff14a27b4fe57b5631bd9a6e008f35d164c[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 15:30:37 2026 +0700
+
+    oh my include
+
+[33mcommit 97e43f893393ff181ae3c330fe1fbd03506ca2da[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 15:21:50 2026 +0700
+
+    fix alot, its sysdialog macos, macos gui things ratio diddy, x button no save gui left
+
+[33mcommit 350b15dc558952ac98fd46911a97f167a82a5bd1[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 12:48:04 2026 +0700
+
+    ?
+
+[33mcommit e3e7a6c27e918dcf7389fab18ce709c88b253593[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 12:25:38 2026 +0700
+
+    rmv viewport thing
+
+[33mcommit 246c2d5ee3100b9b1db470e3170d2c89640be987[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 11:52:44 2026 +0700
+
+    locales,...
+
+[33mcommit bf68cba6e43379c44940fefb74a4ef85e3eeec3b[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 11:21:44 2026 +0700
+
+    nolimit
+
+[33mcommit f909f69bad88c812ef26d35b1f4736a6375b6656[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 11:17:16 2026 +0700
+
+    wow very replace
+
+[33mcommit 09b36dda46bfb617bb70959a22e02f617e93e40d[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 11:12:09 2026 +0700
+
+    ok
+
+[33mcommit f2dc21318044658dc7f301e1fb9627007f0c39b4[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 10:18:45 2026 +0700
+
+    fix randomly
+
+[33mcommit c18f4c1d76192e4b57f31c4e86c880a6e86884de[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 08:35:46 2026 +0700
+
+    fix path2
+
+[33mcommit 368c273823a18957ce6f2c07a782c97fe012484d[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 30 00:01:43 2026 +0700
+
+    fixpath
+
+[33mcommit a6cb9cfc84e715222c04a2dc68872859ffb2c118[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Fri May 29 23:56:20 2026 +0700
+
+    chdir for macOS from ~ to ~/Users/CasioEmuMsvc, pls move file manually if installed before
+
+[33mcommit e892bdaca05ee269102435687188f1a723632496[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Fri May 29 23:39:50 2026 +0700
+
+    keyboardropcompilerfix
+
+[33mcommit dcd51af9d5edc57408d261b83c0aa57ca48f2cbc[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Fri May 29 23:19:28 2026 +0700
+
+    fintry
+
+[33mcommit d29de1e6a3eee8753fb870903dd3287d7780b475[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Fri May 29 09:27:10 2026 +0700
+
+    very small change
+
+[33mcommit 1df85f808c95e39532bbce786bec0fb665b517be[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Fri May 29 09:17:08 2026 +0700
+
+    att6
+
+[33mcommit 4e9203d8b59d218d0e830393d4b80a992086c86c[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Fri May 29 09:01:48 2026 +0700
+
+    pray for att6
+
+[33mcommit 300179d9c70be0d851e021c63307e22ddfcd5dc0[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu May 28 23:05:11 2026 +0700
+
+    att5
+
+[33mcommit 1085a3826eafa4476eb18ae5d3afbdfd9aaf9eec[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu May 28 21:54:46 2026 +0700
+
+    glmyes
+
+[33mcommit ea29e5059bbe36d00f49e3e955fdb493c65b5bfa[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu May 28 21:17:00 2026 +0700
+
+    att4
+
+[33mcommit e75875f5baa2578bc98bc4631b7a664056e80418[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu May 28 20:14:47 2026 +0700
+
+    att3
+
+[33mcommit 8df2431aa46425131da5adfb4bffe1a86d871821[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu May 28 19:59:17 2026 +0700
+
+    att2
+
+[33mcommit 8ec495f5a45575b32dc301927ef3751467d30827[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu May 28 14:42:33 2026 +0700
+
+    custom compiler.h
+
+[33mcommit 4ad3a5e83b918d2d5822133e6929ee72139a18ca[m
+Author: bhlk64 <hoangthivang1974pl@gmail.com>
+Date:   Thu May 28 13:50:17 2026 +0700
+
+    uhm ui patch
+
+[33mcommit bb47b6b3e4a4163f63bddc31d2bd00a801537293[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon May 25 13:36:42 2026 +0700
+
+    pray
+
+[33mcommit ffcb4a6406ad3bb01e368d5b52cccabec0d69a86[m
+Merge: 41c0b5d 3eeae38
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon May 25 13:04:52 2026 +0700
+
+    bro pls fix
+
+[33mcommit 3eeae38e9d26845347cb413266c32e30431fc8fe[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun May 24 14:27:46 2026 +0800
+
+    Fix: Delay keyboard release by 25ms using SDL Timer (#58)
+    
+    Modified `CasioEmuMsvc/Peripheral/Keyboard.cpp` to ensure a key press
+    is visually and logically held for at least 25ms. Uses `SDL_AddTimer`
+    with a direct callback to defer the release action if the physical key
+    was pressed for less than 25ms.
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit 41c0b5de56d84f9fc533d5f6c64f826e664953a2[m
+Merge: 6cc163d 2696688
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon May 18 10:51:03 2026 +0700
+
+    Merge remote-tracking branch 'upstream' into stable
+
+[33mcommit 2696688748b228d1b3e04982a7b1a8b9cfc5cf49[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun May 17 16:41:51 2026 +0800
+
+    🛡️ Sentinel: Fix Path Traversal (Zip Slip) in RomPackage.h (#53)
+    
+    Added an `isPathSafe` validator to `RomPackage::ExtractTo` to prevent paths containing `..` or absolute paths from being used during archive extraction. This prevents a classic Zip Slip vulnerability where a maliciously crafted package could write files outside the intended destination directory.
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit b9846fc78e95a1c80d33dac4a5e6b15cda2fc58c[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun May 17 12:56:39 2026 +0800
+
+    fix: raisemaskable
+
+[33mcommit 595a4696a58802b68e819d3a7b5744e5be7144bf[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun May 17 02:10:00 2026 +0800
+
+    ui: little tweak
+
+[33mcommit dfb5b0d507bfcfcc21edf25e3bb4a4e144a45b70[m
+Merge: d398bbc a9c7235
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun May 17 01:43:04 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit d398bbc2eec5aa67e05f26432948c3b8aafb9bb6[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun May 17 01:42:56 2026 +0800
+
+    temporary patch: cpu&mmu
+    
+    android long click fix
+
+[33mcommit a9c723567c4d1ade785e82af53c518068676f4b8[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri May 15 23:34:42 2026 +0800
+
+    🛡️ Sentinel: [CRITICAL] Fix command injection in SysDialog.cpp (#40)
+    
+    This commit fixes a critical command injection vulnerability in the `SystemDialogs::SaveFileDialog` method. Previously, the user-provided `preferred_name` was directly concatenated into the shell commands for `zenity` and `kdialog`. Now, `preferred_name` is safely escaped using a new `escape_shell_arg` function before being used.
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit 9b1b846e2434705a5d17888b32af0cf9905d9a97[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Wed May 6 01:43:34 2026 +0800
+
+    Avoid std::string allocations in Localization lookup (#38)
+    
+    This commit eliminates implicit `std::string` heap allocations in the
+    `Localization::Get()` and `Localization::GetCStr()` methods by defining a
+    transparent `StringHash` struct with `is_transparent = void`. This enables C++20
+    heterogeneous lookup on `std::unordered_map`, avoiding costly allocations when
+    looking up string constants. This lookup occurs heavily during the ImGui UI
+    render loop through the `_lc` operator.
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit 6cc163de6a35ac284de2212438f7f8e9e77d7fb7[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 3 18:14:29 2026 +0700
+
+    oh my .plist
+
+[33mcommit c8ae4462f9d7ba161ed2396470b4dc88349dcbde[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sun May 3 17:52:22 2026 +0700
+
+    Build macOS 11.0
+
+[33mcommit c6c828eac992650c1cbdc4b43200c91d1f7b6d6e[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 15:04:27 2026 +0700
+
+    fix code tab display nothing
+
+[33mcommit 1255f638fb0ec776cd21987605157952015a52ab[m
+Author: bhlk64 <150582425+bhlk64@users.noreply.github.com>
+Date:   Sat May 2 14:47:36 2026 +0700
+
+    Fix: CodeViewer window rendering issue with proper child height calculation
+
+[33mcommit c84eb2e740385575cd1e879cc0e2193264f7ed0f[m
+Author: bhlk64 <150582425+bhlk64@users.noreply.github.com>
+Date:   Sat May 2 14:43:33 2026 +0700
+
+    Fix: Improve ScreenMirror rendering by tracking window dimensions and optimizing display rect updates
+
+[33mcommit fc0cb7f367ceb21af7b2456ca6ef64b5a482c2eb[m
+Merge: def308c e53571e
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 14:03:12 2026 +0700
+
+    sync2
+
+[33mcommit def308c9ceb2cadcd8ffbe0651ec9f1333d890a3[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 13:46:16 2026 +0700
+
+    sync
+
+[33mcommit e53571ea3f0e61764999405f4a8fcb5cecbc71de[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 11:46:13 2026 +0800
+
+    w
+
+[33mcommit 5ecf0e1a6ff9f1831bc542adff49a4b08dba1205[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 11:44:53 2026 +0800
+
+    Fix 2
+
+[33mcommit eea39cbcaeba5f7b72edc1b0ecae3b8d81669f71[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 10:24:06 2026 +0800
+
+    w
+
+[33mcommit fe5750828ec72ff54f49a91492ec0ce4a2ab6e49[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 09:09:31 2026 +0700
+
+    build less, delete EOF, fix bugs
+
+[33mcommit 58af7522ba110490ea02f4cd5e291d463b4b2c5f[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 09:01:36 2026 +0700
+
+    try fix touch not working on Android
+
+[33mcommit 4c7d1b5017187524263433a76e7d149d206fab7b[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 08:26:35 2026 +0700
+
+    idk wat im trying to do
+
+[33mcommit 46e049cc1994c8139b3be30311b52bfe647d3960[m
+Merge: 0d65cd5 3e0e8bf
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 08:21:32 2026 +0700
+
+    Merge remote-tracking branch 'upstream' into stable
+
+[33mcommit 0d65cd5d3cfc245a113024a7e32c4811f01ff386[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 08:04:57 2026 +0700
+
+    oh its me fix conflict wrong
+
+[33mcommit 9f07e3e1d1884be83a829f0c2d84631c16c9beea[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 08:04:39 2026 +0700
+
+    oh its me fix conflict wrong
+
+[33mcommit f1435baef7d6c75e35718a38e149e99aeb2162c6[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Sat May 2 07:52:09 2026 +0700
+
+    gpt said in,out thing broke include
+
+[33mcommit 3e0e8bf3e87db667688269d5b8cff5b0cfe3e2bb[m
+Merge: 4a79d31 7f93a6d
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 02:52:48 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 4a79d31ab985aa1ed83a2bef8bd5b13918f645a6[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 02:52:39 2026 +0800
+
+    ?
+
+[33mcommit 7f93a6d1c2d28861914bd0838adf2dccea7f3e63[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 02:45:14 2026 +0800
+
+    const
+
+[33mcommit 294f58373d5e335ebae71f07a5d611ad5545ec25[m
+Merge: 4adaec0 c0f52fd
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 02:34:07 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 4adaec01efc519c418523ad407c27ed48ac65d6f[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 02:33:18 2026 +0800
+
+    fix
+
+[33mcommit c0f52fd2a8512043adc59a3330fd01b4982d43e2[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat May 2 02:31:34 2026 +0800
+
+    Fix crash when raising invalid maskable interrupt in HwController (#36)
+    
+    This change modifies `CasioEmuMsvc/Gui/HwController.cpp` to validate the interrupt index before calling `m_emu->chipset.RaiseMaskable(irq)`.
+    
+    - Initializes `irq` to 5 (the lowest valid maskable interrupt index) instead of 0.
+    - Adds a bounds check to ensure `irq` is between 5 and 63 (inclusive of 5, exclusive of 64).
+    
+    This prevents the application from hitting the `PANIC` macro and crashing with `EXCEPTION_BREAKPOINT` when the user triggers an interrupt with an invalid index via the debug UI.
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit 6c521e0a8f25a20173bd5d6af65abe3401c597fb[m
+Merge: 3799d8d 0512caf
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 02:29:31 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 3799d8d9fa59682ab0bf65f6308b073588514218[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 02:29:25 2026 +0800
+
+    touch
+
+[33mcommit 14d2fc0c17d657a3ef2a5fcf6f25b3e07c2e7742[m
+Merge: ded39a9 0512caf
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Fri May 1 23:53:38 2026 +0700
+
+    build all + test build
+
+[33mcommit 0512caf81c93c3a33b9afce484e46cb65e1e3b3b[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat May 2 00:28:09 2026 +0800
+
+    feat(android): Add background emulation notifications and timeout (#35)
+    
+    * Add POST_NOTIFICATIONS permission to AndroidManifest.xml for Android 13+.
+    * In `Game.java`, create an "emu_channel" notification channel in `onCreate`.
+    * Override `onPause` to display an ongoing background notification and post a 5-minute delayed `Runnable` via a `Handler`.
+    * In `onResume`, cancel the background notification and remove the timeout callback.
+    * If the timeout is reached while in the background, display a "Emulation Stopped" notification and exit the application cleanly.
+    * Request POST_NOTIFICATIONS permission dynamically on `onResume` for Android 13+ devices.
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit 2fb947a8438ed682e6f5612ce5a31b9780e450aa[m
+Merge: 3530e79 7a8d604
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 00:08:49 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 3530e799c4f14ee92a2dba665e291f9a0248f281[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat May 2 00:08:19 2026 +0800
+
+    ?
+
+[33mcommit ded39a9fca71b91c0e1b91dda14ce2ca1af5ef12[m
+Merge: 6649606 7a8d604
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Fri May 1 20:29:26 2026 +0700
+
+    Merge remote-tracking branch 'upstream' into stable
+
+[33mcommit 7a8d604a86339ffad55df198894dcd95fd560630[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri May 1 20:26:51 2026 +0800
+
+    Delete .github/workflows/pr-check.yml
+
+[33mcommit 66496063b26209d5078d625d00b11b9066df1596[m
+Merge: be605bc 59de31f
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 20:20:49 2026 +0700
+
+    sync
+
+[33mcommit 59de31fa7791eeab71ac8899454488f9864edbbd[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Thu Apr 30 18:24:08 2026 +0800
+
+    Fix error message display in RopCompilerUI
+
+[33mcommit 34b3552cd38ebe77632fead5f955b96101ea9f7c[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Thu Apr 30 18:17:33 2026 +0800
+
+    Add Rop directory to CMakeLists
+
+[33mcommit 72552bd67873f9bd1bcc2d2acee8b8fec212d1bc[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Apr 30 17:49:49 2026 +0800
+
+    fix
+
+[33mcommit ff11cef66288ca5e7ee278b0c4b0baeaf14f2468[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Apr 30 17:48:17 2026 +0800
+
+    Rop Compiler
+
+[33mcommit 2d2ea06eeb1704bcbc0e5c2734258df25f8506b9[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Apr 30 14:56:17 2026 +0800
+
+    h
+
+[33mcommit 3faab54cd868694195035259d65984efde617624[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Apr 30 14:56:13 2026 +0800
+
+    w
+
+[33mcommit be605bc6faafdc9f5b7ec3e27c11b5eff24905d1[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 13:20:15 2026 +0700
+
+    oh my day
+
+[33mcommit 1f9571501fea29fef32ad1e8d9885adb1d9fbdd6[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 13:18:41 2026 +0700
+
+    holy moly renderpresent
+
+[33mcommit e29e4a209a857fb83742c0503186689a625a1ae6[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 12:51:47 2026 +0700
+
+    rangesfix4
+
+[33mcommit 19d329c97ecd2804850d0009068833d8cb624c06[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 12:41:16 2026 +0700
+
+    fix range 3
+
+[33mcommit 83100081af1218b5ac5f36cbfdd9999aa7999daa[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 12:38:57 2026 +0700
+
+    fix ranges 2
+
+[33mcommit d37c404b2d110c93ab3c0296dc442b14b03b9177[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 11:56:44 2026 +0700
+
+    fix ranges fonts
+
+[33mcommit 0461fdfbded9b92bc516f339902aed2fe09795bc[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 11:27:04 2026 +0700
+
+    the dark side of copy paste
+
+[33mcommit 361e7e229b9815d34e01de5a53f2f89fe84659f1[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 11:19:57 2026 +0700
+
+    sanliuqi
+
+[33mcommit 7b1d222c20aed96178e541d8a4ba2f2a1c566848[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 11:12:23 2026 +0700
+
+    custom fonts
+
+[33mcommit dd35d9f58ac43c38aec65369b33fc6b82d0018c1[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 09:45:58 2026 +0700
+
+    fix index
+
+[33mcommit 429a1d348d482466dca00daff7eab0fb1b9541cd[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 09:44:24 2026 +0700
+
+    common newbie c++ mistake
+
+[33mcommit 5817b1a65b4e12856a9180dd8e572e5d0d77f3ad[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 09:39:00 2026 +0700
+
+    i accepted the fate.
+
+[33mcommit e92bc46cd9053df55a6885b4488b5006822a268b[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 08:59:24 2026 +0700
+
+    test
+
+[33mcommit 5c6245dcfa9fc347d49454be276390c9a5d78853[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 08:46:48 2026 +0700
+
+    ?
+
+[33mcommit 067e96417615c3794d2b3d63f9fc74348d71a347[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 08:29:44 2026 +0700
+
+    fix open visible thing
+
+[33mcommit 0790fbe86d807ef8e39b52f0d31fd6d379d48b27[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 08:17:19 2026 +0700
+
+    log
+
+[33mcommit 3fd370174fa6b8e65bed5844fa23589a8edacc33[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 08:11:37 2026 +0700
+
+    logs
+
+[33mcommit 5cad12ebb0edade849982a5222a1928df7c87d6b[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 07:58:27 2026 +0700
+
+    brr skibidi cleanup
+
+[33mcommit c1a6be42434d84dd9afa47ccee1421970321667c[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 07:46:58 2026 +0700
+
+    wthisdisbug
+
+[33mcommit e7d8dddff5a24016638dd817072f3b07527162d6[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 07:27:47 2026 +0700
+
+    ok
+
+[33mcommit 628e7de5f7237e5c98718c2cecb9a7e9c5c6d46d[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 07:10:54 2026 +0700
+
+    include
+
+[33mcommit ddf8e1b6537df8e6b2473f2306eb56a18ef2fa97[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 07:05:42 2026 +0700
+
+    pray
+
+[33mcommit f179b43c06141194277116db49eb8987056287a9[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 06:10:15 2026 +0700
+
+    hmm
+
+[33mcommit 7c91dbb294a289feb35ac57c11581ab41fe1180c[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 05:46:32 2026 +0700
+
+    comment
+
+[33mcommit 80b14ab08f9aaf48260b9208d151a22b339e554a[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Thu Apr 30 05:30:02 2026 +0700
+
+    draw
+
+[33mcommit 693847e96a4172444db319a237e6115b0ea7ffd2[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Apr 30 02:45:09 2026 +0800
+
+    Fix few ui bugs. improved code viewer
+
+[33mcommit 50ed2bfa8f1729fcbde6b8ccfd6c8449cff6902c[m
+Merge: 261712f e03654e
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Apr 30 01:16:42 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 261712f56a96a0633a3925334fa463fea439a685[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Apr 30 01:16:37 2026 +0800
+
+    remove trash
+
+[33mcommit c333b986be4e239137a9cb102e82a55c906224fa[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 23:26:55 2026 +0700
+
+    67
+
+[33mcommit 152175c3bac2bcd35a089070280b903b47e76408[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 23:01:36 2026 +0700
+
+    not the no toolbar again
+
+[33mcommit 659bd595a3b7da6f20010fd448196fe6489e0dfb[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 22:40:10 2026 +0700
+
+    ios
+
+[33mcommit 20cdd5ea3d087b713ad83a425b1341f1045c74a6[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 22:25:10 2026 +0700
+
+    function in class wrong
+
+[33mcommit 3be8431806f48f47ab18dc7f376e6a2290a81580[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 22:11:30 2026 +0700
+
+    ui
+
+[33mcommit fbcdfc46e67c464102a1364837e86ace83d350ac[m
+Merge: 9e91fe7 e03654e
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 17:59:00 2026 +0700
+
+    sync(1)
+
+[33mcommit e03654e1bb9db0a89fdafe0269eb87a347aeb034[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Apr 29 15:56:38 2026 +0700
+
+    sync
+
+[33mcommit 9e91fe74d2601d0b682d17124a2efc5428b3380d[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 13:35:25 2026 +0700
+
+    hi
+
+[33mcommit 9019ab5639ecbe076f5dc3526c10482aa48068f6[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 13:15:58 2026 +0700
+
+    that no subort?
+
+[33mcommit 635eda7b9348600f9aa1328b4c5d33032200daba[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 13:04:58 2026 +0700
+
+    braket
+
+[33mcommit 0ef81b8efa14b7b170dd5d886cdd711fd048e418[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 12:58:55 2026 +0700
+
+    fine now
+
+[33mcommit 1548d6b62d2488fcb8a1894d6fdf409b265f6634[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 12:35:25 2026 +0700
+
+    build2
+
+[33mcommit a6073e5133605a8c25c4c387ed3a74a34d6239ed[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 12:17:05 2026 +0700
+
+    hmm?
+
+[33mcommit f7c60857733d16aa75ad7e4c45b0ff57a0b8f994[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 11:58:49 2026 +0700
+
+    build mac only
+
+[33mcommit 7fe03f11b0c93928b0c6427dc0c52e02d23064d2[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 11:33:22 2026 +0700
+
+    build 3 thing
+
+[33mcommit 0b7ebc23909748fd703cf59e80800b965581fcef[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 11:16:38 2026 +0700
+
+    now
+
+[33mcommit 9513dc0ccd99dbb38481e865bcea4580eea0a48f[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 11:09:06 2026 +0700
+
+    eeeee
+
+[33mcommit f8c596af251e378579942b0ad5c8fe5212d6dfc2[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 10:57:59 2026 +0700
+
+    d
+
+[33mcommit 328605031ffa74f47d8d83626420a4c4ff303f6a[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 10:45:32 2026 +0700
+
+    c
+
+[33mcommit 4856a7b82dc7207ebb26bf0fdb898a6a0d88b46f[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 10:29:59 2026 +0700
+
+    b
+
+[33mcommit c8bc02a44e37c8f76df40d6a50d4f512f4a8a83c[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 10:22:00 2026 +0700
+
+    a
+
+[33mcommit 6d8c4ce58b8a06e4728c907d26a1ea17b0fa1d85[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Wed Apr 29 10:06:45 2026 +0700
+
+    6sibikidi
+
+[33mcommit 85976cd808e3f8d7bdafbc491a9c584b30f75828[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Tue Apr 28 23:45:12 2026 +0700
+
+    fix sdl didding
+
+[33mcommit fc7aacdd56721031d50f5b0001405f51750585f7[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Tue Apr 28 23:10:46 2026 +0700
+
+    wolala
+
+[33mcommit 407500ff2e65c9d5aa3cbd1a6b1d5b54547229bb[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Tue Apr 28 22:52:05 2026 +0700
+
+    fix black black on androiud
+
+[33mcommit 73f4d4de4f93e3eaf730c890f4e581a37cd45bb2[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Tue Apr 28 22:30:12 2026 +0700
+
+    bro build
+
+[33mcommit 619b253f414cd96b3b7d88bbb88dc2f4c2057ccc[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Tue Apr 28 11:57:08 2026 +0700
+
+    build 3
+
+[33mcommit 135bc3255d3a32e514444c3654e732dc5bb96a1c[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Tue Apr 28 10:36:19 2026 +0700
+
+    bro path
+
+[33mcommit f16cf26c21af71079086eede3ea3e36b1ddc0a94[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Tue Apr 28 00:37:22 2026 +0700
+
+    holy my minutis
+
+[33mcommit ca4d92687f635cdc7b151d183940fb5089e49f24[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Tue Apr 28 00:10:34 2026 +0700
+
+    mfks
+
+[33mcommit 9c17090b0ec07fee289fa0c836b3d7442e339a27[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 23:58:30 2026 +0700
+
+    help
+
+[33mcommit a17f414def51e76a03bfa4dd220d9bb6905b5dff[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 23:37:14 2026 +0700
+
+    sigma fix
+
+[33mcommit 4e68d5fac9590d8e35fb6567c73f861b6f613933[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 23:32:55 2026 +0700
+
+    67 years later
+
+[33mcommit c075b4b9af0cafc9d48bcba41aed8254d3b3e271[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 23:13:12 2026 +0700
+
+    cmon
+
+[33mcommit 8338ebbec841f02e85a79c46c22ca428cf43b23d[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 23:02:25 2026 +0700
+
+    me stupid now
+
+[33mcommit c2f1ab9cdcfd67f927b6d6a0635daba4a8aa488b[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 22:56:49 2026 +0700
+
+    wtf cmake
+
+[33mcommit d462084a48527b86ac9c4fd62e0ed2fe99a5ad05[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 22:51:39 2026 +0700
+
+    idk what this fixing
+
+[33mcommit 00e07591b548d5c6f672036f382e66a6e4261473[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 22:41:09 2026 +0700
+
+    fix index
+
+[33mcommit 4764c2d3171b93bf15fa8a1fb151aa399f6934a0[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 22:34:27 2026 +0700
+
+    build for windows x64 too, added that bar to all platforms, fix goto in tab code crash
+
+[33mcommit ef52a42ac556361c9e7ae1ab369ff86fd4cc5c5d[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 21:56:26 2026 +0700
+
+    try fix slow macOS build
+
+[33mcommit 957f54d34ece27eab9deaee068e59c5f7181d8ba[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 20:55:49 2026 +0700
+
+    fix icons for macOS
+
+[33mcommit 397cb6f1be273d27c3d487fca7304115a5ade052[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 19:31:02 2026 +0700
+
+    oh my stupid ifdef
+
+[33mcommit f05d941f036dafadd4e5dd78f653747b6b9e1205[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 18:30:13 2026 +0700
+
+    time iss not a joke gpt
+
+[33mcommit 5dbe71adbc755c88b5a7b5c8cc8e3ea7507d1874[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 18:15:23 2026 +0700
+
+    fu..welcome include
+
+[33mcommit eb8ecf4d1fddddd07b498534aa87335f38b25ef0[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 13:21:39 2026 +0700
+
+    add shortcut thing for macos(ai)
+
+[33mcommit 1958915b6b4ced0e131a0eab6df531913cb3ff38[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 12:13:05 2026 +0700
+
+    fix double endif
+
+[33mcommit 9c64638339266b26cb37814f0715f1acbbed8864[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 10:39:52 2026 +0700
+
+    theme fix
+
+[33mcommit 920c3b608c40058d0aa5fdd840e3fc80855adcf7[m
+Merge: 3b90635 3e9fc21
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 27 10:34:55 2026 +0700
+
+    merge upstream stable
+
+[33mcommit 3e9fc213cea2788fb9104f832b8bbacdfbe93781[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Mon Apr 27 01:42:37 2026 +0800
+
+    Raise SDL window after showing it
+
+[33mcommit 358cc1fabf5985b880b2e5019fae60f00a7bb204[m
+Merge: 43d9d27 fdccc0e
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Mon Apr 27 00:39:26 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 43d9d2743916e2b1d4453b73375bf45f98f5a30b[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Mon Apr 27 00:38:08 2026 +0800
+
+    fix: include order again. and i hate vsc auto reordering
+
+[33mcommit fdccc0ebebfd8a5350de7466653e8cc8c69275c4[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Mon Apr 27 00:24:50 2026 +0800
+
+    fix: Windows icon
+
+[33mcommit 76ea4a4ceefe58932773b00d2828e17803e4c78d[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Mon Apr 27 00:18:01 2026 +0800
+
+    feat: improve automated renderer switching for GPU driver faults
+
+[33mcommit c970fe9f23c9e24292d7e2864a013b654c6c4236[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 26 17:20:47 2026 +0800
+
+    fix include order. really
+
+[33mcommit f7a792e572aac1655d5b7a2a4ac7593b2ea0cb1d[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 26 17:09:35 2026 +0800
+
+    fix: include order
+
+[33mcommit 8accef53066eec6b8b96ab15d30a2b0a306ad8a9[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 26 17:03:00 2026 +0800
+
+    fix
+
+[33mcommit 818ac98cd6617a1e685d92b0b99efe6a58ce280c[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 26 16:57:00 2026 +0800
+
+    feat: implement renderer crash-fallback mechanism and beautify readme
+
+[33mcommit c1ec165694cb4640723acc46fe87cf858bbe1f60[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 26 16:44:08 2026 +0800
+
+    fix
+
+[33mcommit 47760cb4ecf0bd9823c380710953f725c20b3d2f[m
+Merge: bca41a9 56d417d
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 26 15:15:27 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit bca41a9bd2bc32de74e42a1fb48df0c4a9273a32[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 26 15:14:50 2026 +0800
+
+    feat: integrate cpu_features library and add base UI and locale support
+
+[33mcommit 56d417d8e761506739450e74321f39dc76bd6a92[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Apr 26 11:59:57 2026 +0800
+
+    Change SnapshotWindow title for clarity
+    
+    Updated constructor to use a simplified window title.
+
+[33mcommit 7403609d0ee9f4626dbd9f6c1771ec7eb7eee42f[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Apr 25 22:58:30 2026 +0800
+
+    feat: localize snapshot window (#34)
+    
+    Extract hardcoded English strings from CasioEmuMsvc/Gui/SnapshotWindow.cpp
+    and add them to the localization files for English, Simplified Chinese, and
+    Vietnamese. Update SnapshotWindow.cpp to use the `_lc` literal.
+    
+    Co-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+
+[33mcommit 3b906357b7cdafd5f055fc5e7446b993d968b768[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 21:52:23 2026 +0700
+
+    links
+
+[33mcommit 627829271e92d23d45e30b9c74fae13574d0e6f8[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 21:27:41 2026 +0700
+
+    fix link options for MacOs
+
+[33mcommit 35679901d5284e7890b5ddfd7949fc284fa0d369[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 21:07:49 2026 +0700
+
+    sentry import java
+
+[33mcommit a85347501263ceb70e833e95b5933d765d11c3e2[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 20:55:10 2026 +0700
+
+    oh my stupid c++ knowledge
+
+[33mcommit 1593359e6121f384daeba9693c938e78bb0a27de[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 20:47:31 2026 +0700
+
+    oh my c++ is hard
+
+[33mcommit decbfd4d569ed93e6b0767b0ebaa1b10d6c0b5ae[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 20:39:08 2026 +0700
+
+    fix include, syntax, api
+
+[33mcommit 1f37618ea44c878d47f896e2b9564c2c08cd7af0[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 20:30:24 2026 +0700
+
+    builds
+
+[33mcommit c3d8bea0ec559c1f38568b774a4894599b94e71a[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 20:15:51 2026 +0700
+
+    pls donate log pls cmake
+
+[33mcommit 9256d7a4d1ad9a52616e56f571d45151327e611b[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 20:06:19 2026 +0700
+
+    fix my stupid cmake comment too(back to spam build)
+
+[33mcommit cb7a8ac92fb22dde7cb31f33b67e7e4697b23836[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 20:00:54 2026 +0700
+
+    fix that sentry(last and this(last and this commit tho)
+
+[33mcommit 34405b1f6bc08b51fb2619d79b7f726a513121d5[m
+Author: blhk68 <hoangthivang1974pl@gmail.com>
+Date:   Mon Apr 20 19:46:05 2026 +0700
+
+    Readded, Test build: Custom Breakpoints, Fix Highlights, Mac Os build, Load Theme On Start(Android), Add .so plugin on gui(Android)
+
+[33mcommit cc5458682d9842a98ac2aa4ccc6ac64c887b1d21[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Apr 19 02:07:34 2026 +0700
+
+    i forgot to update the submodule
+
+[33mcommit 6fadcb8870f6242051d65cb9e695ae401bc205fc[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Apr 19 02:05:36 2026 +0700
+
+    fix build+add sentry for linux
+
+[33mcommit 89a730ee70554c8c6df8a7a2a41a43e11b11fa32[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sat Apr 18 23:51:43 2026 +0700
+
+    fix build
+
+[33mcommit 55691a90fdde76a91fa742d836ed82514f5f0e50[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sat Apr 18 23:23:39 2026 +0700
+
+    gradually transition to cmake for win + assets configuration for android
+
+[33mcommit cecb22469903cd48d61206b1be90d66d94fc6ff8[m
+Merge: acce23a c2d2ff4
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sat Apr 18 22:04:46 2026 +0700
+
+    merge
+
+[33mcommit c2d2ff4770bbe97c83c72b82e44090fa65f509e2[m
+Merge: 9719a39 b5a59c2
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Apr 18 19:53:12 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 9719a39682443c5107ef90f4e460b31fe99b8314[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Apr 18 19:49:21 2026 +0800
+
+    fix
+
+[33mcommit b5a59c2aaaf27c9a9f91167a43c09b762383579c[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Apr 18 18:48:19 2026 +0800
+
+    Update CMakeLists.txt
+
+[33mcommit 979a307cf07df4f6c042debacaadb70580188bdb[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Apr 18 18:48:06 2026 +0800
+
+    Add CMake source file grouping for C files
+
+[33mcommit 28fac53f1b7f43d8d0a72d00052d58f2a158d94c[m
+Merge: 062b50e f1e081c
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Apr 18 18:40:14 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 062b50e1981ef157be2be174415f1056353d09dc[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Apr 18 18:40:09 2026 +0800
+
+    Snapshot
+
+[33mcommit f1e081c420443aab99d2905f55b84627f5b25f4b[m
+Author: tahoangphuc111 <tahoangphuc111@gmail.com>
+Date:   Sat Apr 18 15:22:26 2026 +0700
+
+    feat: discord rich presence + PR build check (#31)
+    
+    * feat: add discord rich presence integration
+    
+    * ci: add separate PR build check workflow
+    
+    * fix: remove using namespace std from header to fix MSVC byte ambiguity
+
+[33mcommit acce23aa22644c477bfd4b26203993fe5707374f[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Tue Apr 7 18:02:14 2026 +0700
+
+    feat: add Discord RPC + remove unused cpu_features
+
+[33mcommit 9ba028f2823cf6fe15f0c221c439524c7a53bbd4[m
+Merge: bd20451 16034c3
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 5 23:04:34 2026 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit bd20451ded245728f71aeb0420be8a566d1eb321[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Apr 5 23:04:30 2026 +0800
+
+    1
+
+[33mcommit 16034c3195cc4f9c5b55e74779c94d62055cd3e3[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Apr 5 22:35:55 2026 +0800
+
+    Fix repository URL and update emulator description
+    
+    Updated repository URL and corrected wording in descriptions.
+
+[33mcommit 41badc4841c4e8adf493b9e290898f026a653705[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Apr 5 16:47:58 2026 +0700
+
+    fix: build win+pluginapi
+
+[33mcommit c86fa6c8df7bcf22b824bfac7e48ac64f542a00d[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Apr 5 15:15:24 2026 +0700
+
+    fix: build linux
+
+[33mcommit b28f0aa1a075c5ff95e5491bf32c571e50433e44[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Apr 5 15:00:54 2026 +0700
+
+    feat(android): add plugin support system
+
+[33mcommit d625e9119a564546023c21fccdb566ae94165c08[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Fri Apr 3 07:25:44 2026 +0800
+
+    mcp plugin
+
+[33mcommit 76c5cac8fb58715476302aa9be97b8008f63dc62[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri Apr 3 07:05:09 2026 +0800
+
+    Change file extension from .cpp to .cc for cam sources
+
+[33mcommit e3ac3ee50a06818610d3526a51958d9aab4d9ed2[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri Apr 3 06:43:14 2026 +0800
+
+    Update CMakeLists.txt
+
+[33mcommit 18b2605e5d3cbbe60779e4a77f5a359686559627[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri Apr 3 06:37:36 2026 +0800
+
+    Delete CasioEmuMsvc/Gui/RopTool.cpp
+
+[33mcommit 052dad616d552bae56c0dec746aa1e130e971c02[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri Apr 3 06:33:57 2026 +0800
+
+    Update sdl_win32_extra.cpp
+
+[33mcommit f372a5433ab89782a8bd83e914d0881650b417d3[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri Apr 3 06:32:24 2026 +0800
+
+    Revert changes to cicd
+
+[33mcommit 65cd0767efcf34d7af37d28760acde57989fe381[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri Apr 3 06:29:52 2026 +0800
+
+    Refactor SDL window handle functions for clarity
+
+[33mcommit fa699b6c03e83452dff001e0fdb60745a12e841e[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Mar 28 01:32:05 2026 +0800
+
+    Refactor GitHub Actions workflow for builds and releases
+
+[33mcommit e30be67a1c1ea21981943a73d9e5e4bc4fced54a[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Mar 28 01:30:37 2026 +0800
+
+    Update GitHub Actions workflow for multi-platform builds
+
+[33mcommit d35845f2c47c1e458577a7e37835fdc7fe1c1b97[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Mar 26 23:28:29 2026 +0800
+
+    Key press
+
+[33mcommit 305828bf9f2b32b5d0f13d66b977a860b904eed1[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Fri Feb 20 15:37:50 2026 +0800
+
+    upd
+
+[33mcommit a03f02cb21f4b185258bc24cc719f41bf35ee1e0[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Feb 12 12:11:00 2026 +0800
+
+    Fix
+
+[33mcommit 4c8814ce8cf534592d36d162366a74a86bcba7eb[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Thu Feb 12 04:32:20 2026 +0800
+
+    MD coloring
+    some fixes
+
+[33mcommit 5b1413dc99df0e11e438248c753457e935ea7878[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Wed Feb 11 23:14:19 2026 +0800
+
+    UI improvements.
+    
+    * Deleted trash.
+    * Docking
+    * SP breakpoint
+
+[33mcommit 71eaa23dbd7fe6e528d7523fc049c85c9c0d8e2d[m
+Merge: e61f8c1 b998cb8
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Feb 8 02:10:49 2026 +0800
+
+    Merge pull request #28 from telecomadm1145/dev
+    
+    Dev
+
+[33mcommit b998cb86824ceb0bff11c38f40984658a6db8619[m
+Merge: e61f8c1 9b5208b
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Feb 8 02:03:00 2026 +0800
+
+    Merge pull request #26 from telecomadm1145/fix-injector-crash-race-condition-13657443328949502331
+    
+    Fix Access Violation in Injector::BackgroundReload due to race condition
+
+[33mcommit 9b5208bf87850b6308899efbb633078b15f511b8[m
+Author: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date:   Sat Feb 7 18:00:03 2026 +0000
+
+    Fix Access Violation in Injector::BackgroundReload by managing thread lifecycle
+    
+    - Added `std::thread reloadThread` to `Injector` class to manage the background reloading thread.
+    - Updated `Injector::~Injector` to join `reloadThread` instead of sleeping, ensuring the thread finishes before the object is destroyed.
+    - Updated `Injector::AsyncLoadCustomInjections` to use `reloadThread` and join any existing thread before starting a new one.
+    - Updated `RenderCustomInjectTab` and `RenderCore` to use `AsyncLoadCustomInjections` for consistent thread management.
+    - Fixed a race condition where `Injector` object destruction could occur while `BackgroundReload` was still running, leading to a crash when accessing `injectionMutex`.
+    
+    Co-authored-by: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+
+[33mcommit e61f8c114ffaac7c554f1fc05ab9e7530facc7aa[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Feb 1 23:48:33 2026 +0800
+
+    fix
+
+[33mcommit fd86418940e9afa4e34aeda46944dfb83661af42[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Feb 1 23:48:13 2026 +0800
+
+    fix touch translator
+
+[33mcommit fb227252a966c3a40c92f0b1d2222bb22535affd[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Feb 1 13:25:27 2026 +0800
+
+    Reverting Input handler logic
+
+[33mcommit 4889611dff222bc798023813b6daa5a76797f03f[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Feb 1 02:03:20 2026 +0800
+
+    Updated logo
+
+[33mcommit 8795680f14694c020ee041721503d736c3d57642[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Feb 1 00:36:41 2026 +0800
+
+    fix sentry bug 9
+
+[33mcommit 48666492c1230fcb3c1137a59c83ef6abdd91b10[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Feb 1 00:15:03 2026 +0800
+
+    fix 7
+
+[33mcommit 9ecce0c0ac25b6bf9dac9830a6fbdfd1609655cc[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sun Feb 1 00:08:44 2026 +0800
+
+    fix 6
+
+[33mcommit 44b5a7c8c5687eb907d308de05bc52e7f75b3b48[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 23:46:45 2026 +0800
+
+    fix 5
+
+[33mcommit 4b85bd6e7420a411a13fd619f36a46df407d0e5d[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 23:37:28 2026 +0800
+
+    fix 4
+
+[33mcommit d2be0778575bc843e04012a7f89c38f4ab6ae098[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 23:28:16 2026 +0800
+
+    fix sentry 3
+
+[33mcommit 79d975664b99babf2a5c0cd909a591dee6b405db[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 23:17:56 2026 +0800
+
+    fix sentry 2
+
+[33mcommit 4fc2358cb42aefe1608fb290de52cb8ad66362c1[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 22:47:40 2026 +0800
+
+    fix2
+
+[33mcommit 84d96ab406e15859549f370d8df10f19b5ed1418[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 22:41:45 2026 +0800
+
+    fix
+
+[33mcommit a363dc796187bffe7c844762d54893edd006417e[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Jan 31 22:26:34 2026 +0800
+
+    Delete local.properties
+
+[33mcommit e816487ea9ef8410a2167d9ed5e60d163cb9808a[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 22:23:08 2026 +0800
+
+    Sentry
+
+[33mcommit 7d879658b58c02c80b0f3cb740d930bd237c0c4c[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 21:56:44 2026 +0800
+
+    引入 Sentry 支持并优化多平台兼容性
+    
+    - 集成 Sentry，用于崩溃捕获和用户反馈功能。
+    - 更新 `Binary.h`，添加文件读写辅助方法。
+    - 改进字体加载逻辑，支持多平台字体回退机制。
+    - 优化 GUI 渲染逻辑，提升代码一致性和可读性。
+    - 添加路径清理函数，避免非法字符导致的问题。
+
+[33mcommit e69997929c442a9d793da4df25193fb72d1d461b[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 20:37:11 2026 +0800
+
+    优化语言资源并模块化加载方式
+    
+    更新内容：
+    - 更新 `en_US.lc` 文件，修正占位符、术语及提示信息。
+    - 修改 `lang.h` 文件，改为通过外部语言文件加载资源。
+    - 更新 `vi_VN.lc` 文件，修正部分翻译内容。
+    - 大规模更新 `zh_CN.lc` 文件，优化翻译、统一术语及改进描述。
+    
+    这些更改提升了代码的可维护性和用户界面的易用性。
+
+[33mcommit bb78a601361a0d900c0da47b21ee97137d71c1df[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Jan 31 20:10:52 2026 +0800
+
+    集成 Sentry 并优化多语言支持
+    
+    - 在 `build.gradle` 和 `AndroidManifest.xml` 中添加 Sentry 配置，支持错误监控和性能跟踪。
+    - `Game.java` 引入 Sentry SDK，增加异常捕获支持，优化代码结构。
+    - `README.md` 添加英文、中文和越南文版本说明，提升国际化支持。
+    - 更新 `build.gradle`，新增对 `armeabi-v7a` 架构的支持。
+    - 修改 `.gitignore`，忽略 Sentry 和本地配置文件。
+
+[33mcommit d84ab439cad9f65040cce92a3a1113508c72ffa2[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Jan 25 10:29:10 2026 +0700
+
+    refactor: moved the immersive mode logic from SDLActivity to Game class and minor modifications
+
+[33mcommit 151d5270db934ba132aa64a79b463080211055b4[m
+Merge: 8b875ea 2cdab4e
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Jan 25 00:53:42 2026 +0800
+
+    Merge pull request #24 from Osmous/stable
+    
+    Enable Immersive Mode
+
+[33mcommit 2cdab4e5dfd57583f6ff13c306626b8532a035e3[m
+Author: Osmous <67967981+Osmous@users.noreply.github.com>
+Date:   Sun Jan 25 00:42:28 2026 +0800
+
+    Enable Immersive Mode
+    
+    Enable Immersive Mode to hide android notification bar and home button panel.
+
+[33mcommit 8b875ea5ff6ce3f03fd915fcd4d8db1765822d3f[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon Dec 8 12:40:08 2025 +0700
+
+    fix: rm stupid AI char and fix liblog
+
+[33mcommit 836addd1772301e6de346c1d60f6ac78771762c4[m
+Merge: a003f41 afde0f3
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Dec 6 01:10:52 2025 +0800
+
+    Merge pull request #20 from telecomadm1145/android-crash-handler
+    
+    Add Android native crash handler
+
+[33mcommit afde0f385cd360d47e52937e2eaaaf8f6f1ee544[m
+Author: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date:   Fri Dec 5 17:09:07 2025 +0000
+
+    Implement Android native crash handler with Java UI dialog
+
+[33mcommit a003f41ea05632c73148beae9d5b78691ccd7595[m
+Merge: 07c2038 0ec58e6
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Thu Dec 4 00:56:21 2025 +0800
+
+    Merge pull request #17 from telecomadm1145/feature/search-export-disasm
+    
+    Add search and export disassembly features to CodeViewer
+
+[33mcommit 0ec58e6a946ff8e0110576de153bc4a0c0102888[m
+Author: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date:   Wed Dec 3 16:51:01 2025 +0000
+
+    Add search and export features to CodeViewer
+    
+    - Added search functionality with Hex Pattern and Instruction modes.
+    - Added Export Disassembly button to save disassembly to a text file.
+    - Updated CodeViewer UI to include search and export controls.
+    - Implemented file dialog for export.
+
+[33mcommit 07c2038fb3dcfa00f2d6116bfb157c0c83584cdd[m
+Merge: 048d2ac f74f4ae
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Wed Dec 3 23:38:10 2025 +0800
+
+    Merge pull request #16 from telecomadm1145/model-editor-sprites
+    
+    Add sprite editor to ModelEditor
+
+[33mcommit f74f4aea7092a64f8c1fbaa328492b78c18a0ea9[m
+Author: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date:   Mon Dec 1 16:16:25 2025 +0000
+
+    feat: Add sprite editing to ModelEditor with performance improvements
+    
+    - Added a "Sprites" tab to the Model Editor to list and edit sprite properties (src/dest rects).
+    - Implemented visual highlighting for the selected sprite in the preview area.
+    - Optimized the main sprite rendering loop to iterate by reference, reducing overhead.
+    - Organized Model Editor controls into "General", "Buttons", and "Sprites" tabs for better usability.
+
+[33mcommit 048d2ac24b10dbc12d57cafd019d81a682fc4f01[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sat Nov 29 18:46:54 2025 +0700
+
+    feat: add low performance mode for platforms other than android
+
+[33mcommit ce9618529cd8c2f009636e4d0a36d2713c8c4af5[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon Nov 24 18:05:39 2025 +0700
+
+    fix: resolve 'Is a directory' crash on linux when loading models
+
+[33mcommit a1de7882ce416c0731f591d2919820a63cc8ad89[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Tue Nov 18 12:51:37 2025 +0700
+
+    fix: missing lib
+
+[33mcommit b3613c010531bbb77da512738032d0427e146eb9[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Tue Nov 18 12:43:25 2025 +0700
+
+    add setup build for linux (only build successfully)
+
+[33mcommit 64703a3bd834f253450e30efff9d0f0fb8e96fd0[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Nov 12 18:31:30 2025 +0700
+
+    fix known bugs
+
+[33mcommit d268fde90a47a712f7842ec98fa350cdc061ba10[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Nov 12 13:34:18 2025 +0700
+
+    feat: setup build lua convert config for other platforms(with cmake)
+
+[33mcommit 35c74ec6fe87afe2e089c594d239e81d95589785[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Oct 19 09:23:54 2025 +0700
+
+    chore(SDL): bump to SDL2.32.10(for android) and switch to using submodules
+
+[33mcommit ad346157040b332e5bb235567dea49a82beb302d[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Oct 19 08:08:52 2025 +0700
+
+    Fix(StartupUi): Prevent crash on empty password for package unpacking+add error handling
+
+[33mcommit 9d22e2f426628653a861e3344503a352311dcdf5[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Oct 19 08:05:34 2025 +0700
+
+    Fix(Binary): Improve error handling in deserialization
+
+[33mcommit d64ed3d5c0b540e39c388c2b51f0d33106f2b092[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sat Oct 18 10:58:24 2025 +0700
+
+    fix: done
+
+[33mcommit 9f5ba6b0bec3a2e115dd2358b7ed5a93ec8ecdd4[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Fri Oct 17 22:51:06 2025 +0700
+
+    fix: find library
+
+[33mcommit 3af02346f624a3c789cf0db372497d4bd54ce326[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Fri Oct 17 22:40:42 2025 +0700
+
+    fix(StartupUi): fix errors
+
+[33mcommit 46eb90cd1c055c56753e9f407a1389ad328da30b[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Fri Oct 17 21:37:09 2025 +0700
+
+    fix: fix some bugs
+
+[33mcommit 2cf67301718b43a6128a2a97ac0b2be2562ca3b6[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Thu Oct 16 15:01:01 2025 +0800
+
+    version display on Android
+
+[33mcommit db4d3afaad5c8bef1c44ef8646ae28eb08f233d8[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Thu Oct 16 14:59:02 2025 +0800
+
+    Bump to ver 0.1.0
+
+[33mcommit 9c807e583e2fc80ab604de8bee84793317ee4194[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Mon Oct 13 12:28:21 2025 +0800
+
+    w
+
+[33mcommit ed3ee8be0bd03170e465d59583330ef12f8402e2[m
+Merge: 8b6e8b7 347b0d1
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Mon Oct 13 12:21:24 2025 +0800
+
+    Bump to SDL 2.23.8, merged some updates
+
+[33mcommit 347b0d1f1f02870a71f553eb2ab238e00f0ebc8b[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Oct 12 14:48:37 2025 +0800
+
+    Update README.md
+
+[33mcommit 5ad4c2b662ffe25e432d13025a0bfd6e8fca4fa1[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Aug 10 09:16:06 2025 +0800
+
+    Update Screen.cpp
+
+[33mcommit 8b6e8b79454ca8c163b053e17c5aa5d64744b669[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Aug 9 20:54:25 2025 +0800
+
+    w
+
+[33mcommit a973d8ccdfce721fe912f8d46430693d57fe6f86[m
+Author: Administrator <Administrator@DESKTOP-PLDNBJR>
+Date:   Sat Aug 9 15:19:21 2025 +0800
+
+    Refactoring by GPT-5
+
+[33mcommit b17b9f0afb55696a6687ecefae16d11e83e23437[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Jul 29 11:09:24 2025 +0800
+
+    ?
+
+[33mcommit 36bcccf9fbd7138c0ec602cccb2564d490859262[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Jul 20 16:12:33 2025 +0800
+
+    new
+
+[33mcommit 6959efe775174e71a746987e16cdd6e45c006a55[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Jun 25 05:00:23 2025 +0700
+
+    fix: update ePSCpu.cpp to improve variable handling and memory safety
+
+[33mcommit 89ffc7d4d8950648600ea1ec52bb20c9e60a6a42[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Jun 25 04:49:03 2025 +0700
+
+    fix
+
+[33mcommit fc8ae2ee600b19b0e5ea492637da04fee3337315[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Jun 25 04:39:31 2025 +0700
+
+    refactor: Keyboard input, module
+
+[33mcommit 9faeacf634a3ece4763e60edd2dfd810be48f7ae[m
+Merge: 42e984b f4ea926
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Jun 25 04:09:44 2025 +0700
+
+    Merge
+
+[33mcommit 42e984b5010197e7bf0048e4301e0f2ed9163b00[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Jun 25 04:07:08 2025 +0700
+
+    fix: update ePSCpu.cpp and ePSDisas.cpp for type casting and memory safety
+
+[33mcommit f4ea926d3885ed98f37aa2f8fcc336ccf678bd43[m
+Merge: 78a939d 7c9b492
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Wed Jun 25 05:06:24 2025 +0800
+
+    Merge pull request #10 from telecomadm1145/fix/android-multitouch
+    
+    Fix: Enable Android multi-touch for emulator buttons
+
+[33mcommit 7c9b4926846b8de5d0dba3aae8ad7dd698dbf7d4[m
+Author: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date:   Tue Jun 24 21:02:57 2025 +0000
+
+    Fix: Enable Android multi-touch for emulator buttons
+    
+    Previously, Android touch events were primarily translated into single
+    mouse input events for the emulator. This caused any finger lift to
+    trigger a ReleaseAll() equivalent, preventing multiple buttons from
+    being pressed simultaneously.
+    
+    This commit introduces the following changes:
+    
+    1.  `casioemu.cpp`:
+        *   Passes raw `SDL_FINGERDOWN`, `SDL_FINGERUP`, and
+            `SDL_FINGERMOTION` events directly to `emulator.UIEvent()` for
+            Android builds. This allows the Keyboard module to receive
+            distinct `fingerId`s.
+        *   Retains existing ImGui touch-to-mouse synthesis logic but it now
+            operates in conjunction with direct emulator touch events.
+    
+    2.  `Keyboard.hpp` & `Keyboard.cpp`:
+        *   Added `pressingFingerId` (SDL_FingerID) to the `Button` struct to
+            track which finger is pressing a button.
+        *   `PressAt` and `PressButton` now accept and store `fingerId`.
+        *   Added `ReleaseAt(x, y, fingerId)` to release a button only if
+            the specified finger was pressing it and the button is not stuck.
+        *   `UIEvent` now calls `PressAt` or `ReleaseAt` with the `fingerId`
+            for `SDL_FINGERDOWN` and `SDL_FINGERUP` events respectively.
+        *   `RecalculateEmuInput()` function added to handle input aggregation
+            for `!real_hardware` mode:
+            *   `keyboard_in_emu` now ORs `ki_bit`s from all pressed buttons.
+            *   `keyboard_out_emu` uses the `ko_bit` of the first found
+                pressed button (to maintain "arbitrary key" for KO lines).
+        *   `ReleaseAll()` logic updated to clear `pressingFingerId` and
+            respect stuck buttons, calling `RecalculateEmuInput()` or
+            `RecalculateGhost()`.
+        *   Mouse event handling in `UIEvent` is now more conservative,
+            avoiding indiscriminate `ReleaseAll()` calls that would clear
+            finger presses.
+
+[33mcommit 78a939d0914b37e2f26b4fdb5446d3886d027fcf[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Jun 6 14:15:44 2025 +0800
+
+    w
+
+[33mcommit 25e74f4145d5259464dd09e81c4b729a667610ef[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Jun 6 13:44:11 2025 +0800
+
+    w
+
+[33mcommit f092353004008f069f2b5db75ce7069a072ba164[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Jun 5 10:52:47 2025 +0800
+
+    w
+
+[33mcommit daab72f4f154517ca694077523ebea0641356186[m
+Merge: 10ef0ac 56c0c55
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Jun 5 10:52:44 2025 +0800
+
+    w
+
+[33mcommit 10ef0acbc9d1bf078b94f2f3559fc8086c63249f[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Jun 5 10:41:22 2025 +0800
+
+    w
+
+[33mcommit 56c0c554ac7216cd53719b5003375a3dc8127150[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Wed Jun 4 23:17:13 2025 +0800
+
+    更新 ePSCpu.h
+
+[33mcommit 6f18edd3f48442b48b3b75d95ddf655f9fee29ff[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Wed Jun 4 04:31:09 2025 +0800
+
+    更新 ePSCpu.h
+
+[33mcommit e1529e7c97a972ec244459f39774eb47cd643b50[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Tue Jun 3 22:09:17 2025 +0700
+
+    fix: correct type casting in _post_id_handle_indf2 macro
+
+[33mcommit d8b094272629c1cdb5bfe3e5b20bf092498fb73e[m
+Merge: 43fdb23 92e9a84
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Jun 2 15:18:46 2025 +0800
+
+    w
+
+[33mcommit 43fdb233a60b3644bc9287608477fb5f75931c87[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Jun 2 14:00:51 2025 +0800
+
+    w
+
+[33mcommit 92e9a843e5beb2cdf02c45477d12f5ce53c7863c[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Jun 1 23:45:31 2025 +0700
+
+    fix: replace iostream with stdio for better compatibility
+    
+    - Replace std::cout and std::cerr with printf and fprintf(stderr, ...)
+    - Remove <iostream> include and add <cstdio> instead
+    - Fix hex value formatting using proper printf format specifiers
+    - Improve code readability with consistent formatting
+
+[33mcommit 30e6dcd7cdd155b82ac7729ccd78c3f967e2e1b4[m
+Merge: e5516e6 1e1af51
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun Jun 1 22:24:42 2025 +0700
+
+    Merge
+
+[33mcommit 1e1af516c9e1041cfc1c35f605316c2b8160cf72[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Jun 1 22:58:09 2025 +0800
+
+    eps wip
+
+[33mcommit 24db7673d13db6f228bc1ef5e4aa2c11853f6921[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Jun 1 21:14:21 2025 +0800
+
+    w
+
+[33mcommit 427d2d4465b090c59346e21266d535a4caa0eefe[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Jun 1 14:14:04 2025 +0800
+
+    EPS
+
+[33mcommit e5516e6ea5fdde4255f2b9d1a4dc84065041852a[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Fri May 30 18:27:26 2025 +0700
+
+    chore: update submodule
+
+[33mcommit 9f29b6fec3cb92872805e4ffbc8c7356c23225bf[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Fri May 30 18:22:34 2025 +0700
+
+    fix: missing locales
+
+[33mcommit a06f2679b8052869ee106e0f9dff77d6e2d45bfb[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri May 30 16:54:17 2025 +0800
+
+    a
+
+[33mcommit 100741a79d365d0da8a56544059834d24de4f51c[m
+Merge: b517e72 7fd2e38
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri May 30 16:54:12 2025 +0800
+
+    merge
+
+[33mcommit b517e721d86969f6b9a85ec59b7afe9da05aeff0[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed May 28 13:46:12 2025 +0800
+
+    ww
+
+[33mcommit 7fd2e38120b63d494949c5f5812d9518de90b91f[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon May 26 21:29:59 2025 +0700
+
+    refactor: use better method(suggestion from telecomadm)
+
+[33mcommit cd0210d8b61f86509bde3df824a99385ceeef971[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon May 26 17:57:26 2025 +0700
+
+    fix: Replace std::min/max with ternary operators to avoid Windows.h conflicts
+
+[33mcommit e339e442ea8dae510d0cbacc82c85f7b2c37c21f[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon May 26 17:37:56 2025 +0700
+
+    fix: missing necessary includes
+
+[33mcommit 66aa543a2ef860240a590fa1df224746358ffd1d[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon May 26 15:04:23 2025 +0700
+
+    fix: Use current position for cursor instead of starting position
+
+[33mcommit ea2a82313144cb85c295893fba1492a1925152b3[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon May 26 14:58:00 2025 +0700
+
+    feat: Assign F12 as screenshot key
+
+[33mcommit 33a43c5004a3a8b0f98659d8065ae862691267df[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon May 26 14:57:43 2025 +0700
+
+    feat: Add ability to copy screenshot to clipboard
+
+[33mcommit 50b26b90c2b879c672a8978cf23cac440f5d94ff[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Mon May 26 14:55:30 2025 +0700
+
+    chore: update locales
+
+[33mcommit e6919e1e5856c2cc80924966a01bbc18f9af8f50[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun May 25 17:09:45 2025 +0700
+
+    f
+
+[33mcommit c26f559c80b2d2174d99e409f9c960c71c54c5fa[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun May 25 17:05:18 2025 +0700
+
+    fix: change name to avoid duplication with asmjit
+
+[33mcommit d62de18c2e14c3f62a95d5d31b90b684936cefb8[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun May 25 16:29:37 2025 +0700
+
+    i forgot to save the file(sry)
+
+[33mcommit 4a6791fc8c5c6ddebfd799c19cf657bcbb2a803f[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun May 25 16:15:34 2025 +0700
+
+    Fix asmjit error
+    
+    - Fix init submodule
+    - Edit to include/link with asmjit project (Android only verification)
+
+[33mcommit cb5b5dd405ded4bd3c2b962c779966c1da91435f[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun May 25 15:45:37 2025 +0800
+
+    fixed encoding thing(?)
+
+[33mcommit 1279bb6d04302e46f9e73d42a6d1c8c6b53e8351[m
+Merge: 9b6f20e cd0f52c
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun May 25 15:18:06 2025 +0800
+
+    Merge pull request #9 from hieuxyz00/stable
+    
+    Merge android project
+
+[33mcommit 9b6f20eb14edc55f6ad7630c648d82a602378eab[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun May 25 15:15:18 2025 +0800
+
+    e
+
+[33mcommit e93cf2d62e72550471e3c7787ff558e3fdc86475[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun May 25 15:05:48 2025 +0800
+
+    b
+
+[33mcommit 5b42b497355c401dc067d92b27317014d22ab8fb[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun May 25 14:53:12 2025 +0800
+
+    c
+
+[33mcommit e1a044ca1366d4710ea49ca39423e383769c7290[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun May 25 14:51:19 2025 +0800
+
+    b
+
+[33mcommit f60f90d3dc67ad6048641319eb5b04268d48a4b1[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun May 25 14:46:57 2025 +0800
+
+    暂存
+
+[33mcommit cd0f52c8549393fe6f2a83ae6ed82e44de7a72ad[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Sun May 25 10:18:01 2025 +0700
+
+    Merge android project
+    
+    - Add autobuild to build both win and android
+    - Small changes to files to make paths reasonable after merge
+    - Delete the app/jni folder because it is no longer needed (if needed u
+      can backup it)
+
+[33mcommit 59119822515f0f50d824eea679dbb8dc695e9417[m
+Merge: 3e70869 c9f3546
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat May 24 22:59:00 2025 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 3e70869fd28cbf98d65b1ac5f87dd7c002b57c95[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat May 24 22:58:45 2025 +0800
+
+    w
+
+[33mcommit c9f354697831c3b85011bfd49c406e52f7786f45[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat May 24 20:12:24 2025 +0800
+
+    Update README.md
+
+[33mcommit fc8703d43d7203aa1f27ceb44ad310f964f29c07[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Thu May 22 11:22:21 2025 +0700
+
+    fix build
+
+[33mcommit e7e867992025834b9412cd7d10ce741e104e2f96[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Thu May 22 05:41:36 2025 +0700
+
+    Sync with Android repo
+
+[33mcommit cc66f2e2866404eae28d5884be6841f16ca95d16[m
+Merge: 7a8efc1 cd1eef4
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun May 18 12:16:18 2025 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 7a8efc1e0d9841a7a6f12dc5a9abfe3b9a8f2c65[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun May 18 12:16:12 2025 +0800
+
+    w
+
+[33mcommit cd1eef465881c4ded45e821bbc0e876bf42c0311[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Apr 23 14:53:24 2025 +0700
+
+    check debug
+
+[33mcommit 3496745c956c8616f3ede7a8a9b5abc2bd466770[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Wed Apr 23 14:38:56 2025 +0700
+
+    test agains
+
+[33mcommit 114412d81040570a51ecad2bf7a3d3532241fc81[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Tue Apr 22 15:54:31 2025 +0700
+
+    f
+
+[33mcommit d5e739ae1346848e48d54c83cb0af47daa64ed61[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Tue Apr 22 15:45:08 2025 +0700
+
+    testing some things
+
+[33mcommit 1b1bc6d2c2a71cc403fd64ae0be01a5f8b34991b[m
+Merge: 8d45d81 a21e315
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Apr 12 13:18:55 2025 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 8d45d812c0fe9c92f538c2c307b1658a3bea9099[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Apr 12 13:18:46 2025 +0800
+
+    a hack to fix 0xF312
+
+[33mcommit a21e3158b3b9f9ba9e5378ec49fd2e0ee94f9613[m
+Merge: fc2b65c 2cd5d35
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Apr 12 12:30:18 2025 +0800
+
+    Merge pull request #7 from Xyzstk/stable
+    
+    BCD Coprocessor
+
+[33mcommit 2cd5d35157d86a98328d26c41c48417349b01670[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Sat Apr 12 12:15:05 2025 +0800
+
+    BCD Coprocessor
+
+[33mcommit 54e42bf54c5e0c3814637b92653221e1b7c0c9d2[m
+Merge: 7b03665 fc2b65c
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Apr 4 15:21:21 2025 +0800
+
+    merge
+
+[33mcommit 7b03665b1a7518886e832665cfcbc43713772593[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Apr 4 14:59:02 2025 +0800
+
+    fix fakesdcard not working
+
+[33mcommit fc2b65c3526b17096e2e9d3337a8bc246c7db09c[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Fri Mar 21 19:01:37 2025 +0700
+
+    Fix build fail
+    
+    - Temporarily stop building plugin for action to work (if you want to
+      use plugin you can clone project and use vs to build it)
+
+[33mcommit f90388fcaded0785592c2c51a0f14adac79d89cf[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Fri Mar 21 16:02:11 2025 +0700
+
+    sync main project, edit and add some things
+    
+    - Fix some things that prevent android build
+    - Fix custom injections because there are still bugs
+    - Add setting custom file infections (with browser attached - FileDialog)
+    - Update full translation
+
+[33mcommit 343ef5cf68542698d697dc95d1918809934a139f[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Tue Mar 4 21:44:51 2025 +0700
+
+    better
+
+[33mcommit ecae28f7f3e60f89486e512f09bd4eafb147d7d1[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Feb 10 10:05:10 2025 +0800
+
+    a
+
+[33mcommit c26e76f8dcb91c7fdc5fdfb94b1f6ae4ec8a06af[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Feb 9 22:40:16 2025 +0800
+
+    Plugin Test
+
+[33mcommit b5fd4a3b0e349c19d67e0b0e498f625969e6db02[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Feb 9 16:54:31 2025 +0800
+
+    f
+
+[33mcommit 29d478074628ef34de039d240773746b5bae779e[m
+Merge: 471392e 62101e3
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Feb 9 16:52:02 2025 +0800
+
+    Merge
+
+[33mcommit 471392ea3efeac4d206b4990bae26d8cd10f3863[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Feb 9 16:48:52 2025 +0800
+
+    b
+
+[33mcommit ee1d15f98a204b8b8ffd5acc2536baf6dc245faa[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Feb 3 22:29:39 2025 +0800
+
+    a
+
+[33mcommit 62101e3cd8c14b9745e763a976fb8072022d27b2[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Fri Jan 31 21:33:13 2025 +0700
+
+    fix some err
+
+[33mcommit 3bb49d2217f237ee87312a5904f10e2fd9b1f95c[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Thu Jan 30 19:38:17 2025 +0700
+
+    Fix custom injections err
+
+[33mcommit 6d7b7ed80b90ce2d7ce49d195aeb3639b477ebff[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Thu Jan 30 18:36:56 2025 +0700
+
+    w
+
+[33mcommit f704bbbd58705483c1c09555e5b1d1fae3fed6de[m
+Author: hieuxyz00 <khongbt446@gmail.com>
+Date:   Thu Jan 30 17:14:15 2025 +0700
+
+    w
+
+[33mcommit 032034d1584d5dcf3f2c8626e956cc642cbc631e[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Jan 29 00:00:44 2025 +0800
+
+    fix build issue(roms.db)
+
+[33mcommit 2c26477a88eaadf46e1c71f964a04d047dd30ae9[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Jan 28 20:55:19 2025 +0800
+
+    w
+
+[33mcommit 56136388e9b4ceadd6815522f6f566b4e4dd9153[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Jan 28 20:41:16 2025 +0800
+
+    w
+
+[33mcommit a41a8effb75cf6d9e0baddbf428d4721749a4784[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Jan 28 18:33:53 2025 +0800
+
+    w
+
+[33mcommit 06ba8d77343f93f142d319f782ed0f80e838931d[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Jan 19 13:51:07 2025 +0800
+
+    Update U8Disas.cpp
+
+[33mcommit c766d36b65c4b58b8d444f7c7e26547e31c76a68[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Jan 19 13:46:49 2025 +0800
+
+    Update SysDialog.h
+
+[33mcommit 219ffbf34531aa3b1368da8c96baba162780b8c3[m
+Merge: 82e2cf2 3297782
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Jan 17 19:35:40 2025 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 82e2cf21a6466509b5401a2eb3b04b9884bc9900[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Jan 17 19:35:31 2025 +0800
+
+    a
+
+[33mcommit 82a9fb95c22e936d33419306e855b4ac0693a12a[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Jan 17 13:01:56 2025 +0800
+
+    a
+
+[33mcommit 3297782afe8a81432ff2afa19666d782a86790bf[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Jan 16 23:24:00 2025 +0800
+
+    a
+
+[33mcommit 9de57895455ed1028e0fbc6f293d4b96fc7b03ae[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Dec 15 13:20:07 2024 +0800
+
+    a
+
+[33mcommit e4de1fcc8086e519f5d4ab3be0c1f78fa9a9346d[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Dec 15 12:58:54 2024 +0800
+
+    修复bug
+
+[33mcommit a6a21a7d736193bfc64b6a6c3e37d7025fe93056[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Dec 14 23:12:11 2024 +0800
+
+    更新屏幕扫描
+
+[33mcommit ff6a37ac4e6fd6d5ba191f31d74daeb34eaeb3f6[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Dec 14 17:39:51 2024 +0800
+
+    updated screen shot
+
+[33mcommit e5cf953e6da4a453203fcb785d6827803f08d213[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Dec 14 17:14:09 2024 +0800
+
+    c
+
+[33mcommit 7b2a7e899005188c7c324b7a802564580fd14f56[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Dec 14 17:05:42 2024 +0800
+
+    a
+
+[33mcommit acb7c3044327c254457c5851970bfad526d98a9e[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Dec 14 17:01:29 2024 +0800
+
+    Fixed race condition in ConcurrentObject.h
+
+[33mcommit 88dcd9e1a2dd5cff555cb24033794337241083b9[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Dec 14 13:49:02 2024 +0800
+
+    a
+
+[33mcommit 3b75061b1e302b12f1c96336ef36518b13e59bc0[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Dec 14 12:54:34 2024 +0800
+
+    Fix
+
+[33mcommit 13b99af80b88c995cba144560ab9dd17ddbb3f92[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Dec 14 12:45:58 2024 +0800
+
+    修复 Sd 卡崩溃，添加地址窗口
+
+[33mcommit 6741ef7fbc12aee1ac258add6355f4ad00f616be[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Nov 2 22:59:58 2024 +0800
+
+    removed things blocking ci builds
+
+[33mcommit 30b75c13e1a54db0c39a13a8fbb27ce036cb576b[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Nov 2 22:52:21 2024 +0800
+
+    1.Uart
+    2.Spi
+    3.FakeSdCard(Experimental
+
+[33mcommit 8a18ba06d9822f07cd22e7a79c8082d30b6934b2[m
+Merge: d2d0749 3080ba0
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Sep 17 14:56:56 2024 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit d2d0749e9cbdac4330c51f9509af4a98ebbba176[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Sep 17 14:54:32 2024 +0800
+
+    fixed 0x5e000 decomp(hack)
+
+[33mcommit ddafe6ec18554d9a6b5b22a669c0b615d34f47e0[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Sep 15 21:16:10 2024 +0800
+
+    awa
+
+[33mcommit 3080ba0f27ad373db3188d5a8fe6c003003d77ad[m
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Sep 8 11:02:32 2024 +0800
+
+    Update README.md
+
+[33mcommit 94ad428915ede577111f2289c6b44f62008d2ffb[m
+Merge: 9e8545e 2780621
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sun Sep 8 10:59:12 2024 +0800
+
+    Merge pull request #5 from Physics365/stable
+    
+    更新了Github Action
+
+[33mcommit 2780621885e7400e6dd4a1b6d18eb6ff45d60e78[m
+Merge: e61aee0 401437c
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Sep 6 20:31:57 2024 +0800
+
+    Merge branch 'dev' into stable
+
+[33mcommit e61aee0f97713aa95243ff6286b742d2a846334f[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Sep 6 20:23:43 2024 +0800
+
+    Create Release.yml
+
+[33mcommit 401437c379ba60ae503c05125190e793a5300e6f[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Sep 6 19:35:00 2024 +0800
+
+    Update msbuild.yml
+
+[33mcommit 0196ffab6a4bff79187d0a16bf0ddeb82c960d9e[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Sep 6 19:33:43 2024 +0800
+
+    Update msbuild.yml
+
+[33mcommit b5b9061e40c530f2d4d5dfd3506836dfc6597c48[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Sep 6 19:30:22 2024 +0800
+
+    Update README.md
+
+[33mcommit f0a3455c055a223caad70c342aee630e1817bd4f[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Sep 6 19:35:00 2024 +0800
+
+    Update msbuild.yml
+
+[33mcommit 1544d9a927aff7c2286e029f6bd9949dbb9c00a6[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Sep 6 19:33:43 2024 +0800
+
+    Update msbuild.yml
+
+[33mcommit d6f76cf4cffc57b38c681ffd16fad5088ef8d45b[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Sep 6 19:30:22 2024 +0800
+
+    Update README.md
+
+[33mcommit 32c9b6863a74c057393d3d2f52f3602fb23fc2a3[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Sat Aug 31 22:38:21 2024 +0800
+
+    Update CasioEmuMsvc.sln
+
+[33mcommit f783fbbc7bc69fcc47e4985bbab60ded247f138d[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Sat Aug 31 18:49:25 2024 +0800
+
+    change github actions
+
+[33mcommit 1892b900cd8e114f44b59a36dd97ba6d4a2ebd7a[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Sat Aug 31 18:03:21 2024 +0800
+
+    change msbuild files
+
+[33mcommit 9e8545e9175ccb683aa1e84f3e60b67965582e9d[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Aug 31 11:26:47 2024 +0800
+
+    fixed
+
+[33mcommit f73396ff459db282a04ac0dc1d36fd3e93578e51[m
+Merge: 610b823 9df9d94
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Aug 31 11:24:30 2024 +0800
+
+    Merge branch 'stable' of https://github.com/telecomadm1145/CasioEmuMsvc into stable
+
+[33mcommit 610b8231413c0a6916bf7d629e4eda0286f1240a[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Aug 31 11:24:23 2024 +0800
+
+    fix
+
+[33mcommit 9df9d94fdc8c02f95577c9bdc8978cc1b06cb7ce[m
+Merge: 032994b c1246a0
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Sat Aug 31 10:56:08 2024 +0800
+
+    Merge pull request #3 from Physics365/stable
+    
+    修复了msbuild失败的 问题
+
+[33mcommit c1246a08308dff6feee038c298c4b0a65e2b313a[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Sat Aug 31 10:22:10 2024 +0800
+
+    Update Config.hpp
+
+[33mcommit 032994bf2d2e0ed415692d3e89433736b8f0cd55[m
+Merge: dbe37d7 60123d7
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri Aug 30 19:19:54 2024 +0800
+
+    Merge pull request #2 from Physics365/stable
+    
+    Update StartupUi.cpp
+
+[33mcommit 60123d7af64d35ab60712870040b5d4342deed98[m
+Author: 丁元皓 <physics365@outlook.com>
+Date:   Fri Aug 30 19:13:23 2024 +0800
+
+    Update StartupUi.cpp
+
+[33mcommit dbe37d7f284d601c643fca95d7806f74e7e9fd31[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Aug 30 16:55:57 2024 +0800
+
+    w
+
+[33mcommit 4df000a8e2a291e9d9f9e971e394a7c231a40446[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Aug 30 16:46:13 2024 +0800
+
+    f
+
+[33mcommit 7e9e345ae10bd9242f3a6f2c116e5b6aed4f7e63[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Aug 30 15:10:17 2024 +0800
+
+    revert
+
+[33mcommit df0337e8d385d3614d36e713a8d5661245996363[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Aug 30 15:07:57 2024 +0800
+
+    fixed
+
+[33mcommit 3499de8320a689b232bbe990a980c2f285d7c93e[m
+Merge: f5e5b8e b23fbe9
+Author: telecomadm1145 <47657299+telecomadm1145@users.noreply.github.com>
+Date:   Fri Aug 30 15:03:18 2024 +0800
+
+    Merge pull request #1 from gamingwithevets/stable
+    
+    Translate Call Analysis window
+
+[33mcommit b23fbe9c90f480aacba9c832a44865e5981bc245[m
+Merge: 447fba8 f5e5b8e
+Author: Steveyboi <thenewgwe@gmail.com>
+Date:   Fri Aug 30 14:01:53 2024 +0700
+
+    Merge
+
+[33mcommit f5e5b8eec889ab9efbbc68836b7dbecae05f97f2[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Aug 30 15:00:02 2024 +0800
+
+    a
+
+[33mcommit 447fba8d3ed353a91e570ee47e4f8056ba29ad21[m
+Author: Steveyboi <thenewgwe@gmail.com>
+Date:   Fri Aug 30 13:30:45 2024 +0700
+
+    Update
+
+[33mcommit 95a40a4976691c3df67fb45ca533673ef4c9fc9a[m
+Author: Steveyboi <thenewgwe@gmail.com>
+Date:   Fri Aug 30 13:28:58 2024 +0700
+
+    Update
+
+[33mcommit 95a3011e5bbeb2e06b05ba7b33133b4b2ae027e1[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Aug 30 13:18:08 2024 +0800
+
+    alright... android file managing feature is missing,see SysDialogs.h
+
+[33mcommit d9ba48a56a84b43c42e0b247c4b16a29ffba7751[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 29 21:54:43 2024 +0800
+
+    w
+
+[33mcommit 30b7654ae55d54bd01c3def43343ffe6f3523a69[m
+Merge: b659de5 7c8a8f8
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 29 21:54:36 2024 +0800
+
+    w
+
+[33mcommit 7c8a8f8176b871c87f1ff66064fbc076ae1f1702[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 29 21:37:18 2024 +0800
+
+    fetch
+
+[33mcommit b659de5a591ac938e86ab2de1f3563164c7a8c9d[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 29 21:26:13 2024 +0800
+
+    暂存
+
+[33mcommit 3b12fe9cdcd4f17a24e941712e64a3ae219e0e74[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 29 14:43:05 2024 +0800
+
+    packer cli tool
+
+[33mcommit 78877ff447cb6e3326212a44d795cab0daa41b72[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 29 05:37:22 2024 +0800
+
+    Rom package
+
+[33mcommit 8e9bf0cd1dbb8c54b243ab8fc817722d2136249d[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 28 12:44:20 2024 +0800
+
+    重构代码
+
+[33mcommit 26f8f30b8b393fb8e7b894dcf8c5257c7835ae1f[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 28 11:42:00 2024 +0800
+
+    w
+
+[33mcommit 46ca91092276590cc23006d7c0725321d5ac0ab4[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 28 03:39:00 2024 +0800
+
+    fix encoding
+
+[33mcommit 5aae77f34d7718af9cfab508a990aca723157ffa[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 28 03:06:10 2024 +0800
+
+    改进了内建反汇编器的bug，添加了自动标签
+
+[33mcommit 27f3546ecab1a82a4ecd3cccf690bf81572ddc5f[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Aug 27 17:57:05 2024 +0800
+
+    w
+
+[33mcommit 6a849158b079f32bd63627b3927b88dd3ad16706[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Aug 27 16:29:34 2024 +0800
+
+    a
+
+[33mcommit 356c97f76407c37c0d1cc31e022f9d7672ce00a1[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Aug 27 16:29:04 2024 +0800
+
+    Updated debugger ui
+
+[33mcommit 11e19e8350009b401dcc846d632a677832855766[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 21 19:45:06 2024 +0800
+
+    ww
+
+[33mcommit 8bb886bbd5ed74e75b73e68b91d1eee19090bfba[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 21 15:41:03 2024 +0800
+
+    lets go!
+
+[33mcommit 7059dd395adcce680d1420fe4f85341627de5389[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 21 04:34:05 2024 +0800
+
+    Fixed Interrupt Status and Interrupt Enable logic in GPIO
+
+[33mcommit 7b4a274ec178793b4a03ee7e7e7259ac333fa9ba[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 21 03:48:19 2024 +0800
+
+    GPIO minor fix
+
+[33mcommit 62fa7588c016fff3d1d5e58444be542831bb18b5[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Wed Aug 21 03:05:33 2024 +0800
+
+    Fixed GPIO Interrupt
+
+[33mcommit 8450a907ee7c212affa9f22a99eac55c155f5066[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Aug 20 19:18:37 2024 +0800
+
+    w
+
+[33mcommit e57b4f730eff8d0217b666e110f5cef68afef46c[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Aug 20 16:33:57 2024 +0800
+
+    w
+
+[33mcommit b6d685ef77bb4d3dd900e69678256c5394731033[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Aug 19 14:08:31 2024 +0800
+
+    backup
+
+[33mcommit d1ce0658dcb67055ca896928f96e2b23dc31f054[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Aug 19 03:44:37 2024 +0800
+
+    wip labels
+
+[33mcommit 75bb9424c5360251c7b12effd878f92961485e13[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Aug 18 17:44:05 2024 +0800
+
+    a
+
+[33mcommit c59900c08e206879a2ee4e45a0b33971400685fa[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Aug 18 15:57:32 2024 +0800
+
+    awa
+
+[33mcommit c3ef1e2286e64d2d882ee92b3f4b15ca051fead8[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sun Aug 18 15:07:19 2024 +0800
+
+    s
+
+[33mcommit 84fa604614e9e409e7fc05be1a381eb75637008a[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Aug 17 17:15:15 2024 +0800
+
+    a
+
+[33mcommit 82a34e1efe779715c15ed714a007ea53ea5d5f27[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Aug 16 18:28:16 2024 +0800
+
+    w
+
+[33mcommit 51b559b4c17bf1e6c3019179cff71315c83d0409[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 15 21:06:49 2024 +0800
+
+    w
+
+[33mcommit 8aecd3d7541eac12ae0eab33713b56b01e0a2476[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 15 20:47:31 2024 +0800
+
+    w
+
+[33mcommit a153e9f562966a1ac0721e278b2291d7d4278cb5[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 15 20:47:10 2024 +0800
+
+    w
+
+[33mcommit 5ae2a1969e0c188494922130fb4ed5e0b8077b34[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 15 18:46:47 2024 +0800
+
+    a
+
+[33mcommit 649f4703af5980dfd8c7aad209add0c074f08f03[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Thu Aug 15 14:25:42 2024 +0800
+
+    已合并
+
+[33mcommit 707491010f48d159adee347992aab393fe4c1718[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Aug 13 20:04:51 2024 +0800
+
+    a
+
+[33mcommit d3667aa79d7d8c1dc02f486805e3b8511ae5c043[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Aug 13 19:53:42 2024 +0800
+
+    w
+
+[33mcommit a98b3a60a0c39ff79a6d67b02303dcb975731b07[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Aug 12 00:35:01 2024 +0800
+
+    a
+
+[33mcommit b851f755c4b1522b07de3cd0010c6e5926c6717b[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Aug 10 19:28:45 2024 +0800
+
+    a
+
+[33mcommit ee5498d4af0b7661d2fcaa74bbc090e96601d728[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Sat Aug 10 01:04:50 2024 +0800
+
+    b
+
+[33mcommit 6497e7b54185738af1d1643cc6e4c4d4d6e54cb8[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Fri Aug 9 05:35:19 2024 +0800
+
+    Great means not good
+
+[33mcommit 7693ac4e2119135ac582bf654e57ce712de4e5fd[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Tue Aug 6 16:49:30 2024 +0800
+
+    a
+
+[33mcommit 5f3ecd4c3967cb99d144769ea40a50fda4309291[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Aug 5 16:08:43 2024 +0800
+
+    修复了线程锁的bug
+
+[33mcommit f602097dc530e5298b01111c383dbe05b395fa27[m
+Author: telecomadm1145 <telecomadm1919@gmail.com>
+Date:   Mon Aug 5 03:53:19 2024 +0800
+
+    更新
+
+[33mcommit 1fb29d384bd656b22796754585c9931acef13ac7[m
+Author: telecomadm1145 <1587496147@qq.com>
+Date:   Wed May 1 19:40:10 2024 +0800
+
+    Make it possible to compile with msvc
+
+[33mcommit c459f9189e04b9476082764c88ac1d9c6a94d3ea[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Tue Apr 30 07:54:26 2024 +0800
+
+    Modified interrupt system
+
+[33mcommit d91bba2334b0bcda0ae37acde7cc584219ec0299[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Mon Apr 29 19:54:50 2024 +0800
+
+    Update interrupt system
+
+[33mcommit 6354c58cbc15bb965793a1209263861572b8269d[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Sun Apr 21 20:23:16 2024 +0800
+
+    Modified clockspeed and other stuff
+
+[33mcommit 02aab2da80dd71deb8adaa91245074ab343b89ee[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Wed Apr 17 07:28:57 2024 +0800
+
+    Add keylog
+
+[33mcommit 16491eec6bada969a389c8df0fae569b85139ef0[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Tue Apr 16 15:28:26 2024 +0800
+
+    Update about injector
+
+[33mcommit 7a41af9e45879836ba4a6618645472a81a98d41e[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Tue Apr 16 14:16:11 2024 +0800
+
+    Add key injector
+
+[33mcommit b660c4a9815973359ee3277d74b18fcc63a8bae6[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Mon Apr 15 12:14:11 2024 +0800
+
+    Improved keyboard input for emulator ROMs
+
+[33mcommit 08e1f33470eba6f175d2b03bfa2bb90ed7cbcffe[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Tue Apr 9 21:40:22 2024 +0800
+
+    Fixed bugs
+
+[33mcommit 71f9bd901fd6c538dcfda364387824a6290cecee[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Mon Apr 1 06:55:15 2024 +0800
+
+    Modified code about SWI
+
+[33mcommit 6bbad0ab1825ee8a3eb521eb95a9d9e5382a2ff1[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Sun Mar 31 21:36:56 2024 +0800
+
+    Modified Chipset.cpp
+
+[33mcommit 09cf7f20e5afc45b3fb5b5c4d1b3f8373aab44ea[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Sun Mar 31 19:26:33 2024 +0800
+
+    Fixed bugs
+
+[33mcommit b69fc05233246fbb7ae7b85e25cac7226c936630[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Sun Mar 31 19:05:06 2024 +0800
+
+    Update about memory access
+
+[33mcommit 7d406d4fb6bb9d1e73d49832c28ede88c0c8473b[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Sat Mar 30 17:27:21 2024 +0800
+
+    Update about 0xF404 and 0xF405
+
+[33mcommit d9e58cc0d55b29771e7113408767fa8c6d2236d7[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Sat Mar 23 16:19:11 2024 +0800
+
+    Fixed bugs
+
+[33mcommit 0402117ebfb62dc72340400eac7b6e6865753d25[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Sat Mar 23 14:51:59 2024 +0800
+
+    Updated for real hardware
+
+[33mcommit 07e2588669e508dfcf222346e5fa610dd4660af0[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Tue Feb 20 18:17:02 2024 +0800
+
+    Update README.md
+
+[33mcommit b26929e0d6f9219c8ff8a6346491194b43b529be[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Tue Feb 20 18:10:55 2024 +0800
+
+    Update BCDCalc.cpp
+
+[33mcommit ca4ef63aff5a573a33e1894a9e85dc4ffee8d080[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 20:40:46 2024 +0800
+
+    Update README.md
+
+[33mcommit 6efe723496ba1108f81ceca110496a3cee85eb79[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 20:34:36 2024 +0800
+
+    Update README.md
+
+[33mcommit aac464256811f133ae6db0fdfaaa0afbfee6e37d[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Mon Feb 19 20:15:59 2024 +0800
+
+    Delete files
+
+[33mcommit cbc9db4abf3d865df02a3e296558a3210a4deeaf[m
+Author: Xyzstk <13613846017@163.com>
+Date:   Mon Feb 19 20:12:44 2024 +0800
+
+    Add files
+
+[33mcommit b624e033933190b0144991550e41f397dc951049[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:48:26 2024 +0800
+
+    Add files via upload
+
+[33mcommit 98ca68239c4d9697fe4a2260971c4118ff4212be[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:47:13 2024 +0800
+
+    Add files via upload
+
+[33mcommit 145695384496dcd5ba6d6f7a7d302df475d3d99b[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:44:36 2024 +0800
+
+    Add files via upload
+
+[33mcommit 07582cb27be1953c1a6a82a2be53d7e95281a6d2[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:42:19 2024 +0800
+
+    Add files via upload
+
+[33mcommit 9cae18cc7726ca4a3ec0e2db25359a21feb49d66[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:41:27 2024 +0800
+
+    Update .gitignore
+
+[33mcommit e6daaf4b19254ab721f6e1997ef3d2284e931db3[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:34:28 2024 +0800
+
+    Add files via upload
+
+[33mcommit d62682ac9d46faa9ebe24d4b097bf326d0c28a92[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:33:38 2024 +0800
+
+    Add files via upload
+
+[33mcommit 219087a290e8a352aff9a5968beed71c30a0d16e[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:30:05 2024 +0800
+
+    Create README.md
+
+[33mcommit 9513174f3a7501f77401020fe7f9d625c8fb41f5[m
+Author: Xyzstk <104719291+Xyzstk@users.noreply.github.com>
+Date:   Mon Feb 19 19:29:33 2024 +0800
+
+    Delete src directory
+
+[33mcommit 0c9348f60da495e3fe7fff7c54da7fac46f1e147[m
+Author: Xyzst474 <104719291+Xyzst474@users.noreply.github.com>
+Date:   Mon Feb 19 18:23:23 2024 +0800
+
+    Add files via upload
+
+[33mcommit ab1d2c0fedb0c58e7f53b801dd1e8bc68aaef225[m
+Author: Xyzst474 <104719291+Xyzst474@users.noreply.github.com>
+Date:   Mon Feb 19 18:19:25 2024 +0800
+
+    Delete emulator directory
+
+[33mcommit 2f5225caf7871c00ea0f9c751301d23023288e59[m
+Author: qiufuyu123 <qiufuyutony@outlook.com>
+Date:   Fri Sep 22 21:14:42 2023 +0800
+
+    fix `segment fault`
+
+[33mcommit 0b2184d282a6ab46e06f073de16610cfc0de6986[m
+Author: qiufuyu123 <qiufuyutony@outlook.com>
+Date:   Sat Sep 16 23:35:36 2023 +0800
+
+    fix ui bugs
+
+[33mcommit f581deb3e68f71927350a2665796473f852dfd82[m
+Author: qiufuyu123 <qiufuyutony@outlook.com>
+Date:   Sat Sep 16 22:07:23 2023 +0800
+
+    fix readme
+
+[33mcommit c1aa6416617acce910cbae7475d2572bcd9d11e3[m
+Author: qiufuyu123 <qiufuyutony@outlook.com>
+Date:   Sat Sep 16 22:05:35 2023 +0800
+
+    add disas + readme
+
+[33mcommit fe9b3ddfb66c4959d92ac6e044a9110e2fa62311[m
+Author: qiufuyu123 <qiufuyutony@outlook.com>
+Date:   Sat Sep 16 20:36:16 2023 +0800
+
+    code viewer + breakpoint
+
+[33mcommit d3b896615018007d6c76bc7c981c3b937a522fa0[m
+Author: qiufuyu123 <qiufuyutony@outlook.com>
+Date:   Fri Sep 15 21:47:40 2023 +0800
+
+    rebuild xmake + hex editor
+
+[33mcommit bb0fd85e8c122e96b761ad5015cedeba1e1cf90f[m
+Author: Steveyboi <thenewgwe@gmail.com>
+Date:   Sun Aug 27 09:41:53 2023 +0700
+
+    Update README.md
+
+[33mcommit b94b7d0b524780657f184b7294633f07d14d78ef[m
+Author: GamingWithEvets <thenewgwe@gmail.com>
+Date:   Thu May 18 11:57:07 2023 +0700
+
+    Update the README
+
+[33mcommit c1b0aecef87654ce3367af2183597f1ef6d3e004[m
+Author: GamingWithEvets <thenewgwe@gmail.com>
+Date:   Thu May 18 11:42:24 2023 +0700
+
+    Add an s-load of models
+
+[33mcommit 7d7234be05e43dc72f35d6b254c9d2918caf7718[m
+Author: GamingWithEvets <thenewgwe@gmail.com>
+Date:   Thu May 18 11:18:49 2023 +0700
+
+    Update README.md
+
+[33mcommit 85230523e76ad88ec7aa947cc33f2ab45f5649cc[m
+Author: GamingWithEvets <thenewgwe@gmail.com>
+Date:   Thu May 18 11:17:08 2023 +0700
+
+    Add modified code
+
+[33mcommit a28765b347c6717e2db1c1a22d53860cb86b8738[m
+Author: GamingWithEvets <thenewgwe@gmail.com>
+Date:   Thu May 18 11:14:37 2023 +0700
+
+    Update README.md
+
+[33mcommit cf9f96591a192b3090b91cdba3889ab5d6849391[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jul 27 11:51:41 2020 +0700
+
+    Fix mutex -- 2
+
+[33mcommit 0a16e2295a82e97813c8d37486ba4fd1de0ff7cf[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Jul 26 23:09:14 2020 +0700
+
+    Fix mutex
+
+[33mcommit 7e48a03c5b331f1124634af3daeca4c8c13b0858[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri Jul 24 21:14:23 2020 +0700
+
+    Add 991cnx model
+
+[33mcommit 3ef0528c8feea100204b7502a5e57f5bb2cdfbfa[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri Jul 24 16:58:45 2020 +0700
+
+    Implement word boundaries correctly for load/store instructions
+
+[33mcommit f67063090fa66e29fb6041da93ebea021260ffb4[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri Jul 24 16:58:17 2020 +0700
+
+    Delete unnecessary readme file
+
+[33mcommit cd7aa02813cf7fc5ecf60529db4f0adce48a52e2[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jul 15 12:17:01 2020 +0700
+
+    Fix uninterruptible infinite log, workaround for readline issue
+
+[33mcommit 2f1f78f84516b8f3ee2afcf98be301c382414ee6[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jul 15 10:52:07 2020 +0700
+
+    Optimization: Remove unused read/written register tracking
+
+[33mcommit 3323797b9e0350dadb8dbe1314e7a30423886618[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jul 15 10:49:11 2020 +0700
+
+    Modify meson build file to handle different names of lua53 package
+
+[33mcommit b362f1e56eb2bf782b6aafb651d8f2efbbfc55d5[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jul 15 10:48:55 2020 +0700
+
+    Remove outdated Windows build instruction
+
+[33mcommit b179667c99b21fa69bbbcda7948aed18aab1ff03[m
+Merge: 8ef11f9 4ee2287
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jul 13 19:00:43 2020 +0700
+
+    Merge remote-tracking branch 'upstream/master' into stable
+
+[33mcommit 8ef11f9393193ce7f3c518785fd48ba0a95e975a[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri May 29 17:09:19 2020 +0700
+
+    Emulator: Fix issue with number printing debug function, support displaying numbers with hexadecimal digits
+
+[33mcommit 4c60838103f3b29b128ea45c205db14a77dc05ac[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri May 29 17:08:34 2020 +0700
+
+    Disassembler: show string value for ASCII strings
+
+[33mcommit 4ee2287dbbf163bf407e3b7540b3368663ce7d32[m
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Mon Dec 9 15:37:06 2019 +0100
+
+    Forgot to murder this <_< (see de5835b)
+
+[33mcommit de5835b77fbcd0cfb2f9cea8e830ae8b123fe4e9[m
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Mon Dec 9 15:31:52 2019 +0100
+
+    Switch to a sane build system >_>
+
+[33mcommit effde92e81a864d1c1a8d57bf8889ccf8b20af38[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Nov 10 20:50:22 2019 +0700
+
+    Add fx991cnx emulator model
+
+[33mcommit 503ea1a8653cde7f7d929a6f621c7b1eae366165[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Oct 6 23:47:39 2019 +0700
+
+    Allow Lua code to yield
+
+[33mcommit 3c3fcff9b1000985bb191238c87149dfa9e5bfd3[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri Oct 4 17:19:34 2019 +0700
+
+    logger::Info should keep readline prompt
+
+[33mcommit d6a666b80cf825c6d3ea268c2222566c983f9358[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Oct 2 16:37:26 2019 +0700
+
+    O2 optimization
+
+[33mcommit cc8a196eed318636db3ab2043879743120eb172c[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Thu Oct 3 00:21:10 2019 +0700
+
+    Fix timer too slow
+    
+    The problem was introduced in commit 58ac2caa6bd8a7785924dff2b1272b45cded7571.
+    The diff_cap being too small (it should be the ceil of the division, not
+    the floor) and the inaccurate timer makes the emulation slower than the
+    specified cycles_per_second.
+
+[33mcommit 70a80d200923f4eeffb6ea753af39d76d56c23f4[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Oct 2 15:28:07 2019 +0700
+
+    Fix undefined behavior, allow program to work properly with optimization
+
+[33mcommit 767e36256e98c26ad5d676016e0040b04ee054ec[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Tue Oct 1 18:44:48 2019 +0700
+
+    580vnx correct interface
+
+[33mcommit fba76a3efca0b8658dddb0c0d084cce687cbcadd[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Sep 30 23:31:28 2019 +0700
+
+    Add 580vnx model
+
+[33mcommit 7cf4dcc1e327ee101c6714650476a7fdc519476e[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Sep 30 08:09:46 2019 +0700
+
+    Add 580vnx_emu model (classwiz hardware)
+    
+    Note that currently the interface is not correct. See file
+    interface-todo.png.
+    
+    Also some objects originally initialized in the constructor is now
+    initialized in a setup function, because they must be constructed after
+    lua_state, which takes more than a simple command to initialize.
+
+[33mcommit f16a4567386f49781047a121bf40b9b61c61bf67[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Sep 30 08:08:54 2019 +0700
+
+    Disallow copying or moving MMURegion
+
+[33mcommit 4ea41d64805643d4c8cc49f0eee9e9d377805091[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Sep 29 09:29:06 2019 +0700
+
+    Colorize g++ output
+
+[33mcommit 006edffee46153c982ef486e779f5d943b5fef16[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Sep 28 19:39:45 2019 +0700
+
+    Allow accessing model info from Lua
+
+[33mcommit 8f2bf032fdf1e7ae50411531b4b33c55c960cd53[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Sep 28 08:07:29 2019 +0700
+
+    Add model for official emulators provided by Casio
+
+[33mcommit 29b4a0107adfbf53d44f1b950c976109475202e7[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Tue Jan 29 19:44:49 2019 +0700
+
+    Allow disassembler to work properly in case panic2 out of data
+
+[33mcommit 51d50a205bc70523f5fca9e37ace7ff191e0a067[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Sep 1 23:27:11 2019 +0700
+
+    Do not force renderer accelerated
+    
+    The behavior will be the same when accelerated renderer are available
+    and it will still work when it's not available.
+
+[33mcommit e2faf3b7c687cb0e1e9d8b7730fb05fa252131df[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Sep 1 23:22:30 2019 +0700
+
+    Fix bug with calling SDL_Init
+
+[33mcommit ed44728a95f07897bba39296049fd40c710bbae5[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jul 6 21:55:43 2019 +0700
+
+    Fix bug: repaint on exposed window event
+
+[33mcommit b412254e4b5113f03515f927524d8aba8e5f30de[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jul 6 14:39:24 2019 +0700
+
+    Fix window resize
+    
+    On some windows manager (such as xmonad), non-resizable windows can
+    still be resized.
+
+[33mcommit ef1bd6a387237836ec820981bb31ed8113650822[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jul 6 11:22:45 2019 +0700
+
+    Add exit_on_console_shutdown flag
+
+[33mcommit 9a2439495f7d947c78e9130b02a564f0ec1486a8[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jun 29 10:43:13 2019 +0700
+
+    Add execution tracing
+
+[33mcommit 73f76c98e3aaecfbad73bc1d055365c4439091bd[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jun 24 19:01:54 2019 +0700
+
+    Fix error in readme about strict_memory
+
+[33mcommit e87d64794b6167247c0216138618e0aa6cdb937f[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jun 24 17:36:05 2019 +0700
+
+    Use C++ functions instead of C functions
+    
+    (printf, exit, strerror) For better compatibility with other C++
+    compilers.
+
+[33mcommit df42e7990120c377c7b7087b20eb5a7bb687a8fa[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Tue Jun 25 16:34:03 2019 +0700
+
+    Add instruction for compiling emulator on windows
+
+[33mcommit 2f6f8fc0a7af4a9ef050898c9994414402abe768[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jun 24 14:05:32 2019 +0700
+
+    Add word_commands option
+
+[33mcommit ed9b9601894ea9fb925186e7722775effb21d18c[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jun 24 13:54:14 2019 +0700
+
+    Readme refactor
+    
+    Move some documentation to the code to avoid out-of-date documentation.
+
+[33mcommit 314da7c361a9a3715717c201d8cce1f12b308b3d[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jun 24 13:39:48 2019 +0700
+
+    Add some documentation about data type to disassembler
+
+[33mcommit ff84daa8b870708d7a6de09f48fdbe47dcf25db5[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jun 24 13:38:01 2019 +0700
+
+    Change timer counter type to 64-bit to prevent overflow with large frequency
+
+[33mcommit 7fd1ee3ba269c56934a431ce8a646ddbce09cfd7[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Mar 23 15:43:56 2019 +0700
+
+    Fix crash when data is indexed with nil
+
+[33mcommit 3acf0966f29e1982e9f014c74ca6496ef0a2e9a7[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Thu Mar 21 23:51:38 2019 +0700
+
+    Fix wrong read result of screen SFRs
+    
+    This has been broken since commit 5b29d4025a64aacd612e01e2e8437e2bd7003883.
+
+[33mcommit e1928b06c081a79ce88b730df88ae45133922bac[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Tue Mar 12 18:07:58 2019 +0700
+
+    Improve disassembler compatibility with newer Lua versions
+
+[33mcommit c2f60a48724e63add7c631b8087014f16cf2d181[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Mar 11 21:46:06 2019 +0700
+
+    Move inject function to model specific Lua files
+
+[33mcommit a392582d5bb2e284897531a9df545562f1596d00[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri Mar 1 22:18:07 2019 +0700
+
+    Add 82es+a model
+
+[33mcommit 56ad0c82feef3a1ce343afb21f0a9d621bcfa6fb[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Tue Mar 5 13:34:18 2019 +0700
+
+    Fix bugs caused by adding readline support
+    
+    1. It's undefined behavior to destroy argv_map before emulator, so emulator must not be static.
+    2. If the console thread stops the emulator, it must notify the main thread.
+
+[33mcommit 37751d3a8592e33c8eb302ff1d7e51144966133b[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jan 12 13:51:04 2019 +0700
+
+    Lua convenience functions
+
+[33mcommit 228c7592ec9b6a0a4648cd74b648287d4c74985e[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Jan 13 10:50:04 2019 +0700
+
+    Fix README note on paused=true
+    
+    The bug was already fixed in 8c6f6fb613e7a5d829bfb57b707b4b946d77ad6f.
+
+[33mcommit 3347a90cc20f116ffb6e44f135ff2a27dcf0e14b[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Thu Jan 10 10:55:30 2019 +0700
+
+    Implement persistent history
+
+[33mcommit 272840b7c1d577a6faa577e23454ad5731943a22[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Tue Jan 8 10:27:46 2019 +0700
+
+    Use readline library to read input from console
+
+[33mcommit 4fd42cd0c02e006365a447db2e105810b6ac20d0[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jan 12 14:48:43 2019 +0700
+
+    Combine rename list and entry_addresses_file
+    
+    entry_addresses_file was added at commit f22d16a13a9df959cdad91b0893ae2c741cab456.
+
+[33mcommit d69655587338171fcea12c1d6042cfa6feb6e8e2[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri Jan 11 23:24:56 2019 +0700
+
+    Disassembler bugfix
+    
+    The bug was caused by commit b32dcce1d8c325d1b8e87e225d8f3f6f859c302f: Context name should not be prepended for custom label name without leading dot.
+
+[33mcommit 0056dd9e9a361ff1e188f8b751f84abad7a9ef34[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jan 9 17:41:03 2019 +0700
+
+    Disassembler:rename: Allow taking hex address as raw
+
+[33mcommit b32dcce1d8c325d1b8e87e225d8f3f6f859c302f[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jan 9 15:07:23 2019 +0700
+
+    Context name should not be prepended for custom label name without leading dot
+
+[33mcommit 0cd6800f39ee650b2ac8f41d62e4f8cdf9e67cd7[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jan 9 14:55:22 2019 +0700
+
+    Bugfix: Contexts should be renamed too
+
+[33mcommit 2c7ceefce0fcd87c26b2f1b6c387b38404141f18[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jan 9 09:43:50 2019 +0700
+
+    Implement window resize
+    
+    Note that SDL_HINT_RENDER_SCALE_QUALITY should be at least 1, otherwise
+    Moiré pattern may appear.
+
+[33mcommit 16bce45d00fd9f75956e42ac0c4813167133127c[m
+Merge: 68dee63 a63eee8
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Tue Jan 8 23:41:56 2019 +0700
+
+    Merge remote-tracking branch 'upstream/master'
+
+[33mcommit 68dee63ff540c43cab09e946d83739fa8d0bebf3[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jan 7 23:29:40 2019 +0700
+
+    Move common Lua code to emulator/lua-common.lua
+
+[33mcommit 9fb9ad42d9ee63146d9e0b454e7b493e5ae2e731[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jan 7 22:20:44 2019 +0700
+
+    Speed up disassembler for LuaJIT
+    
+    It's unclear why this provides such a massive speedup. For Lua 5.3
+    the speed remains about the same.
+
+[33mcommit e1ce89ffaa09bd75678abd915ba8526652988f8b[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jan 7 22:19:05 2019 +0700
+
+    Speed up disassembler for Lua >= 5.3 using native bitwise operators
+
+[33mcommit 85b64cac552300166bec86c21b2d2425a99edaa3[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jan 7 11:11:57 2019 +0700
+
+    Improve disassembly speed by using string concat for small string
+
+[33mcommit 71cb46f7f63ab03a46723c59827e12fee8ab6ce7[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon Jan 7 09:33:39 2019 +0700
+
+    Implement stack trace
+
+[33mcommit a63eee839f7d39be41243135c280031da7f20425[m
+Merge: 431049c 4967cb5
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Mon Jan 7 15:03:38 2019 +0100
+
+    Merge pull request #19 from user202729/dis-fixpsw
+    
+    Fix disassembly of PSW access instructions
+
+[33mcommit 4967cb56212a45448c39447f5bb674b729f0941a[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Jan 6 22:00:46 2019 +0700
+
+    Fix disassembly of PSW access instructions
+
+[33mcommit 9a7e4aab08e8a8f294f90273699c80b52d82dae0[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Jan 6 22:00:46 2019 +0700
+
+    Fix disassembly of PSW access instructions
+
+[33mcommit ffcbd7bc4d75ca57c5bd4f32cbb2af4aaf15e38f[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Jan 6 16:20:47 2019 +0700
+
+    Dynamically add/remove breakpoint handler to reduce CPU usage
+
+[33mcommit 6c7a398572361825bb6a39874aa9b16dbf9ff6cc[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Jan 6 20:37:29 2019 +0700
+
+    Implement watchpoint
+    
+    The implementation uses segment_dispatch to store watchpoints, so a lot of
+    existing code needs to be changed.
+
+[33mcommit 398d0971b910cceaab155836165b35321569aa5e[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jan 5 23:29:49 2019 +0700
+
+    Add breakpoint commands
+
+[33mcommit 803fd8efbd4b4e43fd329bfb0982b36ac038564c[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jan 5 23:10:18 2019 +0700
+
+    Add some Lua helper functions
+
+[33mcommit f22d16a13a9df959cdad91b0893ae2c741cab456[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jan 5 22:01:15 2019 +0700
+
+    Add entry_addresses_file
+
+[33mcommit dccc24ed1f8ad662ebdb5ee30c86f7f4443141f9[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri Jan 4 17:54:16 2019 +0700
+
+    Require name entry to start at start of line (possibly with some spaces)
+
+[33mcommit dab550faf9446017e5577a5b299b755df7280c68[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Jun 10 08:53:21 2018 +0700
+
+    Add README
+
+[33mcommit 431049c152898de6b5c519ab90e586844473457a[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Aug 14 16:40:04 2018 +0200
+
+    Clear up include directory mess and add pkg-config
+
+[33mcommit a09cad41a6bb9ae62dd052b991309ad7da33f690[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Mon Aug 13 19:21:27 2018 +0200
+
+    Fix dsr prefix conflicting with st/l offset prefix when printed (fixes #18)
+
+[33mcommit 9bc9f0c6808af3d84d5612f90de7e76cb890424c[m
+Merge: 2f8ba3e 8c6f6fb
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Sun Aug 12 20:45:14 2018 +0200
+
+    Merge pull request #15 from user202729/paused-bugfix
+    
+    Make the emulator render properly, even when start with `paused=`
+
+[33mcommit 2f8ba3e3fac8c5c27d335ce6d462c3f4b2c76917[m
+Merge: 12f88d8 7c79266
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Sun Aug 12 20:44:59 2018 +0200
+
+    Merge pull request #17 from user202729/fix-disas
+    
+    Fix some bugs in the disassembler
+
+[33mcommit 7c792669ae0981b8a05018fada687d310ca9b968[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jun 27 23:28:32 2018 +0700
+
+    Fix error reporting
+
+[33mcommit 84d7cf82861faf8acea70afc4c8a74909b8e21a4[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Wed Jun 27 23:25:44 2018 +0700
+
+    Make return value of bitwise operators signed 32-bit integers instead of unsigned
+
+[33mcommit 8c6f6fb613e7a5d829bfb57b707b4b946d77ad6f[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sun Jun 10 10:58:54 2018 +0700
+
+    Make the emulator render properly, even when start with `paused=`
+
+[33mcommit 12f88d835dcef127afa2a650eba9d09e015db0fa[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Jun 9 12:25:26 2018 +0200
+
+    Avoid unused variable warnings properly
+    
+    (I.e. not with (void) casts.)
+
+[33mcommit ebccf6ce6895b53fe55b359e0bfa1b62973fb820[m
+Merge: a6c2cb5 2fab830
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Sat Jun 9 11:53:21 2018 +0200
+
+    Merge pull request #12 from SopaXorzTaker/patch-1
+    
+    Create a reference to the dumped ROM (fixes #6)
+
+[33mcommit a6c2cb51fbb035f5726e1cb3240a9bf12e2c7d67[m
+Merge: 158211a 39d1a69
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Sat Jun 9 11:29:47 2018 +0200
+
+    Merge pull request #11 from user202729/master
+    
+    Set require_frame inside PressButton.
+    
+    I merged #8 too early...
+
+[33mcommit 158211a9b903242ccdb07fc5f923188d369fe0bc[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Jun 9 11:29:06 2018 +0200
+
+    Un-hardcode ink colour
+
+[33mcommit 39d1a6980e9ea2aa09bf0e002a07b51a6bc72813[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jun 9 15:54:44 2018 +0700
+
+    Set require_frame inside PressButton.
+    Otherwise, pressing the keyboard buttons may sometimes not "highlight" the corresponding calculator keys. Try pressing [menu] then [shift].
+
+[33mcommit 2fab830c99bf6a23264ed5a763bbde08121251cf[m
+Author: SopaXorzTaker <SopaXorzTaker@users.noreply.github.com>
+Date:   Sat Jun 9 11:54:29 2018 +0300
+
+    Create a reference to the dumped ROM (fixes #6)
+
+[33mcommit c1b2bcf79f559897fb64a6cfef84dd453f335452[m
+Merge: 983c9e9 1e78c9f
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Jun 9 10:33:15 2018 +0200
+
+    Merge branch 'keyboard-control'
+
+[33mcommit 983c9e9728f812ee4922d381e8b52c2f6ca1e85c[m
+Merge: be64c81 5b29d40
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Sat Jun 9 10:10:20 2018 +0200
+
+    Merge pull request #10 from user202729/reduce-frame
+
+[33mcommit 5b29d4025a64aacd612e01e2e8437e2bd7003883[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jun 9 14:34:51 2018 +0700
+
+    Only call Chipset::Frame when needed.
+    Reduce CPU usage by up to 80% for main thread.
+
+[33mcommit e7da9c600b37db96b674f4fceeb42e04be6b9902[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Sat Jun 9 11:12:43 2018 +0700
+
+    Fix typo
+
+[33mcommit b70375382cf71f62144f44775b2fdac31a9c1ba4[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Fri Jun 8 15:46:45 2018 +0700
+
+    Add Makefile to dependency list.
+
+[33mcommit 1e78c9f8878d92ed0d1c6dcd0596258e440ffe7b[m
+Author: user202729 <25191436+user202729@users.noreply.github.com>
+Date:   Mon May 28 19:03:45 2018 +0700
+
+    Map computer keyboard keys to virtual buttons
+
+[33mcommit be64c8169ba408ef9ee15434332eccb4fde560a9[m
+Merge: 63a38e3 2cacda6
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun May 27 21:22:20 2018 +0200
+
+    Merge branch 'fix-threading-issues'
+
+[33mcommit 63a38e3b97ef35020b18f8c006b4462c6ed1ed61[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Feb 3 23:35:38 2018 +0100
+
+    Redirect PANIC to stderr
+
+[33mcommit 2cacda626b629077810fb2515866b2b5b00edbe7[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Jan 6 16:15:48 2018 +0100
+
+    Fix segfault on close, ditch SDL timer thread
+
+[33mcommit 7a61c2ca5a69dda48149692f8d5626e47ae135b5[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Jan 6 09:49:24 2018 +0100
+
+    Update Makefile and fix a few warnings
+
+[33mcommit e9f4e74368cf42e5e10c6bbb488bba70c8d3d453[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Fri Dec 15 23:47:35 2017 +0100
+
+    Remove stray tostring
+
+[33mcommit c3e13e921d701167a67066733c2f55b94d9baf54[m
+Author: Tamás Bálint Misius <lbphacker@gmail.com>
+Date:   Fri Dec 15 23:45:40 2017 +0100
+
+    Add LICENSE (fixes #2)
+
+[33mcommit 97ec678c09b811529271260caf887f36acc01257[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Fri Sep 29 18:03:09 2017 +0200
+
+    Add CSR mask, remove defunct 991es+ model
+
+[33mcommit 58ac2caa6bd8a7785924dff2b1272b45cded7571[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Fri Sep 29 17:43:16 2017 +0200
+
+    More fixes and a timing adjustment
+
+[33mcommit b1880676af8296b047a46532e1b792277d15a80b[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 24 18:22:34 2017 +0200
+
+    Fixing fixes
+
+[33mcommit 9c5878db19c96374e6cf6ef0c39a7ad85ab174d6[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 24 18:21:37 2017 +0200
+
+    More fixes
+
+[33mcommit 4d10ae45706ced987edbff025383ee39ce9d1fbb[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 24 17:21:43 2017 +0200
+
+    Name clash fixes and HandleMemoryError
+
+[33mcommit f19446cd9e801afee3314063e6a23d8b4fbf0f03[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 24 12:50:31 2017 +0200
+
+    Timer rewamp and other tweaks
+
+[33mcommit 9539eb44c374d835893fa49207736446af09d3f9[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Fri Sep 22 18:45:01 2017 +0200
+
+    Eliminate need for ugly timer hack
+
+[33mcommit 870df8e244ba254c119e02164ab1e5f27150bdfb[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Fri Sep 22 18:06:21 2017 +0200
+
+    Tweaks
+
+[33mcommit ea5494259bcefaeb218f02654eb46ced4a265934[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Fri Sep 22 07:21:16 2017 +0200
+
+    Add load/save option to BatteryBackedRAM
+
+[33mcommit fbfd81c199d2a458288052df3841e294c04c5bf3[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Fri Sep 22 06:53:00 2017 +0200
+
+    Initialise interrupts_active in Chipset
+
+[33mcommit 230a3c557d0703719c0b13dab7d3951ed28f5481[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Thu Sep 21 22:25:40 2017 +0200
+
+    Implement timer and lots of tweaks
+
+[33mcommit ae3f7f18acba8cb6f46bba1af177a98bfed852dc[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Wed Sep 20 14:08:52 2017 +0200
+
+    Ignore all uninteresting SFRs
+
+[33mcommit 25ffd1909af141a847b8df0d4931836977603759[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Wed Sep 20 13:26:54 2017 +0200
+
+    Fix MMU region overlap at 0xF040
+
+[33mcommit 9494e21814324c572c7da6a68ae58d2f281ee77f[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Wed Sep 20 13:09:53 2017 +0200
+
+    More miscellaneous SFRs
+    
+    The purpose of most of which are unknown.
+
+[33mcommit 0911ea37e4c0cb813219fdb79b2a43cc4f09a049[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Wed Sep 20 12:09:02 2017 +0200
+
+    More screen SFRs and such
+
+[33mcommit 7917689f8504174119ab04fd0edfbdc02c879fd8[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Wed Sep 20 09:49:21 2017 +0200
+
+    Reverse data writes for easier SFR write detection
+
+[33mcommit 3cdf3bc609ec116c6d4a797f9643dc3da60910dd[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Wed Sep 20 09:24:38 2017 +0200
+
+    Add StandbyControl
+
+[33mcommit 6a8745c813cf75663c68ccf701869c22fb310aad[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Wed Sep 20 08:10:26 2017 +0200
+
+    Add KOMask to the Keyboard peripheral
+
+[33mcommit 7696e143259910f2a7d9473281e46cb685cafa82[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Sep 19 21:33:55 2017 +0200
+
+    Eliminate the need for manual unregistering of MMU regions
+
+[33mcommit 439756e01566766dd8a9242962d8094a456aec85[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Sep 19 18:19:15 2017 +0200
+
+    More keyboard tweaks
+
+[33mcommit 2e79c7bbab1617fa7f98fcffd72a551894bef86f[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Sep 19 16:51:34 2017 +0200
+
+    Eliminate need for std::set in Keyboard.cpp
+
+[33mcommit 795211fdcd55a111c96e2ae2ca6a918eebd75745[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Mon Sep 18 21:03:13 2017 +0200
+
+    Moving files around
+
+[33mcommit 7fdd064cc4e3649252d51642594b17a1ddba4896[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Mon Sep 18 20:44:29 2017 +0200
+
+    Add ghosting to keyboard
+
+[33mcommit 39f7b8025408932ab3b88e92bccc5e19586fa3ff[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Mon Sep 18 08:59:52 2017 +0200
+
+    Screen enhancements
+
+[33mcommit cddf47e391e4c02d77c71ad58e8896320b607741[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Mon Sep 18 08:51:10 2017 +0200
+
+    Complete screen and keyboard peripheral
+
+[33mcommit 22169e0b6079a8f39a026e596277e340ef7b117a[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 17 14:03:49 2017 +0200
+
+    Ditch surfaces, use SDL renderer
+
+[33mcommit 7c6a2d4c6ce5df44ceab669cf453e66e72fcc842[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 17 13:48:40 2017 +0200
+
+    Add incomplete screen peripheral and some more Lua functions
+
+[33mcommit f7dc3bef92d67b42a51c0d87aba0f58695d42b24[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 17 12:48:45 2017 +0200
+
+    Add emu:pre_tick and emu:post_tick
+
+[33mcommit 5a6b2921ef30b7191af3a7b3e7b05fb6ced49e5c[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 17 12:17:26 2017 +0200
+
+    Make console input thread use a condition variable
+
+[33mcommit 0298f10d0f9484a9a2789964e37183165dff417e[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 17 11:36:56 2017 +0200
+
+    Third round of bugfixing (thanks user202729!)
+
+[33mcommit e8162808502797d51625491c5b621febc05b0df4[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Sep 12 18:18:02 2017 +0200
+
+    Second round of bugfixing (thanks user202729!)
+
+[33mcommit a885f9b9c09b6b4a1b0c9501082bb75ad1387a79[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 10 17:40:06 2017 +0200
+
+    Add Lua console and first round of bugfixing (thanks user202729!)
+
+[33mcommit 7625ba365ed7ca40df0b8008cd0675e8669db988[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Sep 9 20:57:57 2017 +0200
+
+    Add register map, prepare for more Lua integration
+
+[33mcommit 29d353787071a2d813d09c5e8acae66d0ea10194[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Sep 9 12:18:38 2017 +0200
+
+    Implement full instruction set.
+    
+    At this point the instructions are not yet tested.
+
+[33mcommit d1cfdef080c73274e5a02dd05ef135124b817f53[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 3 11:24:15 2017 +0200
+
+    Instruction stubs done, dispatcher done
+
+[33mcommit 1a00af9201473d1b39b60de9a48d373724378576[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 3 10:23:54 2017 +0200
+
+    More instruction stubs
+
+[33mcommit 922111324dda1bc95e6ec5766b60e4ddf354326f[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 3 09:20:19 2017 +0200
+
+    Make the disassembler work under plain Lua
+
+[33mcommit da279e9cf858f183e5a88c52eee4e67e9f1c2e28[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Sep 3 08:42:34 2017 +0200
+
+    Opcode handlers (incomplete)
+
+[33mcommit 29fee3cab32a3e64fa02a2812c1ce511508bcaf1[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Aug 29 19:40:00 2017 +0200
+
+    Implement Chipset
+
+[33mcommit 4b75de38ec5ccee6e32897a5cd17ce610ef97b51[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Mon Aug 21 17:37:06 2017 +0200
+
+    Sync
+
+[33mcommit 2674618479207d60d7539b6a39d60a6f536c09fb[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Aug 19 15:03:34 2017 +0200
+
+    Shift instruction template fix
+
+[33mcommit d81060d62c391eb485b36628a305f54a02c08bd2[m
+Merge: b097f03 3e1ac14
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Aug 6 10:23:56 2017 +0200
+
+    Merge branch 'add-lua'
+
+[33mcommit b097f038f2ba84fac11d4af00e1f0e3ac9b09e0b[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Aug 6 10:22:38 2017 +0200
+
+    Format small negative offsets differently
+
+[33mcommit 3e1ac1423e6c0540e0f660e6def57983c412f739[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Aug 1 16:44:17 2017 +0200
+
+    What is that doing there
+
+[33mcommit 7b3711f6103ea19ce9b98c7d2e06153694f2484c[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Aug 1 16:09:30 2017 +0200
+
+    Add Lua
+
+[33mcommit 735b9857b821d1a438f18991246e3d5fc8d35862[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Tue Aug 1 12:39:43 2017 +0200
+
+    Disassembler enhancements
+
+[33mcommit f9025307e52910461473cfbcd7576c25161170c3[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Jul 30 15:10:45 2017 +0200
+
+    Sync
+
+[33mcommit 1c981efd49b682d98b887728c06a9a6e53ecbf2c[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sat Jul 29 01:27:48 2017 +0200
+
+    Disassembler
+
+[33mcommit 75642e332a41f27f5d98235293caa9c334f51339[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Mon Jul 24 11:13:07 2017 +0200
+
+    Moving stuff around
+
+[33mcommit c0f7238c71bb3496448c31b832ec7b1ffb13f908[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Jul 23 22:52:28 2017 +0200
+
+    More precise cycle staging, cleaner TimerCallback
+
+[33mcommit f52e7f4bb00eaa9536b798e4a61ea2dfee714f28[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Jul 23 21:55:13 2017 +0200
+
+    Cycle staging
+
+[33mcommit f8391a7997247b5a3de99134f96294e913ac9802[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Jul 23 19:18:36 2017 +0200
+
+    Remove some labels
+
+[33mcommit 0931390508fb8a5513a99a192c0816475a63e2f3[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Jul 23 18:57:59 2017 +0200
+
+    More .gitignore tweaks
+
+[33mcommit 827cf80a2b908253e58778627b1478111a68b5f5[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Jul 23 18:46:04 2017 +0200
+
+    Whoops, .gitignore
+
+[33mcommit 66d50c126bc0116f44452bd0d16573236b52b8c9[m
+Author: LBPHacker <lbphacker@gmail.com>
+Date:   Sun Jul 23 18:38:22 2017 +0200
+
+    Initial sync, basic UI
