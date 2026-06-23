@@ -85,7 +85,7 @@ namespace casioemu {
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			width, height,
-			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
 			);
 		if (!window)
 			PANIC("SDL_CreateWindow failed: %s\n", SDL_GetError());
@@ -232,7 +232,7 @@ namespace casioemu {
 				SDL_WINDOWPOS_UNDEFINED,
 				SDL_WINDOWPOS_UNDEFINED,
 				width, height,
-				SDL_WINDOW_SHOWN | (SDL_WINDOW_RESIZABLE));
+				SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 			if (!window)
 				PANIC("SDL_CreateWindow failed: %s\n", SDL_GetError());
 			renderer = SDL_CreateRenderer(window, -1, 0);
@@ -422,6 +422,7 @@ namespace casioemu {
 			return;
 		// std::lock_guard<decltype(access_mx)> access_lock(access_mx);
 		// render on `tx`
+		SDL_RenderSetScale(renderer, 1.0f, 1.0f);
 		if (SDL_SetRenderTarget(renderer, tx) != 0)
 			PANIC("SetRenderTarget failed: %s\n", SDL_GetError());
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -436,6 +437,10 @@ namespace casioemu {
 		SDL_SetRenderTarget(renderer, nullptr);
 		int w, h;
 		SDL_GetWindowSize(window, &w, &h);
+		int render_w, render_h;
+		SDL_GetRendererOutputSize(renderer, &render_w, &render_h);
+		SDL_RenderSetScale(renderer, (float)render_w / w, (float)render_h / h);
+
 		auto wf = (double)w / interface_background.src.w;
 		auto hf = (double)h / interface_background.src.h;
 		auto uf = std::min(wf, hf);

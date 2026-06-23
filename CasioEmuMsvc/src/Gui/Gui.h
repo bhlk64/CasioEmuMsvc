@@ -78,6 +78,15 @@ inline std::string GetMonospaceFontPath() {
 	candidates = {
 		"/system/fonts/DroidSansMono.ttf",
 		"/system/fonts/NotoSansMono-Regular.ttf"};
+#elif defined(__APPLE__) || defined(MACOS)
+	// cac font monospace co san tren macOS
+	candidates = {
+		"/System/Library/Fonts/Menlo.ttc",
+		"/System/Library/Fonts/Monaco.ttf",
+		"/System/Library/Fonts/SFNSMono.ttf",
+		"/System/Library/Fonts/Courier.ttc",
+		"/System/Library/Fonts/Supplemental/Courier New.ttf",
+		"/System/Library/Fonts/Supplemental/PTMono.ttc"};
 #else // Linux / Unix
 	// Linux 等宽字体非常多，这里列出主流发行版的默认项
 	candidates = {
@@ -112,9 +121,9 @@ inline std::string GetCJKFontPath() {
 	}
 	else if (preference == "KR") {
 		candidates = {
-			"C:\\Windows\\Fonts\\malgun.ttf",  // Malgun Gothic (맑은 고딕)
-			"C:\\Windows\\Fonts\\gulim.ttc",   // Gulim (굴림)
-			"C:\\Windows\\Fonts\\batang.ttc"   // Batang (바탕)
+			"C:\\Windows\\Fonts\\malgun.ttf", // Malgun Gothic (맑은 고딕)
+			"C:\\Windows\\Fonts\\gulim.ttc",  // Gulim (굴림)
+			"C:\\Windows\\Fonts\\batang.ttc"  // Batang (바탕)
 		};
 	}
 	else {
@@ -128,6 +137,27 @@ inline std::string GetCJKFontPath() {
 	candidates = {
 		"/system/fonts/NotoSansCJK-Regular.ttc",
 		"/system/fonts/DroidSansFallback.ttf"};
+#elif defined(__APPLE__) || defined(MACOS)
+	if (preference == "JP") {
+		candidates = {
+			"/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+			"/System/Library/Fonts/ヒラギノ丸ゴ ProN W4.ttc",
+			"/System/Library/Fonts/AquaKana.ttc"};
+	}
+	else if (preference == "KR") {
+		candidates = {
+			"/System/Library/Fonts/AppleSDGothicNeo.ttc",
+			"/System/Library/Fonts/Supplemental/AppleGothic.ttf",
+			"/System/Library/Fonts/Supplemental/AppleMyungjo.ttf"};
+	}
+	else { // font chu tieng Tau
+		candidates = {
+			"/System/Library/Fonts/Hiragino Sans GB.ttc",
+			"/System/Library/Fonts/STHeiti Light.ttc",
+			"/System/Library/Fonts/STHeiti Medium.ttc",
+			"/System/Library/Fonts/Supplemental/Songti.ttc",
+			"/System/Library/Fonts/Supplemental/Arial Unicode.ttf"};
+	}
 #else // Linux
 	// 尝试寻找 CJK 的 Mono 版本 (如果有)，否则使用 Regular
 	candidates = {
@@ -143,26 +173,25 @@ inline std::string GetCJKFontPath() {
 }
 
 inline const ImWchar* GetGlobalRanges() {
-    static const ImWchar ranges[] = {
-        // Basics (ASCII + symbols)
-        0x0001, 0x1fff,
+	static const ImWchar ranges[] = {
+		// Basics (ASCII + symbols)
+		0x0001, 0x1fff,
 
-        // Vietnamese + Latin Extended
+		// Vietnamese + Latin Extended
 
-        // General punctuation
-        0x2000, 0x206F,
+		// General punctuation
+		0x2000, 0x206F,
 
-        // CJK (Chinese / Japanese basic)
-        0x3000, 0x30FF,
-        0x31F0, 0x31FF,
-        0x4E00, 0x9FFF,
+		// CJK (Chinese / Japanese basic)
+		0x3000, 0x30FF,
+		0x31F0, 0x31FF,
+		0x4E00, 0x9FFF,
 
-        // Emoji (IMPORTANT)
-        //0x1F300, 0x1FAFF,
+		// Emoji (IMPORTANT)
+		// 0x1F300, 0x1FAFF,
 
-        0
-    };
-    return ranges;
+		0};
+	return ranges;
 }
 
 // Theme/font/scaling globals are now managed by ThemeManager.
@@ -195,7 +224,6 @@ inline void RebuildFont(float scale = 0.0f) {
 			printf("[Ui][Info] Loaded Users Fonts: %s\n", font.c_str());
 		}
 	}
-	
 
 	// 1. 加载等宽基础字体 (Monospace Base)
 	// 这是改动最大的地方，确保英文和代码符号绝对等宽

@@ -1416,12 +1416,7 @@ public:
 	void Render() override {
 		if (!open)
 			return;
-		SDL_Rect bounds;
-		if (SDL_GetDisplayUsableBounds(0, &bounds) != 0) {
-			auto& io = ImGui::GetIO();
-			bounds.x = 0; bounds.y = 0;
-			bounds.w = io.DisplaySize.x; bounds.h = io.DisplaySize.y;
-		}
+		SDL_Rect bounds = {0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y};
 		ImGui::SetNextWindowSize({(float)bounds.w, (float)bounds.h}, ImGuiCond_Appearing);
 		ImGui::SetNextWindowPos({(float)bounds.x, (float)bounds.y});
 		if (ImGui::Begin(name, &open, flags)) {
@@ -1450,12 +1445,7 @@ public:
 	void Render() override {
 		if (!open)
 			return;
-		SDL_Rect bounds;
-		if (SDL_GetDisplayUsableBounds(0, &bounds) != 0) {
-			auto& io = ImGui::GetIO();
-			bounds.x = 0; bounds.y = 0;
-			bounds.w = io.DisplaySize.x; bounds.h = io.DisplaySize.y;
-		}
+		SDL_Rect bounds = {0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y};
 		ImGui::SetNextWindowSize({(float)bounds.w, (float)bounds.h}, ImGuiCond_Appearing);
 		ImGui::SetNextWindowPos({(float)bounds.x, (float)bounds.y});
 		if (ImGui::Begin(name, &open, flags)) {
@@ -1499,7 +1489,7 @@ std::string sui_loop() {
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		1200, 800,
-		SDL_WINDOW_SHOWN | (SDL_WINDOW_RESIZABLE));
+		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 	renderer2 = SDL_CreateRenderer(window2, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 #ifdef _WIN32
 	EnableDarkTitleBar(GetSDLWindowHandle(window2));
@@ -1547,9 +1537,38 @@ std::string sui_loop() {
 	std::vector<std::string> languages;
 	int selected_language_index = 0;
 	bool needs_render = true;
+	auto check_zoom_hotkeys = [](const SDL_Event& ev) {
+		if (ev.type == SDL_KEYDOWN) {
+			SDL_Keymod mod = SDL_GetModState();
+			bool isMod = (mod & KMOD_GUI) || (mod & KMOD_CTRL);
+			if (isMod) {
+				auto& tm = ThemeManager::Instance();
+				auto& settings = tm.Settings();
+				float currentScale = tm.GetFontScale();
+				bool handled = false;
+				if (ev.key.keysym.sym == SDLK_EQUALS || ev.key.keysym.sym == SDLK_PLUS || ev.key.keysym.sym == SDLK_KP_PLUS) {
+					currentScale = std::min(currentScale + 0.10f, 3.0f);
+					handled = true;
+				} else if (ev.key.keysym.sym == SDLK_MINUS || ev.key.keysym.sym == SDLK_KP_MINUS) {
+					currentScale = std::max(currentScale - 0.10f, 0.5f);
+					handled = true;
+				} else if (ev.key.keysym.sym == SDLK_0 || ev.key.keysym.sym == SDLK_KP_0) {
+					currentScale = 1.0f;
+					handled = true;
+				}
+				if (handled) {
+					settings.scale = currentScale;
+					tm.SetFontScale(currentScale);
+					tm.RequestFontRebuild();
+					tm.SaveSettings();
+				}
+			}
+		}
+	};
 	while (!done) {
 		SDL_Event event;
 		if (SDL_WaitEvent(&event)) {
+			check_zoom_hotkeys(event);
 			ImGui_ImplSDL2_ProcessEvent(&event);
 			if (event.type == SDL_QUIT) {
 				done = true;
@@ -1561,6 +1580,7 @@ std::string sui_loop() {
 				needs_render = true;
 			}
 			while (SDL_PollEvent(&event)) {
+				check_zoom_hotkeys(event);
 				ImGui_ImplSDL2_ProcessEvent(&event);
 				if (event.type == SDL_QUIT) {
 					done = true;
@@ -1577,13 +1597,18 @@ std::string sui_loop() {
 			ImGui_ImplSDLRenderer2_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
 			ImGui::NewFrame();
+#if defined(__ANDROID__) || defined(MACOS) || defined(IOS)
+			ThemeManager::Instance().UpdateUIScale();
+#endif
 			
 			ImGuiViewport* viewport = ImGui::GetMainViewport();
+#if defined(__ANDROID__) || defined(IOS)
 			SDL_Rect bounds;
 			if (SDL_GetDisplayUsableBounds(0, &bounds) == 0) {
 				viewport->WorkPos = ImVec2((float)bounds.x, (float)bounds.y);
 				viewport->WorkSize = ImVec2((float)bounds.w, (float)bounds.h);
 			}
+#endif
 			ImGui::DockSpaceOverViewport(0, viewport, ImGuiDockNodeFlags_PassthruCentralNode);
 			ImGui::SetNextWindowDockID(ImGui::GetCurrentContext()->DockContext.Nodes.Data[0].key, ImGuiCond_FirstUseEver); // TODO: ????????
 			ui.Render();
@@ -1656,6 +1681,7 @@ std::string sui_loop() {
 			SDL_SetRenderDrawColor(renderer2, 0, 0, 0, 255);
 			SDL_RenderClear(renderer2);
 			ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+			SDL_RenderSetScale(renderer2, 1.0f, 1.0f);
 			SDL_RenderPresent(renderer2);
 
 			needs_render = false;
