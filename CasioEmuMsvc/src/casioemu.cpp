@@ -29,6 +29,7 @@
 #include <thread>
 #include <algorithm>
 #if _WIN32
+#define NOMINMAX
 #include <Windows.h>
 #include <combaseapi.h>
 #include <timeapi.h>
