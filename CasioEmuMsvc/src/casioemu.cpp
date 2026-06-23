@@ -27,6 +27,7 @@
 #include <ostream>
 #include <string>
 #include <thread>
+#include <algorithm>
 #if _WIN32
 #include <Windows.h>
 #include <combaseapi.h>
@@ -491,11 +492,11 @@ int main(int argc, char* argv[]) {
 				bool handled = false;
 
 				if (event.key.keysym.sym == SDLK_EQUALS || event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_KP_PLUS) {
-					currentScale = std::min(currentScale + 0.10f, 3.0f);
+					currentScale = (std::min)(currentScale + 0.10f, 3.0f);
 					handled = true;
 				}
 				else if (event.key.keysym.sym == SDLK_MINUS || event.key.keysym.sym == SDLK_KP_MINUS) {
-					currentScale = std::max(currentScale - 0.10f, 0.5f);
+					currentScale = (std::max)(currentScale - 0.10f, 0.5f);
 					handled = true;
 				}
 				else if (event.key.keysym.sym == SDLK_0 || event.key.keysym.sym == SDLK_KP_0) {
