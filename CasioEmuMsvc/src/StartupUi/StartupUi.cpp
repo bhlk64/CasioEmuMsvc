@@ -1549,6 +1549,12 @@ std::string sui_loop() {
 				auto& settings = tm.Settings();
 				float currentScale = tm.GetFontScale();
 				bool handled = false;
+				#ifdef min
+				#undef min
+				#endif
+				#ifdef max
+				#undef max
+				#endif
 				if (ev.key.keysym.sym == SDLK_EQUALS || ev.key.keysym.sym == SDLK_PLUS || ev.key.keysym.sym == SDLK_KP_PLUS) {
 					currentScale = std::min(currentScale + 0.10f, 3.0f);
 					handled = true;
