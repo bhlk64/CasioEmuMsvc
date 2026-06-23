@@ -36,6 +36,9 @@ void ThemeManager::LoadSettings() {
 		m_settings.Read(file);
 		file.close();
 		m_fontScale = m_settings.scale;
+		if (m_fontScale < 0.1f) {
+			m_fontScale = 1.0f;
+		}
 		if (ImGui::GetCurrentContext() != nullptr) {
 			if (m_settings.isDarkMode) {
 				SetDarkMode();
@@ -64,7 +67,12 @@ void ThemeManager::ProcessFontRebuild() {
 	if (!m_fontRebuildRequested)
 		return;
 
-	RebuildFont(m_fontScale);
+	float dpiScale = ImGui::GetIO().DisplayFramebufferScale.x;
+	if (dpiScale <= 0.0f) dpiScale = 1.0f;
+	RebuildFont(m_fontScale * dpiScale);
+	for (ImFont* font : ImGui::GetIO().Fonts->Fonts) {
+		font->Scale = 1.0f / dpiScale;
+	}
 	if (m_fontScale != 0) {
 		ImGuiStyle igs;
 
@@ -166,9 +174,17 @@ void ThemeManager::UpdateUIScale() {
 
 	fontScale = baseScale * screenSizeAdjustment * sqrt(densityScale);
 	fontScale = std::clamp(fontScale, 0.5f, 1.5f);
+
+	float dpiScale = io.DisplayFramebufferScale.x;
+	if (dpiScale <= 0.0f) dpiScale = 1.0f;
+	if (dpiScale != m_lastDpiScale) {
+		m_lastDpiScale = dpiScale;
+		RequestFontRebuild();
+	}
 	io.FontGlobalScale = std::max(fontScale, 0.75f);
 
-	float touchScale = std::max(fontScale, 1.0f);
+	fontScale *= m_fontScale;
+	float touchScale = std::max(fontScale, m_fontScale);
 	padding = 9.5f * touchScale;
 	buttonHeight = 38.0f * touchScale;
 	minColumnWidth = 55.0f * fontScale;
@@ -187,7 +203,7 @@ void ThemeManager::UpdateUIScale() {
 	style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
 	style.MouseCursorScale = 1.2f * touchScale;
 
-	float rounding = 7.5f * std::min(touchScale, 1.3f);
+	float rounding = 7.5f * std::min(touchScale, 1.3f * m_fontScale);
 	style.WindowRounding = rounding;
 	style.ChildRounding = rounding;
 	style.FrameRounding = rounding;

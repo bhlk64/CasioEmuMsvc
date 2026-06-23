@@ -66,7 +66,7 @@ public:
 			mirrorWindow = SDL_CreateWindow("Live Mirror",
 				SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 				captureWidth, captureHeight,
-				SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+				SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
 			if (!mirrorWindow) {
 				SDL_Log("Error creating mirror window: %s", SDL_GetError());
@@ -156,6 +156,10 @@ public:
 			if (windowWidth != lastWindowWidth || windowHeight != lastWindowHeight) {
 				updateDisplayRect(windowWidth, windowHeight);
 			}
+
+			int render_w = 0, render_h = 0;
+			SDL_GetRendererOutputSize(mirrorRenderer, &render_w, &render_h);
+			SDL_RenderSetScale(mirrorRenderer, (float)render_w / windowWidth, (float)render_h / windowHeight);
 
 			SDL_UpdateTexture(mirrorTexture, nullptr, pixels, pitch);
 			SDL_SetRenderDrawColor(mirrorRenderer, 0, 0, 0, 255);

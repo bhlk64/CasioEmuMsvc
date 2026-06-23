@@ -368,11 +368,17 @@ int main(int argc, char* argv[]) {
 			continue;
 		busy = true;
 		if (event.type == frame_event) {
+			int w, h;
+			SDL_GetWindowSize(window, &w, &h);
+			int render_w, render_h;
+			SDL_GetRendererOutputSize(renderer, &render_w, &render_h);
+			float scaleX = (float)render_w / w;
+			float scaleY = (float)render_h / h;
+			SDL_RenderSetScale(renderer, scaleX, scaleY);
+
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);
 			if (bg_txt) {
-				int w, h;
-				SDL_GetWindowSize(window, &w, &h);
 				int bg_w, bg_h;
 				SDL_QueryTexture(bg_txt, NULL, NULL, &bg_w, &bg_h);
 
@@ -475,7 +481,38 @@ int main(int argc, char* argv[]) {
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEMOTION:
 #endif
-		case SDL_KEYDOWN:
+		case SDL_KEYDOWN: {
+			SDL_Keymod mod = SDL_GetModState();
+			bool isMod = (mod & KMOD_GUI) || (mod & KMOD_CTRL);
+			if (isMod) {
+				auto& tm = ThemeManager::Instance();
+				auto& settings = tm.Settings();
+				float currentScale = tm.GetFontScale();
+				bool handled = false;
+
+				if (event.key.keysym.sym == SDLK_EQUALS || event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_KP_PLUS) {
+					currentScale = std::min(currentScale + 0.10f, 3.0f);
+					handled = true;
+				}
+				else if (event.key.keysym.sym == SDLK_MINUS || event.key.keysym.sym == SDLK_KP_MINUS) {
+					currentScale = std::max(currentScale - 0.10f, 0.5f);
+					handled = true;
+				}
+				else if (event.key.keysym.sym == SDLK_0 || event.key.keysym.sym == SDLK_KP_0) {
+					currentScale = 1.0f;
+					handled = true;
+				}
+
+				if (handled) {
+					settings.scale = currentScale;
+					tm.SetFontScale(currentScale);
+					tm.RequestFontRebuild();
+					tm.SaveSettings();
+					break;
+				}
+			}
+		}
+		[[fallthrough]];
 		case SDL_KEYUP:
 		case SDL_TEXTINPUT:
 		case SDL_MOUSEWHEEL:

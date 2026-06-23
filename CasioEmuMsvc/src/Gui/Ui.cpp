@@ -491,7 +491,9 @@ void gui_loop() {
     ImGui::Render();
     //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     
+    SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+    SDL_RenderSetScale(renderer, 1.0f, 1.0f);
     
     #ifndef SINGLE_WINDOW
     SDL_RenderPresent(renderer);
@@ -517,7 +519,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
         SDL_WINDOWPOS_CENTERED,
         (int)ThemeManager::Instance().windowWidth,
         (int)ThemeManager::Instance().windowHeight,
-        SDL_WINDOW_RESIZABLE);
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 #else
 	int winX = ThemeManager::Instance().Settings().windowX;
 	int winY = ThemeManager::Instance().Settings().windowY;
@@ -543,7 +545,7 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 		winX,
 		winY,
 		winW, winH,
-		SDL_WINDOW_RESIZABLE);
+		SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 #endif
 #ifdef _WIN32
     EnableDarkTitleBar(GetSDLWindowHandle(window));
