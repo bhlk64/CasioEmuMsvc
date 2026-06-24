@@ -66,11 +66,11 @@ jobs:
       with:
         name: Release-x64.zip
         path: |
-        build-x64/CasioEmuMsvc/*.exe
-        build-x64/CasioEmuMsvc/*.exp
-        build-x64/CasioEmuMsvc/*.lib
-        build-x64/CasioEmuMsvc/roms.db
-        build-x64/CasioEmuMsvc/locales/*
+          build-x64/CasioEmuMsvc/*.exe
+          build-x64/CasioEmuMsvc/*.exp
+          build-x64/CasioEmuMsvc/*.lib
+          build-x64/CasioEmuMsvc/roms.db
+          build-x64/CasioEmuMsvc/locales/*
         retention-days: 1
 
     - name: Setup MSVC x86
@@ -106,11 +106,11 @@ jobs:
       with:
         name: Release-x86.zip
         path: |
-        build-x86/CasioEmuMsvc/*.exe
-        build-x86/CasioEmuMsvc/*.exp
-        build-x86/CasioEmuMsvc/*.lib
-        build-x86/CasioEmuMsvc/roms.db
-        build-x86/CasioEmuMsvc/locales/*
+          build-x86/CasioEmuMsvc/*.exe
+          build-x86/CasioEmuMsvc/*.exp
+          build-x86/CasioEmuMsvc/*.lib
+          build-x86/CasioEmuMsvc/roms.db
+          build-x86/CasioEmuMsvc/locales/*
         retention-days: 1
     
     # ================= MACOS =================
