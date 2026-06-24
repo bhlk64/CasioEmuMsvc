@@ -423,7 +423,26 @@ file(GLOB LOCALE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/locales/*.lc")
 
 if(ANDROID)
     set(ASSET_DIR ${CMAKE_SOURCE_DIR}/app/src/main/assets)
-elseif(APPLE AND BUILD_EXECUTABLE AND NOT IOS)
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+        ${ASSET_DIR}/locales
+    )
+
+    foreach(FILE_PATH ${LOCALE_FILES})
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${FILE_PATH}
+            ${ASSET_DIR}/locales/
+        )
+    endforeach()
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/roms.db
+        ${ASSET_DIR}/roms.db
+    )
+    elseif(APPLE AND BUILD_EXECUTABLE AND NOT IOS)
     set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Resources)
 elseif(IOS AND BUILD_EXECUTABLE)
     set(ASSET_DIR $<TARGET_BUNDLE_DIR:${TARGET_NAME}>)

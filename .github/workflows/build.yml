@@ -58,15 +58,16 @@ jobs:
     
     - name: Build x64
       if: matrix.platform == 'windows' && matrix.platform_arch == 'x64'
-      run: cmake --build build-x64 --parallel
+      run: |
+        cmake --build build-x64 --parallel
+        7z a Release-x64.zip build-x64/*
 
     - name: Upload x64 Build Artifact
       if: matrix.platform == 'windows' && matrix.platform_arch == 'x64'
       uses: actions/upload-artifact@v7
       with:
-        name: build-x64/*
+        name: Release-x64.zip
         path: Release-x64.zip
-        archive: true
 
 
     - name: Setup MSVC x86
@@ -81,7 +82,9 @@ jobs:
 
     - name: Build x86
       if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
-      run: cmake --build build-x86 --parallel
+      run: |
+        cmake --build build-x86 --parallel
+        7z a Release-x86.zip build-x86/*
 
     # - name: Upload PDBs to Sentry
     #   if: matrix.platform == 'windows'
@@ -100,9 +103,8 @@ jobs:
       if: matrix.platform == 'windows' && matrix.platform_arch == 'x86'
       uses: actions/upload-artifact@v7
       with:
-        name: build-x86/*
+        name: Release-x86.zip
         path: Release-x86.zip
-        archive: true
     
     # ================= MACOS =================
     - name: Install dependencies (macOS)
