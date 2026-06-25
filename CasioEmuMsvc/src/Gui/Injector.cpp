@@ -1,5 +1,6 @@
 #include "Injector.hpp"
 #include "Chipset/Chipset.hpp"
+#include "Chipset/CPU.hpp"
 #include "Config.hpp"
 #include "Models.h"
 #include "Peripheral/BatteryBackedRAM.hpp"
@@ -108,7 +109,9 @@ void Injector::InitCustomInjectionsFile() {
 	const std::string template_content = R"(# Custom Injection Template
 # Format: name = {
 #     address = "hex_data",
-#     address = "hex_data"
+#     address = "hex_data",
+#     SP = "6767",
+#     PC = "03636"
 # }
 )";
 
@@ -197,10 +200,12 @@ void Injector::BackgroundReload() {
 void Injector::PrecomputeInjectionValues(InjectionPair& pair) {
 	// Process address
 	std::string addr = pair.address;
-	if (addr.substr(0, 2) == "0x" || addr.substr(0, 2) == "0X") {
-		addr = addr.substr(2);
+	if (addr != "PC" && addr != "SP") {
+		if (addr.substr(0, 2) == "0x" || addr.substr(0, 2) == "0X") {
+			addr = addr.substr(2);
+		}
+		pair.addr_value = std::stoul(addr, nullptr, 16);
 	}
-	pair.addr_value = std::stoul(addr, nullptr, 16);
 
 	// Process data - remove all whitespace
 	std::string cleaned_data = pair.data;
@@ -208,15 +213,26 @@ void Injector::PrecomputeInjectionValues(InjectionPair& pair) {
 		std::remove_if(cleaned_data.begin(), cleaned_data.end(),
 			[](char c) { return std::isspace(c); }),
 		cleaned_data.end());
-
-	pair.data_bytes.clear();
-	pair.data_bytes.reserve(cleaned_data.length() / 2);
-
-	for (size_t i = 0; i + 1 < cleaned_data.length(); i += 2) {
-		std::string byte_str = cleaned_data.substr(i, 2);
-		if (IsHexString(byte_str)) {
-			pair.data_bytes.push_back(HexToByte(byte_str));
+	if (addr != "PC" && addr != "SP") {
+		pair.data_bytes.clear();
+		pair.data_bytes.reserve(cleaned_data.length() / 2);
+	
+		for (size_t i = 0; i + 1 < cleaned_data.length(); i += 2) {
+			std::string byte_str = cleaned_data.substr(i, 2);
+			if (IsHexString(byte_str)) {
+				pair.data_bytes.push_back(HexToByte(byte_str));
+			}
 		}
+	} else if (addr == "PC") {
+		std::string s = pair.data;
+		if (s.rfind("0x", 0) == 0 || s.rfind("0X", 0) == 0)
+			s = s.substr(2);
+		pair.addr_value = std::stoul(s, nullptr, 16);
+	} else if (addr == "SP") {
+		std::string s = pair.data;
+		if (s.rfind("0x", 0) == 0 || s.rfind("0X", 0) == 0)
+			s = s.substr(2);
+		pair.addr_value = std::stoul(s, nullptr, 16);
 	}
 }
 
@@ -312,7 +328,7 @@ bool Injector::ParseCustomInjections(const std::string& content) {
 			break;
 
 		case ParseState::KEY:
-			if (std::isxdigit(c) || c == 'x' || c == 'X' || c == '0') {
+			if (std::isxdigit(c) || c == 'x' || c == 'X' || c == '0' || c == 'S' || c == 'P' || c == 'C') {
 				current_address += c;
 			}
 			else if (c == '=' && !current_address.empty()) {
@@ -365,6 +381,17 @@ bool Injector::ParseCustomInjections(const std::string& content) {
 						// Invalid hex, skip
 					}
 				}
+				else if (current_address == "PC" || current_address == "SP") {
+					InjectionPair pair;
+					pair.address = current_address;
+					pair.data = current_value;
+					try {
+						PrecomputeInjectionValues(pair);
+						if (pair.addr_value) {
+							current_injection.pairs.push_back(std::move(pair));
+						}
+					} catch (...) {}
+					}
 
 				current_address.clear();
 				current_value.clear();
@@ -437,8 +464,16 @@ uint8_t Injector::HexToByte(const std::string& hex) {
 bool Injector::ApplyInjection(const CustomInjection& inj, bool& show_info, std::string& info_msg) {
 	try {
 		for (const auto& pair : inj.pairs) {
-			for (size_t i = 0; i < pair.data_bytes.size(); ++i) {
-				me_mmu->WriteData(pair.addr_value + i, pair.data_bytes[i]);
+			if (pair.address == "PC") {
+				m_emu->chipset.cpu.reg_pc = (uint16_t)pair.addr_value;
+				m_emu->chipset.cpu.reg_csr = pair.addr_value >> 16;
+			}
+			else if (pair.address == "SP") {
+				m_emu->chipset.cpu.reg_sp = (uint16_t)pair.addr_value;
+			} else {
+				for (size_t i = 0; i < pair.data_bytes.size(); ++i) {
+					me_mmu->WriteData(pair.addr_value + i, pair.data_bytes[i]);
+				}
 			}
 		}
 
@@ -499,8 +534,13 @@ void Injector::RenderCustomInjectTab(bool& show_info, std::string& info_msg) {
 			ImGui::Text("%s:", "Rop.Address"_lc);
 			for (const auto& pair : inj.pairs) {
 				std::string displayAddr = pair.address;
-				if (displayAddr.substr(0, 2) != "0x" && displayAddr.substr(0, 2) != "0X") {
+				if ((displayAddr.substr(0, 2) != "0x" && displayAddr.substr(0, 2) != "0X") && (displayAddr != "PC" && displayAddr != "SP" )) {
 					displayAddr = "0x" + displayAddr;
+				} else if (displayAddr == "PC" || displayAddr == "SP") {
+				std::stringstream ss;
+				ss << "0x" << std::hex << pair.addr_value;
+				std::string strhex = ss.str();
+				displayAddr = displayAddr + " = " + strhex;
 				}
 				ImGui::BulletText("%s", displayAddr.c_str());
 			}
