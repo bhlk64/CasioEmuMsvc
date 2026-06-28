@@ -6,6 +6,9 @@
 #include "Peripheral/BatteryBackedRAM.hpp"
 #include "Theme.h"
 #include "Ui.hpp"
+#ifdef CASIOEMU_CORE_WEB
+#include "WebDebuggerGui.h"
+#endif
 #include "hex.hpp"
 #include "imgui/imgui.h"
 #include <Gui.h>
@@ -27,7 +30,9 @@ Injector::Injector() : UIWindow("Rop"), needsReload(false), isReloading(false), 
 	injectors.push_back(InjectorData());
 	injectionFilePath = ThemeManager::Instance().Settings().injectionFilePath;
 	InitCustomInjectionsFile();
+#ifndef CASIOEMU_CORE_WEB
 	AsyncLoadCustomInjections();
+#endif
 }
 
 Injector::~Injector() {
@@ -101,6 +106,9 @@ bool Injector::IsHexString(const std::string& str) {
 
 void Injector::InitCustomInjectionsFile() {
 	const std::filesystem::path filepath = injectionFilePath;
+	if (filepath.has_parent_path()) {
+		std::filesystem::create_directories(filepath.parent_path());
+	}
 
 	if (std::filesystem::exists(filepath)) {
 		return;
@@ -122,6 +130,9 @@ void Injector::InitCustomInjectionsFile() {
 		}
 		file << template_content;
 		file.close();
+#ifdef CASIOEMU_CORE_WEB
+		WebDebuggerRequestFsSync();
+#endif
 	}
 	catch (const std::exception& e) {
 		// Handle error
@@ -641,6 +652,14 @@ void Injector::RenderCore() {
 	static MemoryEditor editor;
 	static bool show_info = false;
 	static std::string info_msg;
+	if (!initialLoadRequested) {
+		initialLoadRequested = true;
+		AsyncLoadCustomInjections();
+	}
+	if (!m_emu || !me_mmu || !n_ram_buffer) {
+		ImGui::TextDisabled("Injector is unavailable until the emulator RAM is ready.");
+		return;
+	}
 	auto inputbase = m_emu->hardware_id == casioemu::HardwareId::HW_CLASSWIZ_II ? 0x9268 : 0xD180;
 	char* base_addr = n_ram_buffer - casioemu::GetRamBaseAddr(m_emu->hardware_id);
 
@@ -648,6 +667,7 @@ void Injector::RenderCore() {
 	std::string currentFilePath = ThemeManager::Instance().Settings().injectionFilePath;
 	if (currentFilePath != injectionFilePath) {
 		injectionFilePath = currentFilePath;
+		InitCustomInjectionsFile();
 		needsReload = true;
 		if (!isReloading.load()) {
 			AsyncLoadCustomInjections();

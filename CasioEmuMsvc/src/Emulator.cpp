@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #ifdef IOS
 #include "iOSNativeBridge.h"
@@ -33,7 +34,7 @@ namespace casioemu {
 			full_spd = false;
 		}
 		if (!full_spd) {
-			cycles_per_second = hardware_id == HW_ES_PLUS ? 128 * 1024 * 2 : hardware_id == HW_CLASSWIZ ? 1024 * 1024 * 2
+			cycles_per_second = hardware_id == HW_ES_PLUS ? 128 * 1024 * 2 : hardware_id == HW_SOLARII ? 64 * 1024 * 2 : hardware_id == HW_CLASSWIZ ? 1024 * 1024 * 2
 				: 2048 * 1024 * 2;
 		}
 		else {
@@ -113,7 +114,8 @@ namespace casioemu {
 		#ifdef __EMSCRIPTEN__
 		tick_thread = nullptr;
 		#else
-		if (ModelDefinition.real_hardware) {
+		bool limit_spd = ModelDefinition.extra.find("limit_spd") != ModelDefinition.extra.end();
+		if (ModelDefinition.real_hardware || limit_spd) {
 			tick_thread = new std::thread([this] {
 				auto iteration_end = std::chrono::steady_clock::now();
 				while (1) {
@@ -153,6 +155,16 @@ namespace casioemu {
 				},
 				this);
 		}
+		if (!ModelDefinition.real_hardware && limit_spd) {
+			SDL_AddTimer(
+				25,
+				[](Uint32 interval, void* param) -> Uint32 {
+					auto emu = ((Emulator*)param);
+					emu->chipset.EmulatorTick();
+					return interval;
+				},
+				this);
+		}
 		#endif
 
 		RunStartupScript();
@@ -165,9 +177,9 @@ namespace casioemu {
 		pause_on_mem_error = argv_map.find("pause_on_mem_error") != argv_map.end();
 	}
 
-	Emulator::Emulator(ModelInfo def, bool paused, bool headless) : Paused(paused), argv_map(*new std::map<std::string, std::string>()), chipset(*new Chipset(*this)), m_step_requested(false), headless(headless) {
+	Emulator::Emulator(ModelInfo def, bool paused, bool headless, std::string modelPath) : Paused(paused), argv_map(*new std::map<std::string, std::string>()), chipset(*new Chipset(*this)), m_step_requested(false), headless(headless) {
 		running = true;
-		model_path = argv_map["model"];
+		model_path = modelPath.empty() ? argv_map["model"] : std::move(modelPath);
 
 		ModelDefinition = def;
 
@@ -180,7 +192,7 @@ namespace casioemu {
 			full_spd = false;
 		}
 		if (!full_spd) {
-			cycles_per_second = hardware_id == HW_ES_PLUS ? 128 * 1024 * 2 : hardware_id == HW_CLASSWIZ ? 1024 * 1024 * 2
+			cycles_per_second = hardware_id == HW_ES_PLUS ? 128 * 1024 * 2 : hardware_id == HW_SOLARII ? 64 * 1024 * 2 : hardware_id == HW_CLASSWIZ ? 1024 * 1024 * 2
 				: 2048 * 1024 * 2;
 		}
 		else {
@@ -250,7 +262,8 @@ namespace casioemu {
 		#ifdef __EMSCRIPTEN__
 			tick_thread = nullptr;
 		#else
-			if (ModelDefinition.real_hardware) {
+			bool limit_spd = ModelDefinition.extra.find("limit_spd") != ModelDefinition.extra.end();
+			if (ModelDefinition.real_hardware || limit_spd) {
 				tick_thread = new std::thread([this] {
 					auto iteration_end = std::chrono::steady_clock::now();
 					while (1) {
@@ -281,6 +294,16 @@ namespace casioemu {
 						}
 					}
 					});
+				SDL_AddTimer(
+					25,
+					[](Uint32 interval, void* param) -> Uint32 {
+						auto emu = ((Emulator*)param);
+						emu->chipset.EmulatorTick();
+						return interval;
+					},
+					this);
+			}
+			if (!ModelDefinition.real_hardware && limit_spd) {
 				SDL_AddTimer(
 					25,
 					[](Uint32 interval, void* param) -> Uint32 {

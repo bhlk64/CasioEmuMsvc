@@ -17,13 +17,21 @@
 #include "Theme.h"
 #include "VariableWindow.h"
 #include "WatchWindow.hpp"
+#ifndef CASIOEMU_CORE_WEB
+#include "QrCodeWindow.h"
+#endif
+#ifndef TEST_BUILD
 #include "Rop/RopCompilerUI.h"
 #include "PluginLogWindow.hpp"
 #include "SnapshotWindow.h"
 #include "CalculatorWindow.h"
 #include "imgui/imgui.h"
+#ifdef CASIOEMU_CORE_WEB
+#include "WebDebuggerGui.h"
+#else
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer2.h"
+#endif
 #include <Gui.h>
 #include <SDL.h>
 #include <algorithm>
@@ -63,6 +71,7 @@ CodeViewer* code_viewer = 0;
 Injector* injector = 0;
 int top_bar_size = 0;
 Breakpoints* membp = 0;
+SnapshotWindow* snapshot_window = 0;
 
 std::vector<UIWindow*> windows{};
 
@@ -263,14 +272,29 @@ void LoadUIState() {
     }
 } 
 
+#ifdef CASIOEMU_CORE_WEB
+SDL_Surface* background = nullptr;
+SDL_Texture* bg_txt = nullptr;
+#endif
+
+static float GetStatusBarHeight() {
+	return ImGui::GetFrameHeight() + 4.0f;
+}
+
 void RenderStatusBar() {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	float barHeight = ImGui::GetFrameHeight() + 4.0f;
+	float barHeight = GetStatusBarHeight();
 	
 	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - barHeight));
 	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, barHeight));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 2.0f));
+#ifdef CASIOEMU_CORE_WEB
+	ImVec4 statusBg = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
+	statusBg.w = std::max(statusBg.w, 0.82f);
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, statusBg);
+#else
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.08f, 0.12f, 1.0f));
+#endif
 	
 	if (ImGui::Begin("##StatusBar", nullptr, 
 		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
@@ -304,189 +328,91 @@ void RenderStatusBar() {
 	ImGui::PopStyleVar();
 }
 
-void gui_loop() {
-    if (!m_emu->Running())
-        return;
+static ImGuiID RenderDockSpace(float reservedBottom) {
+/*	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	float dockHeight = viewport->Size.y - reservedBottom;
+	if (dockHeight < 1.0f) dockHeight = 1.0f;
 
-    ImGuiIO& io = ImGui::GetIO();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, dockHeight));
+	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGui::SetNextWindowBgAlpha(0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGuiWindowFlags flags =
+		ImGuiWindowFlags_NoDocking |
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus |
+		ImGuiWindowFlags_NoNavFocus |
+		ImGuiWindowFlags_NoBackground;
 
-#if defined(__ANDROID__) || defined(MACOS) || defined(IOS)
-    ThemeManager::Instance().UpdateUIScale();
+	ImGui::Begin("##DebuggerDockSpaceHost", nullptr, flags);
+	ImGuiID dockspace_id = ImGui::GetID("DebuggerDockSpace");
+	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+	ImGui::End();
+	ImGui::PopStyleVar(3);
+*/
+		// --- BẮT ĐẦU DOCKSPACE ---
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+
+	ImVec2 dockSize = viewport->WorkSize;
+	dockSize.y -= reservedBottom;
+	if (dockSize.y < 1.0f)
+		dockSize.y = 1.0f;
+
+	ImGui::SetNextWindowSize(dockSize);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	
+	ImGuiWindowFlags host_flags = ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus |
+		ImGuiWindowFlags_NoNavFocus |
+		ImGuiWindowFlags_NoBackground;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	ImGui::Begin("MainDockHost", nullptr, host_flags);
+	ImGui::PopStyleVar(3);
+
+	// Lệnh này tạo ra vùng để bạn gộp Tab
+	ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+	
+	ImGui::End(); // Kết thúc Host
+	// --- KẾT THÚC DOCKSPACE ---
+	return dockspace_id;
+}
+
+static void RenderDebuggerGuiWindows() {
+#if !defined(__ANDROID__) && !defined(IOS)
+	ImGuiID dockspace_id = RenderDockSpace(GetStatusBarHeight());
 #endif
-
-    ImGui_ImplSDLRenderer2_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
-    ImGui::NewFrame();
-    
-    #if !defined(__ANDROID__) && !defined(IOS)
-    
-      // --- BẮT ĐẦU DOCKSPACE ---
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    
-    ImVec2 dockSize = viewport->WorkSize;
-    float barHeight = ImGui::GetFrameHeight() + 4.0f;
-    dockSize.y -= barHeight;
-    ImGui::SetNextWindowSize(dockSize);
-    
-    ImGui::SetNextWindowViewport(viewport->ID);
-
-    ImGuiWindowFlags host_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | 
-                                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | 
-                                  ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-                                  ImGuiWindowFlags_NoBackground;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-    ImGui::Begin("MainDockHost", nullptr, host_flags);
-    ImGui::PopStyleVar(3);
-
-    // Lệnh này tạo ra vùng để bạn gộp Tab
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
-    
-    ImGui::End(); // Kết thúc Host
-    // --- KẾT THÚC DOCKSPACE ---
-    
-    /*
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    
-    ImGui::SetNextWindowPos(viewport->Pos);
-    ImGui::SetNextWindowSize(viewport->Size);
-    ImGui::SetNextWindowViewport(viewport->ID);
-    
-    ImGuiWindowFlags flags =
-        ImGuiWindowFlags_NoDecoration |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoDocking |
-        ImGuiWindowFlags_NoBringToFrontOnFocus;
-    
-    ImGui::Begin("DockSpaceWnd", nullptr, flags);
-    
-    ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-    ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_PassthruCentralNode;
-    
-    ImGui::DockSpace(dockspace_id, ImVec2(0, 0), dock_flags);
-    
-    ImGui::End();*/
+	for (auto win : windows) {
+		if (!win) continue;
+#if !defined(__ANDROID__) && !defined(IOS)
+		if (dockspace_id != 0) {
+			ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+		}
 #endif
+		win->Render();
+	}
+
     RenderDebuggerToolbar();
-    for (auto win : windows) {
-        if (!win) continue;
-        win->Render();
-    }
 
-    //    ImGui::Begin("Testing");
-    //    if (ImGui::Button("Crash"_lc)) {
-    //        throw 0;
-    //    }
-    //    // --- 新增：手动反馈选项 ---
-    // #ifdef ENABLE_SENTRY
-    //    ImGui::SameLine(); // 放在 Crash 按钮旁边
-    //    if (ImGui::Button("Send Feedback"_lc)) {
-    //        // 重置之前的输入内容
-    //        memset(sentry_user_comments, 0, sizeof(sentry_user_comments));
-    //        show_sentry_feedback = true;
-    //    }
-    // #endif
-    //    ImGui::End();
-    //    // --- Sentry 反馈对话框逻辑 ---
-    // #ifdef ENABLE_SENTRY
-    //    if (show_sentry_feedback) {
-    //        // 确保每一帧都调用 OpenPopup，直到它真正打开
-    //        ImGui::OpenPopup("User Feedback");
-    //    }
-    //
-    //    // 使用 Modal 窗口确保反馈过程不被打断
-    //    if (ImGui::BeginPopupModal("User Feedback", &show_sentry_feedback, ImGuiWindowFlags_AlwaysAutoResize)) {
-    //        ImGui::Text("Help us improve CasioEmuMsvc!");
-    //        ImGui::Separator();
-    //
-    //        ImGui::Text("Email (Optional):");
-    //        ImGui::InputText("##email", sentry_user_email, IM_ARRAYSIZE(sentry_user_email));
-    //
-    //        ImGui::Text("What happened?");
-    //        ImGui::InputTextMultiline("##comments", sentry_user_comments, IM_ARRAYSIZE(sentry_user_comments),
-    //            ImVec2(350, 120), ImGuiInputTextFlags_AllowTabInput);
-    //
-    //        if (ImGui::Button("Submit", ImVec2(120, 0))) {
-    //            auto uuid = Binary::LoadOrInit("uuid.bin", util::Random::getRandomObject<sentry_uuid_t>());
-    //            char buf[37]{};
-    //            sentry_uuid_as_string(&uuid, buf);
-    //            sentry_value_t feedback = sentry_value_new_feedback(sentry_user_comments, sentry_user_email, buf, 0);
-    //            sentry_capture_feedback(feedback);
-    //
-    //            show_sentry_feedback = false;
-    //            ImGui::CloseCurrentPopup();
-    //        }
-    //
-    //        ImGui::SameLine();
-    //        if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-    //            show_sentry_feedback = false;
-    //            ImGui::CloseCurrentPopup();
-    //        }
-    //        ImGui::EndPopup();
-    //    }
-    // #endif
     top_bar_size = ImGui::GetCursorPosY();
 #if !defined(__ANDROID__) && !defined(IOS)
 	RenderStatusBar();
 #endif
-
-	//	ImGui::Begin("Testing");
-	//	if (ImGui::Button("Crash"_lc)) {
-	//		throw 0;
-	//	}
-	//	// --- 新增：手动反馈选项 ---
-	// #ifdef ENABLE_SENTRY
-	//	ImGui::SameLine(); // 放在 Crash 按钮旁边
-	//	if (ImGui::Button("Send Feedback"_lc)) {
-	//		// 重置之前的输入内容
-	//		memset(sentry_user_comments, 0, sizeof(sentry_user_comments));
-	//		show_sentry_feedback = true;
-	//	}
-	// #endif
-	//	ImGui::End();
-	//	// --- Sentry 反馈对话框逻辑 ---
-	// #ifdef ENABLE_SENTRY
-	//	if (show_sentry_feedback) {
-	//		// 确保每一帧都调用 OpenPopup，直到它真正打开
-	//		ImGui::OpenPopup("User Feedback");
-	//	}
-	//
-	//	// 使用 Modal 窗口确保反馈过程不被打断
-	//	if (ImGui::BeginPopupModal("User Feedback", &show_sentry_feedback, ImGuiWindowFlags_AlwaysAutoResize)) {
-	//		ImGui::Text("Help us improve CasioEmuMsvc!");
-	//		ImGui::Separator();
-	//
-	//		ImGui::Text("Email (Optional):");
-	//		ImGui::InputText("##email", sentry_user_email, IM_ARRAYSIZE(sentry_user_email));
-	//
-	//		ImGui::Text("What happened?");
-	//		ImGui::InputTextMultiline("##comments", sentry_user_comments, IM_ARRAYSIZE(sentry_user_comments),
-	//			ImVec2(350, 120), ImGuiInputTextFlags_AllowTabInput);
-	//
-	//		if (ImGui::Button("Submit", ImVec2(120, 0))) {
-	//			auto uuid = Binary::LoadOrInit("uuid.bin", util::Random::getRandomObject<sentry_uuid_t>());
-	//			char buf[37]{};
-	//			sentry_uuid_as_string(&uuid, buf);
-	//			sentry_value_t feedback = sentry_value_new_feedback(sentry_user_comments, sentry_user_email, buf, 0);
-	//			sentry_capture_feedback(feedback);
-	//
-	//			show_sentry_feedback = false;
-	//			ImGui::CloseCurrentPopup();
-	//		}
-	//
-	//		ImGui::SameLine();
-	//		if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-	//			show_sentry_feedback = false;
-	//			ImGui::CloseCurrentPopup();
-	//		}
-	//		ImGui::EndPopup();
-	//	}
-	// #endif
 
     ImGui::Render();
     //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -498,8 +424,153 @@ void gui_loop() {
     #ifndef SINGLE_WINDOW
     SDL_RenderPresent(renderer);
     #endif
+
+/*#ifdef SINGLE_WINDOW
+	ImGui::SetNextWindowBgAlpha(0.0f);
+	ImGui::Begin("Overlay", nullptr,
+		ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_NoDocking |
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoBackground |
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoMove);
+
+	auto& tm = ThemeManager::Instance();
+	float safeAreaPadding = tm.padding * 1.5f;
+	ImGui::SetWindowPos(ImVec2(safeAreaPadding, safeAreaPadding));
+
+	float displayWidth = ImGui::GetIO().DisplaySize.x;
+	float totalWidth = displayWidth - (safeAreaPadding * 2);
+	float spacingBetweenElements = tm.padding * 1.2f;
+	float buttonWidth = (totalWidth - spacingBetweenElements * 2) * 0.25f;
+	float comboWidth = totalWidth - (buttonWidth * 2) - (spacingBetweenElements * 2);
+
+	static UIWindow* current_filter = 0;
+	ImGui::SetNextItemWidth(comboWidth);
+	if (ImGui::BeginCombo("##cb", current_filter ? current_filter->name : 0)) {
+		for (int n = 0; n < windows.size(); n++) {
+			bool is_selected = (current_filter == windows[n]);
+			if (ImGui::Selectable(windows[n]->name, is_selected))
+				current_filter = windows[n];
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::SameLine(0, spacingBetweenElements);
+	ImVec2 buttonSize(buttonWidth, tm.buttonHeight * 1.2f);
+	if (ImGui::Button("Open", buttonSize)) {
+		if (current_filter != 0)
+			current_filter->open = true;
+	}
+
+	ImGui::SameLine(0, spacingBetweenElements);
+	if (ImGui::Button("Close all", buttonSize)) {
+		for (auto& win : windows) {
+			win->open = false;
+		}
+	}
+	// Let's record where we are.
+	top_bar_size = ImGui::GetCursorPosY();
+	ImGui::End();
+#endif*/
 }
 
+void gui_loop() {
+	if (!m_emu->Running())
+		return;
+
+	ImGuiIO& io = ImGui::GetIO();
+
+#if defined(__ANDROID__) || defined(MACOS) || defined(IOS)
+	ThemeManager::Instance().UpdateUIScale();
+#endif
+
+#ifndef CASIOEMU_CORE_WEB
+	ImGui_ImplSDLRenderer2_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+#endif
+	ImGui::NewFrame();
+	RenderDebuggerGuiWindows();
+	ImGui::Render();
+#ifndef CASIOEMU_CORE_WEB
+#ifdef SINGLE_WINDOW
+	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+#else
+	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+	SDL_RenderPresent(renderer);
+#endif
+#endif
+}
+
+static CodeViewer* CreateDebuggerGuiWindows() {
+	while (!me_mmu)
+		std::this_thread::sleep_for(std::chrono::microseconds(1));
+	std::filesystem::path label_file = m_emu->GetModelFilePath("labels.txt");
+	if (std::filesystem::exists(label_file))
+		g_labels = parseFile(label_file.string());
+	else
+		std::cout << "[Warning] " << label_file.string() << " doesn't exist. You can consider create one for better debugging experiences. Format: address(0x1234),func name(can be quoted)\n";
+
+	if (m_emu->hardware_id == casioemu::HW_FX_5800P) {
+		windows.push_back(CreateFx5800FileSystem());
+	}
+
+	if (m_emu->hardware_id != casioemu::HW_SOLARII) {
+		windows.push_back(new VariableWindow());
+	}
+
+	for (auto item : std::initializer_list<UIWindow*>{
+			 new CalculatorWindow(),
+			 new HwController(),
+			 new LabelViewer(),
+			 new WatchWindow(),
+			 CreateCallAnalysisWindow(),
+			 code_viewer = new CodeViewer(),
+			 injector = new Injector(),
+			 membp = new Breakpoints(),
+			 CreateAddressWindow(),
+			 // MakeAssemblerUI(),
+#if !defined(TEST_BUILD)
+			 CreateRopCompilerWindow(),
+#endif
+#if !defined(TEST_BUILD) && !defined(CASIOEMU_CORE_WEB)
+			 new PluginLogWindow(),
+#endif
+#if !defined(TEST_BUILD)
+			 snapshot_window = static_cast<SnapshotWindow*>(CreateSnapshotWindow()),
+#endif
+#ifndef CASIOEMU_CORE_WEB
+			 new QrCodeWindow(),
+#endif
+			 MakeThemeWindow(),
+			 CreateBitmapViewer(), })
+		windows.push_back(item);
+	for (auto item : GetEditors())
+		windows.push_back(item);
+
+#if defined(__ANDROID__) || defined(IOS)
+	for (auto item : windows) {
+		item->open = false;
+	}
+#else
+	if (!std::filesystem::exists(ui_state_fn)) {
+		for (auto* w : windows) {
+			if (w) {
+				w->open = true;
+				w->bring_to_front_requested = false;
+			}
+		}
+	}
+#endif
+	LoadUIState();
+	ui_ready = true;
+
+	return code_viewer;
+}
+
+#ifndef CASIOEMU_CORE_WEB
 CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
     SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
     
@@ -584,95 +655,75 @@ CodeViewer* test_gui(bool* guiCreated, SDL_Window* wnd, SDL_Renderer* rnd) {
 
 	if (guiCreated)
 		*guiCreated = true;
-	while (!me_mmu)
-		std::this_thread::sleep_for(std::chrono::microseconds(1));
-	auto label_file = m_emu->GetModelFilePath("labels.txt");
-	if (std::filesystem::exists(label_file))
-		g_labels = parseFile(label_file);
-	else
-		std::cout << "[Warning] labels.txt doesn't exist. You can consider create one for better debugging experiences. Format: address(0x1234),func name(can be quoted)\n";
-
-    if (m_emu->hardware_id == casioemu::HW_FX_5800P) {
-        windows.push_back(CreateFx5800FileSystem());
-    }
-
-    for (auto item : std::initializer_list<UIWindow*>{
-             new CalculatorWindow(),
-             new VariableWindow(),
-             new HwController(),
-             new LabelViewer(),
-             new WatchWindow(),
-             CreateCallAnalysisWindow(),
-             code_viewer = new CodeViewer(),
-             injector = new Injector(),
-             membp = new Breakpoints(),
-             CreateAddressWindow(),
-             // MakeAssemblerUI(),
-             CreateRopCompilerWindow(),
-             new PluginLogWindow(),
-             CreateSnapshotWindow(),
-             MakeThemeWindow(),
-             CreateBitmapViewer(), })
-        windows.push_back(item);
-    for (auto item : GetEditors())
-        windows.push_back(item);
-    if (!std::filesystem::exists(ui_state_fn)) {
-        for (auto* w : windows) {
-            if (w) {
-                w->open = true;
-                w->bring_to_front_requested = false;
-            }
-        }
-    }
-    LoadUIState();
-    ui_ready = true;
-    /*for (auto* w : windows) {
-        if (!w) continue;
-    
-        char buf[256];
-        snprintf(buf, sizeof(buf),
-            "%s ptr=%p open=%d",
-            w->name,
-            (void*)w,
-            w->open
-        );
-    
-        DebugLog(buf);
-    }*/
-    
-    return nullptr;
+	return CreateDebuggerGuiWindows();
 }
+#endif
+
+#ifdef CASIOEMU_CORE_WEB
+void InitWebDebuggerGuiWindows() {
+	if (windows.empty()) {
+		CreateDebuggerGuiWindows();
+	}
+}
+
+void RenderWebDebuggerGuiWindows() {
+	RenderDebuggerGuiWindows();
+}
+
+void CleanupWebDebuggerGuiWindows() {
+	for (auto* win : windows) {
+		delete win;
+	}
+	windows.clear();
+	code_viewer = nullptr;
+	injector = nullptr;
+	membp = nullptr;
+	g_labels.clear();
+}
+#endif
 
 namespace UIHelpers {
 
 	void JumpToMemory(uint32_t addr) {
 		// Try Ram first
 		for (auto* win : windows) {
-			if (win->name && strcmp(win->name, "Ram") == 0) {
-				if (win->GotoMemoryAddress(addr)) return;
+			const char* n = win->name;
+			if (n && strcmp(n, "Ram") == 0) {
+				win->GotoMemoryAddress(addr);
+				win->BringToFront();
+				return;
+			}
+			// Track first editor-like window as fallback
+			if (!fallback && n && (strcmp(n, "Rom") == 0 || strcmp(n, "All") == 0
+				|| strcmp(n, "PRam") == 0 || strcmp(n, "Flash") == 0)) {
+				fallback = win;
 			}
 		}
-		// Try PRam next
-		for (auto* win : windows) {
-			if (win->name && strcmp(win->name, "PRam") == 0) {
-				if (win->GotoMemoryAddress(addr)) return;
-			}
-		}
-		// Try any remaining
-		for (auto* win : windows) {
-			if (win->GotoMemoryAddress(addr)) return;
+		if (fallback) {
+			fallback->GotoMemoryAddress(addr);
+			fallback->BringToFront();
 		}
 	}
 
 	void ClickableAddress(uint32_t addr, JumpTarget defaultTarget) {
-		// Render the colored address text
-		ImGui::PushStyleColor(ImGuiCol_Text, kColorInfo);
 		char addrLabel[16];
 		snprintf(addrLabel, sizeof(addrLabel), "%05X", addr);
-		ImGui::TextUnformatted(addrLabel);
-		ImGui::PopStyleColor();
+		ImGui::PushID(addrLabel);
+		const ImVec2 textSize = ImGui::CalcTextSize(addrLabel);
+		const ImVec2 textPos = ImGui::GetCursorScreenPos();
+		ImGui::InvisibleButton("##clickable_address", textSize);
+		const bool hovered = ImGui::IsItemHovered();
+		const bool leftClicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
+		const bool rightClicked = ImGui::IsItemClicked(ImGuiMouseButton_Right);
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		const ImU32 textColor = ImGui::GetColorU32(hovered ? ImVec4(0.55f, 0.72f, 1.0f, 1.0f) : kColorInfo);
+		drawList->AddText(textPos, textColor, addrLabel);
+		if (hovered) {
+			const float underlineY = textPos.y + textSize.y;
+			drawList->AddLine(ImVec2(textPos.x, underlineY), ImVec2(textPos.x + textSize.x, underlineY), textColor);
+		}
 
-		if (ImGui::IsItemHovered()) {
+		if (hovered) {
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			ImGui::BeginTooltip();
 			if (defaultTarget == JumpTarget::Code) {
@@ -688,7 +739,7 @@ namespace UIHelpers {
 		}
 
 		// Left-click: default action
-		if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+		if (leftClicked) {
 			if (defaultTarget == JumpTarget::Code || defaultTarget == JumpTarget::Both) {
 				if (code_viewer) {
 					code_viewer->JumpTo(addr);
@@ -702,7 +753,7 @@ namespace UIHelpers {
 		// Right-click: context menu with both options
 		char popupId[32];
 		snprintf(popupId, sizeof(popupId), "##ca_popup_%05X", addr);
-		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+		if (rightClicked) {
 			ImGui::OpenPopup(popupId);
 		}
 		if (ImGui::BeginPopup(popupId)) {
@@ -719,12 +770,14 @@ namespace UIHelpers {
 			}
 			ImGui::EndPopup();
 		}
+		ImGui::PopID();
 	}
 }
 
 
 void gui_cleanup() {
-#ifndef __ANDROID__
+#ifndef CASIOEMU_CORE_WEB
+#if !defined(__ANDROID__) && !defined(IOS)
 #ifndef SINGLE_WINDOW
 	if (window) {
 		int x, y, w, h;
@@ -739,14 +792,16 @@ void gui_cleanup() {
 	}
 #endif
 #endif
-
+	SaveUIState();
 	ImGui_ImplSDLRenderer2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-	SaveUIState();
 	windows.clear();
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+#else
+	CleanupWebDebuggerGuiWindows();
+#endif
 }

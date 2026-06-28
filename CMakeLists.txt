@@ -9,12 +9,27 @@ endif()
 
 project(GAME)
 
+<<<<<<< HEAD
 # After project(), set Xcode attributes so ALL targets (SDL2, SDL2_image, etc.) inherit the correct deployment target
 if(IOS)
     set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "14.0" CACHE STRING "" FORCE)
 else()
     if(APPLE)
         set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "" FORCE)
+    endif()
+endif()
+
+set(SDL_TEST OFF CACHE BOOL "Disable building the SDL_test library" FORCE)
+option(BUILD_EXECUTABLE "Build a statically linked executable" OFF)
+option(BUILD_MCP_PLUGIN "Build the MCP debugger plugin" ON)
+
+if(NOT DEFINED BUILD_EXECUTABLE)
+    if(ANDROID OR IOS)
+        set(BUILD_EXECUTABLE OFF)
+        message(STATUS "Auto-setting BUILD_EXECUTABLE: OFF (Mobile platform)")
+    else()
+        set(BUILD_EXECUTABLE ON)
+        message(STATUS "Auto-setting BUILD_EXECUTABLE: ON (Desktop platform)")
     endif()
 endif()
 
@@ -82,3 +97,7 @@ endif()
 
 # Your game and its CMakeLists.txt are in a subfolder named "src"
 add_subdirectory(CasioEmuMsvc)
+
+if(WIN32 AND BUILD_EXECUTABLE AND BUILD_MCP_PLUGIN)
+    add_subdirectory(McpPlugin)
+endif()

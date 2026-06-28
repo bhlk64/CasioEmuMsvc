@@ -60,6 +60,7 @@ namespace casioemu {
 
 		switch (emulator.hardware_id) {
 		case HW_ES_PLUS:
+		case HW_SOLARII:
 			if (offset < rom_size)
 				return le_read(rom[offset]);
 			else
