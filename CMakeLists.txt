@@ -79,6 +79,14 @@ set(SDL2IMAGE_WEBP OFF CACHE BOOL "Disable WEBP" FORCE)
 set(SDL2IMAGE_JXL OFF CACHE BOOL "Disable JXL" FORCE)
 set(SDL2IMAGE_TIF OFF CACHE BOOL "Disable TIFF" FORCE)
 add_subdirectory(SDL_image)
+if(IOS)
+    target_link_libraries(SDL2_image PRIVATE
+        "-framework CoreFoundation"
+        "-framework CoreGraphics"
+        "-framework ImageIO"
+        "-framework MobileCoreServices"
+    )
+endif()
 #add_subdirectory(SDL_mixer)
 #add_subdirectory(SDL_ttf)
 
