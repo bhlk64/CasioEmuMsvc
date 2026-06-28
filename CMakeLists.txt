@@ -9,7 +9,6 @@ endif()
 
 project(GAME)
 
-<<<<<<< HEAD
 # After project(), set Xcode attributes so ALL targets (SDL2, SDL2_image, etc.) inherit the correct deployment target
 if(IOS)
     set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "14.0" CACHE STRING "" FORCE)
