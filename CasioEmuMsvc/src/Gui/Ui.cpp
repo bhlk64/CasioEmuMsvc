@@ -24,6 +24,7 @@
 #include "Rop/RopCompilerUI.h"
 #include "PluginLogWindow.hpp"
 #include "SnapshotWindow.h"
+#endif
 #include "CalculatorWindow.h"
 #include "imgui/imgui.h"
 #ifdef CASIOEMU_CORE_WEB
@@ -417,6 +418,7 @@ static void RenderDebuggerGuiWindows() {
     ImGui::Render();
     //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     
+    ImGuiIO& io = ImGui::GetIO();
     SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderSetScale(renderer, 1.0f, 1.0f);
@@ -685,7 +687,8 @@ void CleanupWebDebuggerGuiWindows() {
 namespace UIHelpers {
 
 	void JumpToMemory(uint32_t addr) {
-		// Try Ram first
+		// Prefer the "Ram" window; fall back to any window that overrides GotoMemoryAddress.
+		UIWindow* fallback = nullptr;
 		for (auto* win : windows) {
 			const char* n = win->name;
 			if (n && strcmp(n, "Ram") == 0) {
