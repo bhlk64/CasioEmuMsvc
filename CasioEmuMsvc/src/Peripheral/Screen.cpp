@@ -611,21 +611,27 @@ namespace casioemu {
 
 	public:
 		Screen(Emulator& emu)
-			: Peripheral(emu) {
-#if !defined(TEST_BUILD) && !defined(__EMSCRIPTEN__)
-			std::thread thd([&]() {
-				while (1) {
-					tick();
-#elif defined(__ANDROID__) || defined(IOS)
-					SDL_Delay(10);
-#elif !defined(__EMSCRIPTEN__)
-					if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
-						SDL_Delay(10);
-					}
-#endif
-				}
-				});
-			thd.detach();
+		    : Peripheral(emu)
+		{
+		#if !defined(TEST_BUILD) && !defined(__EMSCRIPTEN__)
+		
+		    std::thread thd([this]() {
+		        while (true) {
+		            tick();
+		
+		#if defined(__ANDROID__) || defined(IOS)
+		            SDL_Delay(10);
+		#elif !defined(__EMSCRIPTEN__)
+		            if (ThemeManager::Instance().Settings().lowPerformanceMode || low_perf_ext) {
+		                SDL_Delay(10);
+		            }
+		#endif
+		        }
+		    });
+		
+		    thd.detach();
+		
+		#endif
 		}
 		~Screen() {
 			if (screen_buffer)
