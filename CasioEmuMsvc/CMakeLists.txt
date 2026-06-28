@@ -283,7 +283,6 @@ else()
     add_library(${TARGET_NAME} SHARED ${MAIN_SOURCES})
 endif()
 
-<<<<<<< HEAD
 if(APPLE AND NOT IOS)
     set_target_properties(${TARGET_NAME} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST
