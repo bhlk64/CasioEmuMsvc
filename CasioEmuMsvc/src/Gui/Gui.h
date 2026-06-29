@@ -141,7 +141,7 @@ inline std::string GetCJKFontPath() {
 		"/android_asset/fonts/CasioEmuGuiCJKSubset.otf",
 		"/data/data/com.casioemu/files/fonts/CasioEmuGuiCJKSubset.otf",
 		"/system/fonts/NotoSansCJK-Regular.ttc",
-		"/system/fonts/DroidSansFallback.ttf"};
+		"/system/fonts/DroidSansFallback.ttf"});
 #elif defined(__APPLE__) || defined(MACOS)
 	if (preference == "JP") {
 		candidates = {
