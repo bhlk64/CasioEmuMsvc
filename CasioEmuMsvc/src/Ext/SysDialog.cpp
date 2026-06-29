@@ -326,7 +326,6 @@ extern "C" {
 
 // --- KHỐI THÊM MỚI: HỖ TRỢ NATIVE MACOS VÀ IOS ---
 #ifdef __APPLE__
-#include <TargetConditionals.h>
 #include <iostream>
 #include <cstdio>
 #include <memory>
@@ -335,95 +334,15 @@ extern "C" {
 #include <filesystem>
 #include <functional>
 
+#ifdef IOS
+#include "iOSNativeBridge.h"
+#else
+
+// MACOS implementation
 std::function<void(std::filesystem::path)> SystemDialogs::fileOpenCallback;
 std::function<void(std::filesystem::path)> SystemDialogs::fileSaveCallback;
 std::function<void(std::filesystem::path)> SystemDialogs::folderOpenCallback;
 std::function<void(std::filesystem::path)> SystemDialogs::folderSaveCallback;
-
-#if TARGET_OS_IPHONE
-
-#import <UIKit/UIKit.h>
-#import <objc/runtime.h>
-
-@interface SysDialogDelegate : NSObject <UIDocumentPickerDelegate>
-@property (nonatomic, assign) std::function<void(std::filesystem::path)> callback;
-@end
-
-@implementation SysDialogDelegate
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
-    if (urls.count > 0 && self.callback) {
-        NSURL *url = urls.firstObject;
-        BOOL secured = [url startAccessingSecurityScopedResource];
-        
-        NSString *tempDir = NSTemporaryDirectory();
-        NSString *fileName = [url lastPathComponent];
-        NSString *tempPath = [tempDir stringByAppendingPathComponent:fileName];
-        
-        NSFileManager *fm = [NSFileManager defaultManager];
-        if ([fm fileExistsAtPath:tempPath]) {
-            [fm removeItemAtPath:tempPath error:nil];
-        }
-        [fm copyItemAtURL:url toURL:[NSURL fileURLWithPath:tempPath] error:nil];
-        
-        if (secured) {
-            [url stopAccessingSecurityScopedResource];
-        }
-        
-        self.callback(std::filesystem::path([tempPath UTF8String]));
-    }
-}
-@end
-
-static UIViewController* getRootVC() {
-    UIWindow *keyWindow = nil;
-    for (UIWindow *window in UIApplication.sharedApplication.windows) {
-        if (window.isKeyWindow) {
-            keyWindow = window;
-            break;
-        }
-    }
-    return keyWindow.rootViewController;
-}
-
-void SystemDialogs::OpenFileDialog(std::function<void(std::filesystem::path)> callback) {
-    SysDialogDelegate *delegate = [[SysDialogDelegate alloc] init];
-    delegate.callback = callback;
-    
-    UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data", @"public.content"] inMode:UIDocumentPickerModeImport];
-    picker.delegate = delegate;
-    
-    // Retain the delegate by associating it with the picker (simple hack to keep it alive without ARC issues)
-    objc_setAssociatedObject(picker, "SysDialogDelegate", delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
-    UIViewController *vc = getRootVC();
-    [vc presentViewController:picker animated:YES completion:nil];
-}
-
-void SystemDialogs::SaveFileDialog(std::string preferred_name, std::function<void(std::filesystem::path)> callback) {
-    // Unsupported on basic iOS dialogs without creating temporary file first
-    if (callback) callback(std::filesystem::path(""));
-}
-
-void SystemDialogs::OpenFolderDialog(std::function<void(std::filesystem::path)> callback) {
-    SysDialogDelegate *delegate = [[SysDialogDelegate alloc] init];
-    delegate.callback = callback;
-    
-    UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.folder"] inMode:UIDocumentPickerModeOpen];
-    picker.delegate = delegate;
-    objc_setAssociatedObject(picker, "SysDialogDelegate", delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
-    UIViewController *vc = getRootVC();
-    [vc presentViewController:picker animated:YES completion:nil];
-}
-
-void SystemDialogs::SaveFolderDialog(std::function<void(std::filesystem::path)> callback) {
-    OpenFolderDialog(callback);
-}
-
-#else
-
-// MACOS implementation
-
 
 static std::string exec_apple_script(const std::string& script) {
     std::string cmd = "osascript -e " + script;

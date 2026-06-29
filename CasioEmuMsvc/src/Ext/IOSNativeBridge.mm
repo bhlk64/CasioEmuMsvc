@@ -3,9 +3,11 @@
 #import <UIKit/UIKit.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 // Include the header we just made
 #include "iOSNativeBridge.h"
+#include "SysDialog.h"
 
 // Singleton to act as the UIDocumentPickerDelegate
 @interface iOSNativeBridge : NSObject <UIDocumentPickerDelegate>
@@ -90,8 +92,17 @@ float getSafeTop() {
 
 - (void)openFileDialog {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSArray *documentTypes = @[(NSString *)kUTTypeItem]; // Equivalent to setType("/")
-        UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeOpen];
+        UIDocumentPickerViewController *picker = nil;
+
+        if (@available(iOS 14.0, *)) {
+            picker = [[UIDocumentPickerViewController alloc]
+                initForOpeningContentTypes:@[UTTypeItem]];
+        } else {
+            NSArray *documentTypes = @[(NSString *)kUTTypeItem];
+            picker = [[UIDocumentPickerViewController alloc]
+                initWithDocumentTypes:documentTypes
+                               inMode:UIDocumentPickerModeOpen];
+        }
         picker.delegate = self;
         picker.allowsMultipleSelection = NO;
         [[self rootViewController] presentViewController:picker animated:YES completion:nil];
@@ -100,22 +111,49 @@ float getSafeTop() {
 
 - (void)saveFileDialog:(NSString*)preferredName {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSArray *documentTypes = @[(NSString *)kUTTypeItem];
-        UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeExportToService];
+        UIDocumentPickerViewController *picker = nil;
+
+        if (@available(iOS 14.0, *)) {
+            picker = [[UIDocumentPickerViewController alloc]
+                initForExportingURLs:@[]];
+        } else {
+            NSArray *documentTypes = @[(NSString *)kUTTypeItem];
+            picker = [[UIDocumentPickerViewController alloc]
+                initWithDocumentTypes:documentTypes
+                               inMode:UIDocumentPickerModeExportToService];
+        }
+
         picker.delegate = self;
+
         if (@available(iOS 11.0, *)) {
             picker.allowsContentCreation = YES;
         }
-        [[self rootViewController] presentViewController:picker animated:YES completion:nil];
+
+        [[self rootViewController] presentViewController:picker
+                                                animated:YES
+                                              completion:nil];
     });
 }
 
 - (void)openFolderDialog {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSArray *documentTypes = @[(NSString *)kUTTypeFolder];
-        UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:documentTypes inMode:UIDocumentPickerModeOpen];
+        UIDocumentPickerViewController *picker = nil;
+
+        if (@available(iOS 14.0, *)) {
+            picker = [[UIDocumentPickerViewController alloc]
+                initForOpeningContentTypes:@[UTTypeFolder]];
+        } else {
+            NSArray *documentTypes = @[(NSString *)kUTTypeFolder];
+            picker = [[UIDocumentPickerViewController alloc]
+                initWithDocumentTypes:documentTypes
+                               inMode:UIDocumentPickerModeOpen];
+        }
+
         picker.delegate = self;
-        [[self rootViewController] presentViewController:picker animated:YES completion:nil];
+
+        [[self rootViewController] presentViewController:picker
+                                                animated:YES
+                                              completion:nil];
     });
 }
 
@@ -146,13 +184,39 @@ float getSafeTop() {
             onFolderSaved(path.UTF8String);
         }
     } else {
-        // It's a file, read the data
-        NSData *fileData = [NSData dataWithContentsOfURL:url options:0 error:&error];
-        if (fileData && !error) {
+        // It's a file, copy it into a temporary location so it remains
+        // accessible after the security-scoped resource is released.
+        
+        NSString *tempDir = NSTemporaryDirectory();
+        NSString *fileName = url.lastPathComponent;
+        NSString *tempPath = [tempDir stringByAppendingPathComponent:fileName];
+        
+        NSFileManager *fm = [NSFileManager defaultManager];
+        
+        // Remove any previous copy.
+        if ([fm fileExistsAtPath:tempPath]) {
+            [fm removeItemAtPath:tempPath error:nil];
+        }
+        
+        BOOL copied = [fm copyItemAtURL:url
+                                  toURL:[NSURL fileURLWithPath:tempPath]
+                                  error:&error];
+        
+        if (copied) {
             if (controller.documentPickerMode == UIDocumentPickerModeOpen) {
-                onFileSelected(path.UTF8String, (const unsigned char*)fileData.bytes, (int)fileData.length);
+                // Read from the temporary copy so C++ doesn't depend on the
+                // security-scoped URL.
+                NSData *fileData = [NSData dataWithContentsOfFile:tempPath];
+        
+                if (fileData) {
+                    onFileSelected(tempPath.UTF8String,
+                                   (const unsigned char *)fileData.bytes,
+                                   (int)fileData.length);
+                } else {
+                    onImportFailed();
+                }
             } else {
-                onFileSaved(path.UTF8String);
+                onFileSaved(tempPath.UTF8String);
             }
         } else {
             onImportFailed();
@@ -216,20 +280,30 @@ void onNativeCrash(const char* message) {
     });
 }
 
-void openFileDialog() {
+void SystemDialogs::OpenFileDialog(std::function<void(std::filesystem::path)> callback)
+{
+    fileOpenCallback = std::move(callback);
     [[iOSNativeBridge sharedInstance] openFileDialog];
 }
 
-void saveFileDialog(const char* preferredName) {
-    NSString *name = preferredName ? [NSString stringWithUTF8String:preferredName] : @"Untitled";
+void SystemDialogs::SaveFileDialog(std::string preferredName,
+                                   std::function<void(std::filesystem::path)> callback)
+{
+    fileSaveCallback = std::move(callback);
+
+    NSString *name = [NSString stringWithUTF8String:preferredName.c_str()];
     [[iOSNativeBridge sharedInstance] saveFileDialog:name];
 }
 
-void openFolderDialog() {
+void SystemDialogs::OpenFolderDialog(std::function<void(std::filesystem::path)> callback)
+{
+    folderOpenCallback = std::move(callback);
     [[iOSNativeBridge sharedInstance] openFolderDialog];
 }
 
-void saveFolderDialog() {
+void SystemDialogs::SaveFolderDialog(std::function<void(std::filesystem::path)> callback)
+{
+    folderSaveCallback = std::move(callback);
     [[iOSNativeBridge sharedInstance] saveFolderDialog];
 }
 #endif
