@@ -7,6 +7,10 @@ elseif(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS deployment version" FORCE)
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    set(IOS TRUE)
+endif()
+
 project(GAME)
 
 # After project(), set Xcode attributes so ALL targets (SDL2, SDL2_image, etc.) inherit the correct deployment target

@@ -33,9 +33,9 @@ jobs:
           - platform: linux
             os: ubuntu-latest
             name: "Linux-x64"
-          - platform: ios
-            os: macos-latest
-            name: "iOS"
+          #- platform: ios
+          #  os: macos-latest
+          #  name: "iOS"
     
     runs-on: ${{ matrix.os }}
     name: Build ${{ matrix.name }}
