@@ -343,7 +343,7 @@ extern "C" {
 #ifdef IOS
 #include "iOSNativeBridge.h"
 #else
-
+/*
 // MACOS implementation
 std::function<void(std::filesystem::path)> SystemDialogs::fileOpenCallback;
 std::function<void(std::filesystem::path)> SystemDialogs::fileSaveCallback;
@@ -403,7 +403,7 @@ void SystemDialogs::SaveFolderDialog(std::function<void(std::filesystem::path)> 
     // Trên Mac choose folder có thể dùng chung cho cả chọn nơi save folder
     OpenFolderDialog(callback);
 }
-
+*/
 // --- SỬA ĐỔI KHỐI ĐỂ TRÁNH XUNG ĐỘT VỚI MACOS ---
 #endif
 #endif
