@@ -287,9 +287,9 @@ if(BUILD_EXECUTABLE)
     #        MACOSX_BUNDLE_COPYRIGHT "Copyright (C) 2024-2026 telecomadm1145"
     #        MACOSX_BUNDLE_ICON_FILE "icon.icns"
     #    )
-    else()
-        add_executable(${TARGET_NAME} ${MAIN_SOURCES} ${WIN_RESOURCES})
-    endif()
+    #else()
+    #    add_executable(${TARGET_NAME} ${MAIN_SOURCES} ${WIN_RESOURCES})
+    #endif()
 else()
     message(STATUS "Building shared library")
     set(TARGET_NAME "main")
