@@ -5,7 +5,9 @@
 #include "ModelInfo.h"
 #include "Models.h"
 #include "Peripheral/Keyboard.hpp"
+#include "Peripheral/BatteryBackedRAM.hpp"
 #include "Peripheral/Screen.hpp"
+#include "Romu.h"
 #include "Snapshot.h"
 
 #include <SDL.h>
@@ -18,11 +20,13 @@
 #include <cfloat>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <memory>
 #include <string>
+#include <typeinfo>
 #include <vector>
 #include <unistd.h>
 
@@ -50,6 +54,7 @@ extern bool audio_enable;
 namespace {
 	constexpr const char* kCoreDir = "/tmp/casioemu_core";
 	constexpr const char* kRomPath = "/tmp/casioemu_core/rom.bin";
+	constexpr const char* kFlashPath = "/tmp/casioemu_core/flash.bin";
 
 	std::unique_ptr<casioemu::Emulator> g_emulator;
 	bool g_sdl_ready = false;
@@ -281,6 +286,9 @@ namespace {
 		model.interface_path = "";
 		model.model_name = "CasioEmuCore";
 		model.rom_path = kRomPath;
+		if (hardware_id == casioemu::HW_FX_5800P) {
+			model.flash_path = kFlashPath;
+		}
 		model.enable_new_screen = false;
 		model.is_sample_rom = is_sample_rom;
 		model.legacy_ko = legacy_ko;
@@ -310,12 +318,20 @@ namespace {
 		return model;
 	}
 
-	bool WriteRomFile(const uint8_t* rom, int len) {
+	bool WriteCoreFile(const char* path, const uint8_t* data, int len) {
 		std::filesystem::create_directories(kCoreDir);
-		std::ofstream out(kRomPath, std::ios::binary);
+		std::ofstream out(path, std::ios::binary);
 		if (!out) return false;
-		out.write(reinterpret_cast<const char*>(rom), len);
+		out.write(reinterpret_cast<const char*>(data), len);
 		return out.good();
+	}
+
+	bool WriteRomFile(const uint8_t* rom, int len) {
+		return WriteCoreFile(kRomPath, rom, len);
+	}
+
+	bool WriteFlashFile(const uint8_t* flash, int len) {
+		return WriteCoreFile(kFlashPath, flash, len);
 	}
 
 	std::vector<uint8_t> NormalizeSimulatorRomForWeb(const uint8_t* rom, int len, casioemu::HardwareId hardware_id) {
@@ -348,6 +364,30 @@ namespace {
 			region->description == "Segment4");
 	}
 
+	constexpr uint32_t kFx5800pStateMagic = 0x53503835; // "58PS"
+	constexpr uint32_t kFx5800pStateVersion = 1;
+	constexpr int kFx5800pPramLen = 0x8000;
+	constexpr int kFx5800pFlashLen = 0x80000;
+	constexpr int kFx5800pStateHeaderLen = 20;
+
+	void WriteLe32(uint8_t* out, uint32_t value) {
+		out[0] = static_cast<uint8_t>(value & 0xff);
+		out[1] = static_cast<uint8_t>((value >> 8) & 0xff);
+		out[2] = static_cast<uint8_t>((value >> 16) & 0xff);
+		out[3] = static_cast<uint8_t>((value >> 24) & 0xff);
+	}
+
+	uint32_t ReadLe32(const uint8_t* in) {
+		return static_cast<uint32_t>(in[0]) |
+			(static_cast<uint32_t>(in[1]) << 8) |
+			(static_cast<uint32_t>(in[2]) << 16) |
+			(static_cast<uint32_t>(in[3]) << 24);
+	}
+
+	IRam* GetRamPeripheral() {
+		return g_emulator ? static_cast<IRam*>(g_emulator->chipset.QueryInterface(typeid(IRam).name())) : nullptr;
+	}
+
 	bool UserRamRange(uint32_t& addr, int& len) {
 		if (!g_emulator) return false;
 		switch (g_emulator->hardware_id) {
@@ -359,6 +399,10 @@ namespace {
 		case casioemu::HW_EPS6800:
 			addr = 0x8000;
 			len = 0x2000;
+			return true;
+		case casioemu::HW_FX_5800P:
+			addr = static_cast<uint32_t>(casioemu::GetRamBaseAddr(casioemu::HW_FX_5800P));
+			len = static_cast<int>(casioemu::GetRamSize(casioemu::HW_FX_5800P));
 			return true;
 		case casioemu::HW_SOLARII:
 			addr = 0xE000;
@@ -401,6 +445,68 @@ namespace {
 			cur += chunk;
 			out_pos += static_cast<int>(chunk);
 		}
+		return 0;
+	}
+
+	int Fx5800pRamLen() {
+		uint32_t addr = 0;
+		int len = 0;
+		return UserRamRange(addr, len) ? len : 0;
+	}
+
+	int Fx5800pPersistentStateSize() {
+		const int ram_len = Fx5800pRamLen();
+		if (ram_len <= 0) return 0;
+		return kFx5800pStateHeaderLen + ram_len + kFx5800pPramLen + kFx5800pFlashLen;
+	}
+
+	int SaveFx5800pPersistentState(uint8_t* out, int max_len) {
+		const int ram_len = Fx5800pRamLen();
+		const int state_len = Fx5800pPersistentStateSize();
+		if (state_len <= 0) return -2;
+		if (max_len < state_len) return -state_len;
+
+		IRam* ram = GetRamPeripheral();
+		if (!ram || !ram->GetRam() || !ram->GetPRam()) return -3;
+		if (static_cast<int>(g_emulator->chipset.flash_data.size()) < kFx5800pFlashLen) return -4;
+
+		WriteLe32(out, kFx5800pStateMagic);
+		WriteLe32(out + 4, kFx5800pStateVersion);
+		WriteLe32(out + 8, static_cast<uint32_t>(ram_len));
+		WriteLe32(out + 12, kFx5800pPramLen);
+		WriteLe32(out + 16, kFx5800pFlashLen);
+
+		int pos = kFx5800pStateHeaderLen;
+		std::memcpy(out + pos, ram->GetRam(), ram_len);
+		pos += ram_len;
+		std::memcpy(out + pos, ram->GetPRam(), kFx5800pPramLen);
+		pos += kFx5800pPramLen;
+		std::memcpy(out + pos, g_emulator->chipset.flash_data.data(), kFx5800pFlashLen);
+		return 0;
+	}
+
+	int LoadFx5800pPersistentState(const uint8_t* in, int len) {
+		if (len < kFx5800pStateHeaderLen) return 2;
+		if (ReadLe32(in) != kFx5800pStateMagic) return 3;
+		if (ReadLe32(in + 4) != kFx5800pStateVersion) return 4;
+
+		const int ram_len = static_cast<int>(ReadLe32(in + 8));
+		const int pram_len = static_cast<int>(ReadLe32(in + 12));
+		const int flash_len = static_cast<int>(ReadLe32(in + 16));
+		const int expected_ram_len = Fx5800pRamLen();
+		if (ram_len != expected_ram_len || pram_len != kFx5800pPramLen || flash_len != kFx5800pFlashLen) return 5;
+		if (len < kFx5800pStateHeaderLen + ram_len + pram_len + flash_len) return 6;
+
+		IRam* ram = GetRamPeripheral();
+		if (!ram || !ram->GetRam() || !ram->GetPRam()) return 7;
+		if (static_cast<int>(g_emulator->chipset.flash_data.size()) < flash_len) return 8;
+
+		int pos = kFx5800pStateHeaderLen;
+		std::memcpy(ram->GetRam(), in + pos, ram_len);
+		pos += ram_len;
+		std::memcpy(ram->GetPRam(), in + pos, pram_len);
+		pos += pram_len;
+		std::memcpy(g_emulator->chipset.flash_data.data(), in + pos, flash_len);
 		return 0;
 	}
 
@@ -787,14 +893,43 @@ void WebDebuggerQueueDownload(const char* path, const char* name) {
 	}
 
 	bool WebDebuggerConsumeFileResult(const char* path, int* result) {
-	if (!g_gui_file_result_pending) return false;
-	if (path && g_gui_file_result_path != path) return false;
-	if (result) *result = g_gui_file_result_code;
-	g_gui_file_result_path.clear();
-	g_gui_file_result_code = 0;
-	g_gui_file_result_pending = false;
-	return true;
-}
+		if (!g_gui_file_result_pending) return false;
+		if (path && g_gui_file_result_path != path) return false;
+		if (result) *result = g_gui_file_result_code;
+		g_gui_file_result_path.clear();
+		g_gui_file_result_code = 0;
+		g_gui_file_result_pending = false;
+		return true;
+	}
+
+	int InitRealRomCore(const uint8_t* rom, int len, const uint8_t* flash, int flash_len, int pd_value, int model_type, int legacy_ko, int classwiz_graph) {
+		if (!rom || len <= 0) return -1;
+		const auto hardware_id = HardwareIdFromCoreType(model_type);
+		if (hardware_id == casioemu::HW_FX_5800P && (!flash || flash_len <= 0)) return -4;
+		try {
+			EnsureSdl();
+			StopMainLoop();
+			GuiResetState();
+			g_emulator.reset();
+			if (!WriteRomFile(rom, len)) return -2;
+			if (flash && flash_len > 0 && !WriteFlashFile(flash, flash_len)) return -4;
+			auto model = MakeWebModel(true, false, pd_value, model_type, legacy_ko != 0, classwiz_graph != 0);
+			const auto model_dir = CurrentWebModelDir();
+			std::filesystem::create_directories(model_dir);
+			g_emulator = std::make_unique<casioemu::Emulator>(model, false, true, model_dir);
+			m_emu = g_emulator.get();
+			low_perf_ext = true;
+			RefreshScreenProvider();
+			ResetClock();
+			return 0;
+		}
+		catch (const std::exception& ex) {
+			printf("[CasioEmuCore][Error] %s\n", ex.what());
+			g_emulator.reset();
+			m_emu = nullptr;
+			return -3;
+		}
+	}
 
 extern "C" {
 
@@ -804,29 +939,11 @@ int casioemu_core_set_model_id(const char* model_id) {
 }
 
 int casioemu_core_init_real_rom(const uint8_t* rom, int len, int pd_value, int model_type, int legacy_ko, int classwiz_graph) {
-	if (!rom || len <= 0) return -1;
-	try {
-		EnsureSdl();
-		StopMainLoop();
-		GuiResetState();
-		g_emulator.reset();
-		if (!WriteRomFile(rom, len)) return -2;
-		auto model = MakeWebModel(true, false, pd_value, model_type, legacy_ko != 0, classwiz_graph != 0);
-		const auto model_dir = CurrentWebModelDir();
-		std::filesystem::create_directories(model_dir);
-		g_emulator = std::make_unique<casioemu::Emulator>(model, false, true, model_dir);
-		m_emu = g_emulator.get();
-		low_perf_ext = true;
-		RefreshScreenProvider();
-		ResetClock();
-		return 0;
-	}
-	catch (const std::exception& ex) {
-		printf("[CasioEmuCore][Error] %s\n", ex.what());
-		g_emulator.reset();
-		m_emu = nullptr;
-		return -3;
-	}
+	return InitRealRomCore(rom, len, nullptr, 0, pd_value, model_type, legacy_ko, classwiz_graph);
+}
+
+int casioemu_core_init_real_rom_with_flash(const uint8_t* rom, int rom_len, const uint8_t* flash, int flash_len, int pd_value, int model_type, int legacy_ko, int classwiz_graph) {
+	return InitRealRomCore(rom, rom_len, flash, flash_len, pd_value, model_type, legacy_ko, classwiz_graph);
 }
 
 int casioemu_core_init_sim_rom(const uint8_t* rom, int len, int is_sample_rom, int pd_value, int model_type, int legacy_ko, int classwiz_graph) {
@@ -1067,6 +1184,30 @@ int casioemu_core_load_user_ram(const uint8_t* in, int len) {
 		g_emulator->chipset.mmu.WriteData(addr + i, in[i], false);
 	}
 	return 0;
+}
+
+int casioemu_core_persistent_ram_size() {
+	if (!g_emulator) return 0;
+	if (g_emulator->hardware_id == casioemu::HW_FX_5800P) {
+		return Fx5800pPersistentStateSize();
+	}
+	return casioemu_core_user_ram_size();
+}
+
+int casioemu_core_save_persistent_ram(uint8_t* out, int max_len) {
+	if (!g_emulator || !out || max_len < 0) return -1;
+	if (g_emulator->hardware_id == casioemu::HW_FX_5800P) {
+		return SaveFx5800pPersistentState(out, max_len);
+	}
+	return casioemu_core_save_user_ram(out, max_len);
+}
+
+int casioemu_core_load_persistent_ram(const uint8_t* in, int len) {
+	if (!g_emulator || !in || len < 0) return 1;
+	if (g_emulator->hardware_id == casioemu::HW_FX_5800P) {
+		return LoadFx5800pPersistentState(in, len);
+	}
+	return casioemu_core_load_user_ram(in, len);
 }
 
 uint32_t casioemu_core_snapshot_ptr() {
@@ -1356,6 +1497,20 @@ extern "C" const char* casioemu_core_rom_version() {
 	static char buffer[32] = {};
 	if (!g_emulator) return "";
 	const auto hw = g_emulator->ModelDefinition.hardware_id;
+
+	if (hw == casioemu::HW_FX_5800P) {
+		std::ifstream rom(kRomPath, std::ios::binary);
+		std::ifstream flash(kFlashPath, std::ios::binary);
+		if (!rom || !flash) return "";
+
+		std::vector<byte> rom_data{std::istreambuf_iterator<char>{rom.rdbuf()}, std::istreambuf_iterator<char>{}};
+		std::vector<byte> flash_data{std::istreambuf_iterator<char>{flash.rdbuf()}, std::istreambuf_iterator<char>{}};
+		auto ri = rom_info(rom_data, flash_data, false);
+		if (!ri.ok) return "";
+		snprintf(buffer, sizeof(buffer), "%.8s (%04X)", ri.ver, ri.desired_sum);
+		return buffer;
+	}
+
 	const uint32_t addr = rom_info_addr(hw);
 	if (!addr) return "";
 

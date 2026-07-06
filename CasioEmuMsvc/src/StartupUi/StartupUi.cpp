@@ -650,6 +650,7 @@ static bool CreateDesktopShortcut(const std::filesystem::path& model_path, const
 
 	return true;
 }
+
 #elif defined(MACOS)
 static bool CreateDesktopShortcut(const std::filesystem::path& model_path, const std::string& shortcut_name, const std::string& icon_path_str) {
 

@@ -33,16 +33,16 @@ jobs:
           - platform: linux
             os: ubuntu-latest
             name: "Linux-x64"
-          #- platform: ios
-          #  os: macos-latest
-          #  name: "iOS"
+          - platform: macos
+            os: macos-latest
+            name: "macOS-universal"
     
     runs-on: ${{ matrix.os }}
     name: Build ${{ matrix.name }}
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: recursive
 
@@ -360,13 +360,41 @@ jobs:
         find . -name "CMakeError.log" -exec cat {} \;
         find . -name "CMakeOutput.log" -exec cat {} \;
 
+    - name: Configure CMake
+      if: matrix.platform == 'macos'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_CONFIGURATION }} -DBUILD_EXECUTABLE=ON -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+
+    - name: Build with CMake
+      if: matrix.platform == 'macos'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: cmake --build build --config ${{ env.BUILD_CONFIGURATION }} --parallel
+
+    - name: Code Sign App Bundle
+      if: matrix.platform == 'macos'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: codesign --force --deep --sign - build/CasioEmuMsvc/CasioEmuMsvc.app # it may seem unnecessary but it is for precautionary purposes
+
+    - name: Package App Bundle
+      if: matrix.platform == 'macos'
+      working-directory: build/CasioEmuMsvc
+      run: ditto -c -k --sequesterRsrc --keepParent CasioEmuMsvc.app CasioEmuMsvc-macos.zip
+
+    - name: Upload macOS Build Artifact
+      if: matrix.platform == 'macos'
+      uses: actions/upload-artifact@v7
+      with:
+        path: build/CasioEmuMsvc/CasioEmuMsvc-macos.zip
+        if-no-files-found: error
+        archive: false
+
   web-build:
     runs-on: ubuntu-latest
     name: Build Web
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: recursive
 
@@ -423,9 +451,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
+        fetch-tags: true
 
     - name: Download All Artifacts
       uses: actions/download-artifact@v8
@@ -441,8 +470,15 @@ jobs:
         echo "COMMIT_HASH=$SHORT_HASH" >> $GITHUB_ENV
         echo "RELEASE_TAG=stable-$(date +'%Y%m%d%H%M%S')-$SHORT_HASH" >> $GITHUB_ENV
         echo "RELEASE_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
-        
-        CHANGELOG_CONTENT=$(git log -5 --pretty=format:"- %s (%h)" --abbrev-commit)
+        PREV_TAG=$(git describe --tags --match "stable-*" --abbrev=0 2>/dev/null | tr -d '\n' | tr -d '\r')
+        if [ -z "$PREV_TAG" ]; then
+          CHANGELOG_CONTENT=$(git log -5 --pretty=format:"- %s (%h)" --abbrev-commit)
+        else
+          CHANGELOG_CONTENT=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --abbrev-commit)
+          if [ -z "$CHANGELOG_CONTENT" ]; then
+            CHANGELOG_CONTENT="- No changes"
+          fi
+        fi
         echo "CHANGELOG<<EOF" >> $GITHUB_ENV
         echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
@@ -457,15 +493,15 @@ jobs:
         if [ -f "./artifacts/Release-x86.zip" ]; then
           mv "./artifacts/Release-x86.zip" "./release_assets/windows-x86-${{ env.COMMIT_HASH }}.zip"
         fi
-        
+
         if [ -f "./artifacts/Release-x64.zip" ]; then
           mv "./artifacts/Release-x64.zip" "./release_assets/windows-x64-${{ env.COMMIT_HASH }}.zip"
         fi
-        
+
         if [ -f "./artifacts/Release-Linux-x64.zip" ]; then
           mv "./artifacts/Release-Linux-x64.zip" "./release_assets/linux-x64-${{ env.COMMIT_HASH }}.zip"
         fi
-
+        
         if [ -f "./artifacts/Release-Web-CASIOEMU_WEB.zip" ]; then
           mv "./artifacts/Release-Web-CASIOEMU_WEB.zip" "./release_assets/web-casioemu-web-${{ env.COMMIT_HASH }}.zip"
         fi
@@ -475,12 +511,17 @@ jobs:
         fi
         
         if [ -f "./artifacts/CasioEmuMsvc.dmg" ]; then
-          mv "./artifacts/CasioEmuMsvc.dmg" "./release_assets/macOS-universal-${{ env.COMMIT_HASH }}.dmg"
+          mv "./artifacts/CasioEmuMsvc.dmg" "./release_assets/macOS-universal-head-${{ env.COMMIT_HASH }}.dmg"
         fi
         
         if [ -f "./artifacts/CasioEmuMsvc.ipa" ]; then
           mv "./artifacts/CasioEmuMsvc.ipa" "./release_assets/iOS-build-${{ env.COMMIT_HASH }}.ipa"
         fi
+        
+        if [ -f "./artifacts/CasioEmuMsvc-macos.zip" ]; then
+          mv "./artifacts/CasioEmuMsvc-macos.zip" "./release_assets/macos-universal-upstream-build-${{ env.COMMIT_HASH }}.zip"
+        fi
+
         
         echo "=== ARTIFACTS ==="
         ls -R ./artifacts
@@ -501,7 +542,7 @@ jobs:
         body: |
           ## ⚠️ Pre-release Auto Build
           
-          > **Warning**: This is an automated pre-release build for testing purposes. 
+          > **Warning**: This is an automated pre-release build for testing purposes.
           > It may contain bugs and is not recommended for production use.
           
           **Build Date:** ${{ env.RELEASE_DATE }}

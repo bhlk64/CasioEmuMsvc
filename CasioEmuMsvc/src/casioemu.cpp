@@ -42,7 +42,10 @@
 #ifdef ENABLE_SENTRY
 #include <sentry.h>
 #endif
-
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#include <unistd.h>
+#endif
 #include "StartupUi/StartupUi.h"
 #include <Gui.h>
 #include <Plugin/PluginMan.h>
@@ -201,6 +204,17 @@ int main(int argc, char* argv[]) {
 		std::filesystem::copy("locales", path + "/locales", std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing, ec);
 		std::filesystem::copy("License.md", path + "/License.md", std::filesystem::copy_options::skip_existing, ec);
 		chdir(path.c_str());
+/*
+#elif defined(__APPLE__)
+	char path[1024];
+	uint32_t size = sizeof(path);
+	if (_NSGetExecutablePath(path, &size) == 0) {
+		char* last_slash = strrchr(path, '/');
+		if (last_slash) {
+			*last_slash = '\0';
+			chdir(path);
+		}
+*/
 	}
 #endif
 	g_local.Load();

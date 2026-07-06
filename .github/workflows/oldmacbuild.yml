@@ -1,0 +1,97 @@
+    # ================= MACOS =================
+    - name: Install dependencies (macOS)
+      if: matrix.platform == 'mac'
+      run: |
+        brew install cmake sdl2 sdl2_image ccache ninja
+    
+    - name: Build icons for macOS
+      if: matrix.platform == 'mac'
+      run: |
+        set -e
+    
+        ICONSET=AppIcon.iconset
+        IMG=resources/new-logo.png
+    
+        rm -rf $ICONSET
+        mkdir $ICONSET
+    
+        # generate iconset (macOS chuẩn size)
+        sips -z 16 16     "$IMG" --out $ICONSET/icon_16x16.png
+        sips -z 32 32     "$IMG" --out $ICONSET/icon_16x16@2x.png
+    
+        sips -z 32 32     "$IMG" --out $ICONSET/icon_32x32.png
+        sips -z 64 64     "$IMG" --out $ICONSET/icon_32x32@2x.png
+    
+        sips -z 128 128   "$IMG" --out $ICONSET/icon_128x128.png
+        sips -z 256 256   "$IMG" --out $ICONSET/icon_128x128@2x.png
+    
+        sips -z 256 256   "$IMG" --out $ICONSET/icon_256x256.png
+        sips -z 512 512   "$IMG" --out $ICONSET/icon_256x256@2x.png
+    
+        sips -z 512 512   "$IMG" --out $ICONSET/icon_512x512.png
+        sips -z 1024 1024 "$IMG" --out $ICONSET/icon_512x512@2x.png
+    
+        iconutil -c icns $ICONSET -o AppIcon.icns
+        
+        mkdir -p MacResources
+        cp AppIcon.icns MacResources/AppIcon.icns
+        
+        echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+        echo "CCACHE_MAXSIZE=400M" >> $GITHUB_ENV
+    
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: mac-ccache-${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt') }}
+    
+    - name: Build for macOS
+      if: matrix.platform == 'mac'
+      env:
+        MACOSX_DEPLOYMENT_TARGET: 11.0
+      run: |
+        cmake -S . -B build \
+        -G Ninja \
+        -DBUILD_EXECUTABLE=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+        -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"
+        
+        cmake --build build --parallel 6
+    
+    - name: Show build tree
+      if: matrix.platform == 'mac'
+      run: |
+        echo "---- BUILD TREE ----"
+        ls -R build
+    
+    - name: Create DMG
+      if: matrix.platform == 'mac'
+      run: |
+        cd build
+        APP=$(find . -name "*.app" | head -n 1)
+        echo "Found app: $APP"
+    
+        mkdir dmg
+        cp -r "$APP" dmg/
+        ln -s /Applications dmg/Applications
+        
+        hdiutil create CasioEmuMsvc.dmg \
+          -volname "CasioEmuMsvc" \
+          -srcfolder dmg \
+          -ov \
+          -format UDZO
+    
+    - name: Upload macOS Build Artifact
+      if: matrix.platform == 'mac'
+      uses: actions/upload-artifact@v7
+      with:
+        path: |
+          build/CasioEmuMsvc.dmg
+        # compression-level: 6
+        retention-days: 1
+        archive: false
+    
