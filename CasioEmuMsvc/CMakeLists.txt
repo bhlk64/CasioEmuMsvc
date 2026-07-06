@@ -273,20 +273,20 @@ if(BUILD_EXECUTABLE)
         )
     endif()
 
-    if(APPLE)
-        set(MAC_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/icon.icns)
-        set_source_files_properties(${MAC_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-        add_executable(${TARGET_NAME} MACOSX_BUNDLE ${MAIN_SOURCES} ${WIN_RESOURCES} ${MAC_RESOURCES})
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            MACOSX_BUNDLE_INFO_STRING "Casio nX-U8/100 & nX-U16/100 Emulator"
-            MACOSX_BUNDLE_BUNDLE_NAME "CasioEmuMsvc"
-            MACOSX_BUNDLE_IDENTIFIER "com.telecomadm1145.casioemumsvc"
-            MACOSX_BUNDLE_GUI_IDENTIFIER "com.telecomadm1145.casioemumsvc"
-            MACOSX_BUNDLE_BUNDLE_VERSION "1.0.0"
-            MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0.0"
-            MACOSX_BUNDLE_COPYRIGHT "Copyright (C) 2024-2026 telecomadm1145"
-            MACOSX_BUNDLE_ICON_FILE "icon.icns"
-        )
+    #if(APPLE)
+    #    set(MAC_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/icon.icns)
+    #    set_source_files_properties(${MAC_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    #    add_executable(${TARGET_NAME} MACOSX_BUNDLE ${MAIN_SOURCES} ${WIN_RESOURCES} ${MAC_RESOURCES})
+    #    set_target_properties(${TARGET_NAME} PROPERTIES
+    #        MACOSX_BUNDLE_INFO_STRING "Casio nX-U8/100 & nX-U16/100 Emulator"
+    #        MACOSX_BUNDLE_BUNDLE_NAME "CasioEmuMsvc"
+    #        MACOSX_BUNDLE_IDENTIFIER "com.telecomadm1145.casioemumsvc"
+    #        MACOSX_BUNDLE_GUI_IDENTIFIER "com.telecomadm1145.casioemumsvc"
+    #        MACOSX_BUNDLE_BUNDLE_VERSION "1.0.0"
+    #        MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0.0"
+    #        MACOSX_BUNDLE_COPYRIGHT "Copyright (C) 2024-2026 telecomadm1145"
+    #        MACOSX_BUNDLE_ICON_FILE "icon.icns"
+    #    )
     else()
         add_executable(${TARGET_NAME} ${MAIN_SOURCES} ${WIN_RESOURCES})
     endif()
