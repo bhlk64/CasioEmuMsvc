@@ -619,3 +619,16 @@ void CodeViewer::RemoveBreakpoint(uint32_t address) {
 	LookUp(address, &idx);
 	break_points.erase(idx);
 }
+
+void CodeViewer::Reload() {
+	is_loaded = false;
+	codes.clear();
+	max_row = 0;
+	max_col = 0;
+	cur_col = 0;
+	first_col = 0;
+	last_found_idx = -1;
+	need_roll = false;
+	selected_addr = -1;
+	PrepareDisasm();
+}

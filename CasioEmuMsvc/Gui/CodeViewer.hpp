@@ -48,6 +48,7 @@ public:
 		PrepareDisasm();
 		SetupHooks();
 	}
+	void Reload();
 	void SetupHooks();
 	void PrepareDisasm();
 	bool TryTrigBP(uint8_t seg, uint16_t offset, bool bp_mode = true);

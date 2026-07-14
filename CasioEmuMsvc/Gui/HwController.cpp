@@ -89,23 +89,17 @@ void HwController::RenderCore() {
 	}
 	if (ImGui::Button("HwController.HotReload"_lc)) {
 		m_emu->SetPaused(true);
-		try {
-			auto dat = m_emu->ReadModelResource(m_emu->ModelDefinition.rom_path);
-			{
-				auto lg = std::lock_guard(m_emu->access_mx);
-				for (size_t i = 0; i < std::min(dat.size(), m_emu->chipset.rom_data.size()); i++) {
-					m_emu->chipset.rom_data[i] = dat[i];
-				}
-				m_emu->chipset.Reset();
-			}
-
-			if (cv_a) {
-				cv_a->ClearBreakpoints();
-				cv_a->PrepareDisasm();
-			}
+		auto lg = std::lock_guard(m_emu->access_mx);
+		std::ifstream rom_handle(m_emu->GetModelFilePath(m_emu->ModelDefinition.rom_path), std::ifstream::binary);
+		if (rom_handle.fail())
+			PANIC("std::ifstream failed: %s\n", std::strerror(errno));
+		auto dat = std::vector<unsigned char>((std::istreambuf_iterator<char>(rom_handle)), std::istreambuf_iterator<char>());
+		for (size_t i = 0; i <std::min(dat.size(),m_emu->chipset.rom_data.size()); i++) {
+			m_emu->chipset.rom_data[i] = dat[i];
 		}
-		catch (const std::exception&) {
-			// Keep resource-load failures from escaping the ImGui render loop.
+		m_emu->chipset.Reset();
+		if (cv_a) {
+			cv_a->Reload();
 		}
 		m_emu->SetPaused(false);
 	}
