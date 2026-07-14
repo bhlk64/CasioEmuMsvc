@@ -3,7 +3,7 @@ name: Auto build and pre-release
 on:
   workflow_dispatch:
   push:
-    branches: [ "stable" ]
+    branches: [ "hotreloaddecomp" ]
 
 env:
   BUILD_CONFIGURATION: Release
@@ -250,7 +250,7 @@ jobs:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/stable'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/hotreloaddecomp'
 
     steps:
     - name: Checkout

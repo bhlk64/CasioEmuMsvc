@@ -63,3 +63,4 @@ public:
 	void Search(bool next);
 	void ExportDisassembly();
 };
+extern CodeViewer* cv_a;

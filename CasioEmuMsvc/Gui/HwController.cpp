@@ -4,6 +4,7 @@
 #include "imgui/imgui.h"
 #include "Chipset.hpp"
 #include "Localization.h"
+#include "CodeViewer.hpp"
 int screen_flashing_threshold = 20;
 float screen_fading_blending_coefficient = 0;
 bool enable_screen_fading = false;
@@ -88,15 +89,24 @@ void HwController::RenderCore() {
 	}
 	if (ImGui::Button("HwController.HotReload"_lc)) {
 		m_emu->SetPaused(true);
-		auto lg = std::lock_guard(m_emu->access_mx);
-		std::ifstream rom_handle(m_emu->GetModelFilePath(m_emu->ModelDefinition.rom_path), std::ifstream::binary);
-		if (rom_handle.fail())
-			PANIC("std::ifstream failed: %s\n", std::strerror(errno));
-		auto dat = std::vector<unsigned char>((std::istreambuf_iterator<char>(rom_handle)), std::istreambuf_iterator<char>());
-		for (size_t i = 0; i <std::min(dat.size(),m_emu->chipset.rom_data.size()); i++) {
-			m_emu->chipset.rom_data[i] = dat[i];
+		try {
+			auto dat = m_emu->ReadModelResource(m_emu->ModelDefinition.rom_path);
+			{
+				auto lg = std::lock_guard(m_emu->access_mx);
+				for (size_t i = 0; i < std::min(dat.size(), m_emu->chipset.rom_data.size()); i++) {
+					m_emu->chipset.rom_data[i] = dat[i];
+				}
+				m_emu->chipset.Reset();
+			}
+
+			if (cv_a) {
+				cv_a->ClearBreakpoints();
+				cv_a->PrepareDisasm();
+			}
 		}
-		m_emu->chipset.Reset();
+		catch (const std::exception&) {
+			// Keep resource-load failures from escaping the ImGui render loop.
+		}
 		m_emu->SetPaused(false);
 	}
 	//	static char buf4[40];
