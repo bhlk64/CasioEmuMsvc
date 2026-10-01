@@ -27,24 +27,37 @@
 #define NOOP() ((void)0)
 
 #define ENABLE_CRASH_CHECK
+
 #ifdef ENABLE_CRASH_CHECK
-#ifndef PANIC
-#define PANIC(...)           \
-	{                        \
-		printf(__VA_ARGS__); \
-		__debugbreak();      \
-	}
-#endif
-#else
-#ifndef PANIC
-#define PANIC(...) 0;
-#endif
-#endif
-#ifdef __ANDROID__
+
+#if defined(__ANDROID__)
+
 #include <android/log.h>
-#define PANIC(...) { __android_log_print(ANDROID_LOG_ERROR, "[PANIC]: %s", ...);}
+
+#define PANIC(...) \
+  do { \
+    __android_log_print(ANDROID_LOG_ERROR, "PANIC", __VA_ARGS__); \
+  } while (0)
+
+#else
+
+#ifndef PANIC
+#define PANIC(...) \
+  do { \
+    printf(__VA_ARGS__); \
+    __debugbreak(); \
+  } while (0)
 #endif
 
+#endif
+
+#else
+
+#ifndef PANIC
+#define PANIC(...) 0
+#endif
+
+#endif
 
 #define LOCK(x) \
 	std::lock_guard<std::mutex> lock_##x{x};
