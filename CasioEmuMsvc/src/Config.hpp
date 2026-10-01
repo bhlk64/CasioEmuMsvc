@@ -40,6 +40,11 @@
 #define PANIC(...) 0;
 #endif
 #endif
+#ifdef __ANDROID__
+#include <android/log.h>
+#define PANIC(...) { __android_log_print(ANDROID_LOG_ERROR, "[PANIC]: %s", ...);}
+#endif
+
 
 #define LOCK(x) \
 	std::lock_guard<std::mutex> lock_##x{x};
