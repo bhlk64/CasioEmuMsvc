@@ -59,6 +59,41 @@
 
 #endif
 
+#include <cstdio>
+#include <cstdarg>
+
+#if defined(__ANDROID__)
+#define EMULATOR_LOG_FILE \
+  "/storage/emulated/0/Android/data/com.tele.u8emulator/files/emulator_printf.txt"
+#else
+#define EMULATOR_LOG_FILE "emulator_printf.txt"
+#endif
+
+static void log_printf(const char* fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+
+  // printf như cũ
+  va_list copy;
+  va_copy(copy, args);
+  vprintf(fmt, copy);
+  va_end(copy);
+
+  // Ghi thêm vào file
+  FILE* fp = fopen(EMULATOR_LOG_FILE, "a");
+  if (fp) {
+    va_copy(copy, args);
+    vfprintf(fp, fmt, copy);
+    va_end(copy);
+    fflush(fp);
+    fclose(fp);
+  }
+
+  va_end(args);
+}
+
+#define printf(...) log_printf(__VA_ARGS__)
+
 #define LOCK(x) \
 	std::lock_guard<std::mutex> lock_##x{x};
 
