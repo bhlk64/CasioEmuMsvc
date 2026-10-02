@@ -193,8 +193,10 @@ namespace casioemu {
 					throw std::runtime_error("config.json board button kiko values must be unique.");
 				auto button = std::find_if(model.buttons.begin(), model.buttons.end(),
 					[kiko](const ButtonInfo& item) { return item.kiko == kiko; });
-				if (button == model.buttons.end())
+				if (button == model.buttons.end()) {
+          printf("[Board] Missing kiko: %d\n", kiko);
 					throw std::runtime_error("config.json board button kiko was not found in board SVG.");
+				}
 				button->keyname = entry.at("keyname").get<std::string>();
 			}
 		}
@@ -542,7 +544,7 @@ namespace casioemu {
 		}
 		catch (const std::exception& ex) {
 			if (error)
-				*error = ex.what();
+				*error = ex.what()
 			return false;
 		}
 	}
