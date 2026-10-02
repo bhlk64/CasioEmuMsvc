@@ -544,7 +544,7 @@ namespace casioemu {
 		}
 		catch (const std::exception& ex) {
 			if (error)
-				*error = ex.what()
+				*error = ex.what();
 			return false;
 		}
 	}
