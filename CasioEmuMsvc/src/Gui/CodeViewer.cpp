@@ -725,7 +725,7 @@ void CodeViewer::ExportDisassembly() {
 		out.close();
 		WebDebuggerQueueDownload(path.string().c_str(), "asm.txt");
 	}
-#if defined(__ANDROID__)
+#elif defined(__ANDROID__)
 #include <SDL.h>
 #include <fstream>
 #include <filesystem>
@@ -763,6 +763,7 @@ const char* basePath = SDL_AndroidGetExternalStoragePath();
     }
 
     SDL_Log("Assembly exported to: %s", path.string().c_str());
+}
 #else
 	SystemDialogs::SaveFileDialog("asm.txt", [&](std::filesystem::path pth) {
 		std::ofstream out(pth);
