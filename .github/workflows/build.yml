@@ -252,7 +252,7 @@ jobs:
     name: Create Release
     needs: [build, web-build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/stable'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/eps6800mf'
 
     steps:
     - name: Checkout
@@ -273,9 +273,9 @@ jobs:
       run: |
         SHORT_HASH=$(git rev-parse --short HEAD)
         echo "COMMIT_HASH=$SHORT_HASH" >> $GITHUB_ENV
-        echo "RELEASE_TAG=stable-$(date +'%Y%m%d%H%M%S')-$SHORT_HASH" >> $GITHUB_ENV
+        echo "RELEASE_TAG=eps6800mf-$(date +'%Y%m%d%H%M%S')-$SHORT_HASH" >> $GITHUB_ENV
         echo "RELEASE_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
-        PREV_TAG=$(git describe --tags --match "stable-*" --abbrev=0 2>/dev/null | tr -d '\n' | tr -d '\r')
+        PREV_TAG=$(git describe --tags --match "eps6800mf-*" --abbrev=0 2>/dev/null | tr -d '\n' | tr -d '\r')
         if [ -z "$PREV_TAG" ]; then
           CHANGELOG_CONTENT=$(git log -5 --pretty=format:"- %s (%h)" --abbrev-commit)
         else
@@ -339,7 +339,7 @@ jobs:
           ${{ env.CHANGELOG }}
           
           ### Notes
-          - This is an automated build from the latest commit on the stable branch
+          - This is an automated build from the latest commit on the eps6800mf branch
           - Use at your own risk - this is a development build
         files: release_assets/*
         draft: false

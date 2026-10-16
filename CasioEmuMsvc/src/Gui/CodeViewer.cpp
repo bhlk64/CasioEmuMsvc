@@ -725,6 +725,44 @@ void CodeViewer::ExportDisassembly() {
 		out.close();
 		WebDebuggerQueueDownload(path.string().c_str(), "asm.txt");
 	}
+#if defined(__ANDROID__)
+#include <SDL.h>
+#include <fstream>
+#include <filesystem>
+const char* basePath = SDL_AndroidGetExternalStoragePath();
+
+    if (!basePath) {
+        SDL_Log("Export failed: external storage path unavailable");
+        return;
+    }
+
+    const auto path =
+        std::filesystem::path(basePath) / "asm.txt";
+
+    std::ofstream out(path, std::ios::out | std::ios::trunc);
+
+    if (!out.is_open()) {
+        SDL_Log("Export failed: cannot open %s",
+                path.string().c_str());
+        return;
+    }
+
+    for (const auto& ce : codes) {
+        if (!ce.is_label) {
+            out << "  ";
+        }
+
+        out << ce.srcbuf << '\n';
+    }
+
+    out.close();
+
+    if (!out.good()) {
+        SDL_Log("Export failed: write error");
+        return;
+    }
+
+    SDL_Log("Assembly exported to: %s", path.string().c_str());
 #else
 	SystemDialogs::SaveFileDialog("asm.txt", [&](std::filesystem::path pth) {
 		std::ofstream out(pth);
