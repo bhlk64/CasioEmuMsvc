@@ -12,6 +12,10 @@
 #include "Chipset/T4xCore.hpp"
 #ifdef CASIOEMU_CORE_WEB
 #include "WebDebuggerGui.h"
+#elif defined(__ANDROID__)
+#include <SDL.h>
+#include <fstream>
+#include <filesystem>
 #endif
 #include "imgui/imgui.h"
 #include <Localization.h>
@@ -726,10 +730,7 @@ void CodeViewer::ExportDisassembly() {
 		WebDebuggerQueueDownload(path.string().c_str(), "asm.txt");
 	}
 #elif defined(__ANDROID__)
-#include <SDL.h>
-#include <fstream>
-#include <filesystem>
-const char* basePath = SDL_AndroidGetExternalStoragePath();
+	const char* basePath = SDL_AndroidGetExternalStoragePath();
 
     if (!basePath) {
         SDL_Log("Export failed: external storage path unavailable");
@@ -763,7 +764,6 @@ const char* basePath = SDL_AndroidGetExternalStoragePath();
     }
 
     SDL_Log("Assembly exported to: %s", path.string().c_str());
-}
 #else
 	SystemDialogs::SaveFileDialog("asm.txt", [&](std::filesystem::path pth) {
 		std::ofstream out(pth);
