@@ -113,6 +113,14 @@ void HwController::RenderCore() {
 	
 	ImGui::Spacing();
 	
+	UIHelpers::SectionHeader("Keyboard Timing");
+  static int min_press = m_emu->keyboard_min_press_ms; // 25ms
+  if (ImGui::SliderInt("Min Press Duration (ms)", &min_press, 0, 100, "%d ms")) {
+      m_emu->keyboard_min_press_ms = min_press;
+  }
+	
+	ImGui::Spacing();
+	
 	if (!casioemu::IsEpsFamily(m_emu->hardware_id) && m_emu->hardware_id != casioemu::HW_TI_MULTI_VIEW) {
 		static bool pdx[8];
 		int pd = m_emu->ModelDefinition.pd_value;

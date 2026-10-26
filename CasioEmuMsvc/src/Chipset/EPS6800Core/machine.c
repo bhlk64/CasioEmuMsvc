@@ -21,7 +21,7 @@ const struct eps_variant_traits *eps_get_variant_traits(enum eps_variant variant
 		{ 0u, 0u, 0u, 0u, 0xc0u },
 		{ 0u, 1u, 1u, 1u },
 		{ EPS_LCD_ADDRESS_PAGED_128, 0x61u, 0u, 0u, 0u, 1u },
-		{ EPS_KBD_MATRIX_GPIO, 0x7fu, 1000u, 0u, 0u, 0u },
+		{ EPS_KBD_MATRIX_GPIO, 0x7fu, 0u, 1u, 0u, 0u },
 		{ EPS_TIMER1_STANDARD, 0u, BIT_T1EN, BIT_TMR0IE, BIT_TMR1IE, BIT_TMR2IE,
 			0u, 1u, 1u }
 	};
@@ -68,7 +68,7 @@ const struct eps_variant_traits *eps_get_variant_traits(enum eps_variant variant
 		/* The internal LCDDAT block is retained as an SFR-compatible stub;
 		 * visible pixels are supplied by the external PortD/PortE controller. */
 		{ EPS_LCD_ADDRESS_PAGED_128, 0x61u, 0u, 0u, 0u, 1u },
-		{ EPS_KBD_MATRIX_GPIO, 0x7fu, 1000u, 0u, 0u, 0u },
+		{ EPS_KBD_MATRIX_GPIO, 0x7fu, 0u, 1u, 0u, 0u },
 		{ EPS_TIMER1_STANDARD, 0u, BIT_T1EN, BIT_TMR0IE, BIT_TMR1IE, BIT_TMR2IE,
 			0u, 1u, 1u }
 	};
