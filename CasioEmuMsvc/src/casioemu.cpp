@@ -289,6 +289,10 @@ int main(int argc, char* argv[]) {
 #ifdef __ANDROID__
 	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+	FILE* fp = fopen(EMULATOR_LOG_FILE, "w");
+  if (fp) {
+    fclose(fp);
+  }
 #endif
 
 	bool no_dbg = !argv_map["no_dbg"].empty();
