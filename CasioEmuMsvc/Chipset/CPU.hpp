@@ -2,6 +2,7 @@
 #include "Binary.h"
 #include "Config.hpp"
 #include "Logger.hpp"
+#include <array>
 
 namespace casioemu {
 	class Emulator;
@@ -10,6 +11,7 @@ namespace casioemu {
 		Emulator& emulator;
 
 	public:
+		uint64_t cycles;
 		struct RegisterStub {
 			size_t type_size;
 			std::string name;
@@ -72,7 +74,8 @@ namespace casioemu {
 		} impl_operands[2];
 		size_t impl_hint;
 		uint16_t impl_csr_mask;
-
+		uint64_t op_cycle;
+		bool cycle_pause = false;
 		size_t fetch_addition;
 
 		void SetupOpcodeDispatch();
@@ -183,6 +186,28 @@ namespace casioemu {
 				size_t register_size;
 				uint16_t mask, shift;
 			} operands[2];
+			struct CycleInfo {
+				size_t fixed = 0;
+				std::array<size_t, 16>operand1{};
+				std::array<size_t, 16>operand2{};
+				bool apply_dsr = true;
+			
+				// Fixed cycles
+				CycleInfo(size_t cycles)
+					: fixed(cycles) {}
+			
+				// Dynamic cycles
+				CycleInfo(
+					size_t cycles,
+					std::array<size_t,16> op1,
+					std::array<size_t,16> op2,
+					bool dsr
+				)
+					: fixed(cycles),
+						operand1(op1),
+						operand2(op2),
+						apply_dsr(dsr) {}
+			} cycle;
 		};
 		static OpcodeSource opcode_sources[];
 		OpcodeSource** opcode_dispatch;

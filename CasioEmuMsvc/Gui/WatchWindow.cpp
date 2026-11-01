@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 #include <iomanip>
@@ -51,6 +52,16 @@ void WatchWindow::ShowRX() {
 	if (m_emu->chipset.epscpu) {
 	}
 	else {
+		uint64_t *cycles = &m_emu->chipset.cycles;
+		if (ImGui::Button(m_emu->chipset.cycle_pause ? "Paused" : "Resume")) {
+			m_emu->chipset.cycle_pause = !m_emu->chipset.cycle_pause;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Clear")) {
+			*cycles = 0;
+		}
+		ImGui::SameLine();
+		ImGui::Text("Cycles: %" PRIu64, *cycles);
 		ImGui::TextColored(ImVec4(0, 200, 0, 255), "RXn: ");
 		for (int i = 0; i < 16; i++) {
 			ImGui::SameLine();
