@@ -393,12 +393,14 @@ namespace casioemu {
 			// Cycle implemetation
 			OpcodeSource::CycleInfo& info = handler->cycle;
 			op_cycle = info.fixed;
-			if (!info.operand1.empty()) {
-				op_cycle += info.operand1.at(impl_operands[0].value);
-			}
-			if (!info.operand2.empty()) {
-				op_cycle += info.operand2.at(impl_operands[1].value);
-			}
+			try {
+				if (!info.operand1.empty()) {
+					op_cycle += info.operand1.at(impl_operands[0].value);
+				}
+				if (!info.operand2.empty()) {
+					op_cycle += info.operand2.at(impl_operands[1].value);
+				}
+			} catch (e) {}
 			if (info.apply_dsr) {
 				op_cycle += reg_dsr;
 			}
