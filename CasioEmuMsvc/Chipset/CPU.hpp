@@ -11,7 +11,6 @@ namespace casioemu {
 		Emulator& emulator;
 
 	public:
-		uint64_t cycles;
 		struct RegisterStub {
 			size_t type_size;
 			std::string name;
@@ -75,7 +74,6 @@ namespace casioemu {
 		size_t impl_hint;
 		uint16_t impl_csr_mask;
 		uint64_t op_cycle;
-		bool cycle_pause = false;
 		size_t fetch_addition;
 
 		void SetupOpcodeDispatch();
@@ -132,6 +130,10 @@ namespace casioemu {
 		bool cpu_run_stat;
 
 		bool real_hardware;
+
+		bool cycle_pause = false;
+
+		uint64_t cycles;
 
 		void SetMemoryModel(MemoryModel memory_model);
 		void SetCPUModel(CPUModel cpu_model);
