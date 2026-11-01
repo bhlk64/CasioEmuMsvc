@@ -11,6 +11,8 @@ namespace casioemu {
 		Emulator& emulator;
 
 	public:
+		bool cycle_pause = false;
+		uint64_t cycles;
 		struct RegisterStub {
 			size_t type_size;
 			std::string name;
@@ -130,10 +132,6 @@ namespace casioemu {
 		bool cpu_run_stat;
 
 		bool real_hardware;
-
-		bool cycle_pause = false;
-
-		uint64_t cycles;
 
 		void SetMemoryModel(MemoryModel memory_model);
 		void SetCPUModel(CPUModel cpu_model);
