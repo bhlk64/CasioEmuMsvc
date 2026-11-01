@@ -213,6 +213,7 @@ void WatchWindow::RenderCore() {
 	//	}
 	//	m_emu->ModelDefinition.pd_value = pd;
 	// }
+	ImGui::PushID("cycle_controlling");
 	uint64_t *cycles = &m_emu->chipset.cpu.cycles;
 	if (ImGui::Button(m_emu->chipset.cpu.cycle_pause ? "Resume" : "Pause")) {
 		m_emu->chipset.cpu.cycle_pause = !m_emu->chipset.cpu.cycle_pause;
@@ -223,6 +224,7 @@ void WatchWindow::RenderCore() {
 	}
 	ImGui::SameLine();
 	ImGui::Text("Cycles: %" PRIu64, *cycles);
+	ImGui::PopID();
 	PrepareRX();
 	if (!m_emu->GetPaused()) {
 		ShowRX();
