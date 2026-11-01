@@ -52,7 +52,7 @@ void WatchWindow::ShowRX() {
 	if (m_emu->chipset.epscpu) {
 	}
 	else {
-		uint64_t *cycles = &m_emu->chipset..cpu.cycles;
+		uint64_t *cycles = &m_emu->chipset.cpu.cycles;
 		if (ImGui::Button(m_emu->chipset.cpu.cycle_pause ? "Paused" : "Resume")) {
 			m_emu->chipset.cpu.cycle_pause = !m_emu->chipset.cpu.cycle_pause;
 		}
