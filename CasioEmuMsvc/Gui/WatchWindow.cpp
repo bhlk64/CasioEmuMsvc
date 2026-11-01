@@ -52,16 +52,6 @@ void WatchWindow::ShowRX() {
 	if (m_emu->chipset.epscpu) {
 	}
 	else {
-		uint64_t *cycles = &m_emu->chipset.cpu.cycles;
-		if (ImGui::Button(m_emu->chipset.cpu.cycle_pause ? "Resume" : "Pause")) {
-			m_emu->chipset.cpu.cycle_pause = !m_emu->chipset.cpu.cycle_pause;
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Clear")) {
-			*cycles = 0;
-		}
-		ImGui::SameLine();
-		ImGui::Text("Cycles: %" PRIu64, *cycles);
 		ImGui::TextColored(ImVec4(0, 200, 0, 255), "RXn: ");
 		for (int i = 0; i < 16; i++) {
 			ImGui::SameLine();
@@ -223,6 +213,16 @@ void WatchWindow::RenderCore() {
 	//	}
 	//	m_emu->ModelDefinition.pd_value = pd;
 	// }
+	uint64_t *cycles = &m_emu->chipset.cpu.cycles;
+	if (ImGui::Button(m_emu->chipset.cpu.cycle_pause ? "Resume" : "Pause")) {
+		m_emu->chipset.cpu.cycle_pause = !m_emu->chipset.cpu.cycle_pause;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Clear")) {
+		*cycles = 0;
+	}
+	ImGui::SameLine();
+	ImGui::Text("Cycles: %" PRIu64, *cycles);
 	PrepareRX();
 	if (!m_emu->GetPaused()) {
 		ShowRX();
