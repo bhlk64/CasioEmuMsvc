@@ -142,7 +142,7 @@ namespace casioemu {
 		// * Bit Access Instructions
 		{&CPU::OP_BITMOD     ,                         0, 0xA000, {{0, 0x000F,  8}, {0, 0x0007,  4}}, {3,{},{},false} },
 		{&CPU::OP_BITMOD     ,        H_TI              , 0xA080, {{0,      0,  0}, {0, 0x0007,  4}}, 1},
-		{&CPU::OP_BITMOD     ,                         0, 0xA002, {{0, 0x000F,  8}, {0, 0x0007,  4}, {3,{},{},false} },
+		{&CPU::OP_BITMOD     ,                         0, 0xA002, {{0, 0x000F,  8}, {0, 0x0007,  4}}, {3,{},{},false} },
 		{&CPU::OP_BITMOD     ,        H_TI              , 0xA082, {{0,      0,  0}, {0, 0x0007,  4}}, 1},
 		{&CPU::OP_BITMOD     ,                         0, 0xA001, {{0, 0x000F,  8}, {0, 0x0007,  4}}, {4,{},{},false} },
 		{&CPU::OP_BITMOD     ,        H_TI              , 0xA081, {{0,      0,  0}, {0, 0x0007,  4}}, 1},
@@ -189,8 +189,8 @@ namespace casioemu {
 		{&CPU::OP_MUL        , H_WB                     , 0xF004, {{2, 0x000E,  8}, {1, 0x000F,  4}}, 9},
 		{&CPU::OP_DIV        , H_WB                     , 0xF009, {{2, 0x000E,  8}, {1, 0x000F,  4}}, 17},
 		// * Miscellaneous Instructions
-		{&CPU::OP_INC_EA     ,                         0, 0xFE2F, {{0,      0,  0}, {0,      0,  0}}, {3,{},{},false},
-		{&CPU::OP_DEC_EA     ,                         0, 0xFE3F, {{0,      0,  0}, {0,      0,  0}}, {3,{},{},false},
+		{&CPU::OP_INC_EA     ,                         0, 0xFE2F, {{0,      0,  0}, {0,      0,  0}}, {3,{},{},false} },
+		{&CPU::OP_DEC_EA     ,                         0, 0xFE3F, {{0,      0,  0}, {0,      0,  0}}, {3,{},{},false} },
 		{&CPU::OP_RT         ,                         0, 0xFE1F, {{0,      0,  0}, {0,      0,  0}}, 3},
 		{&CPU::OP_RTI        ,                         0, 0xFE0F, {{0,      0,  0}, {0,      0,  0}}, 3},
 		{&CPU::OP_NOP        ,                         0, 0xFE8F, {{0,      0,  0}, {0,      0,  0}}, 1},
@@ -199,16 +199,16 @@ namespace casioemu {
 		{&CPU::OP_DSR        ,               H_DS | H_DW, 0x900F, {{1, 0x000F,  4}, {0,      0,  0}}, 1},
 
 		// * Undocumented Instructions
-		{&CPU::OP_RTICE      ,                         0, 0xFE6F, {{0,      0,  0}, {0,      0,  0}}}, // RTICE
-		{&CPU::OP_RTICE      ,                         0, 0xFE7F, {{0,      0,  0}, {0,      0,  0}}}, // RTICEPSW 
-		{&CPU::OP_ICESWI     ,                         0, 0xFEFF, {{0,      0,  0}, {0,      0,  0}}}, // ICESWI
-		{&CPU::OP_NOP        ,                         0, 0xFE4F, {{0,      0,  0}, {0,      0,  0}}}, // NOP
-		{&CPU::OP_NOP        ,                         0, 0xFE5F, {{0,      0,  0}, {0,      0,  0}}}, // NOP
-		{&CPU::OP_NOP        ,                         0, 0xFE8F, {{0,      0,  0}, {0,      0,  0}}}, // NOP
-		{&CPU::OP_NOP        ,                         0, 0xFEAF, {{0,      0,  0}, {0,      0,  0}}}, // NOP
-		{&CPU::OP_NOP        ,                         0, 0xFEBF, {{0,      0,  0}, {0,      0,  0}}}, // NOP
-		{&CPU::OP_NOP        ,                         0, 0xFEDF, {{0,      0,  0}, {0,      0,  0}}}, // NOP
-		{&CPU::OP_NOP        ,                         0, 0xFEEF, {{0,      0,  0}, {0,      0,  0}}}, // NOP
+		{&CPU::OP_RTICE      ,                         0, 0xFE6F, {{0,      0,  0}, {0,      0,  0}}, 4}, // RTICE
+		{&CPU::OP_RTICE      ,                         0, 0xFE7F, {{0,      0,  0}, {0,      0,  0}}, 5}, // RTICEPSW 
+		{&CPU::OP_ICESWI     ,                         0, 0xFEFF, {{0,      0,  0}, {0,      0,  0}}, 5}, // ICESWI
+		{&CPU::OP_NOP        ,                         0, 0xFE4F, {{0,      0,  0}, {0,      0,  0}}, 1}, // NOP
+		{&CPU::OP_NOP        ,                         0, 0xFE5F, {{0,      0,  0}, {0,      0,  0}}, 1}, // NOP
+		{&CPU::OP_NOP        ,                         0, 0xFE8F, {{0,      0,  0}, {0,      0,  0}}, 1}, // NOP
+		{&CPU::OP_NOP        ,                         0, 0xFEAF, {{0,      0,  0}, {0,      0,  0}}, 1}, // NOP
+		{&CPU::OP_NOP        ,                         0, 0xFEBF, {{0,      0,  0}, {0,      0,  0}}, 1}, // NOP
+		{&CPU::OP_NOP        ,                         0, 0xFEDF, {{0,      0,  0}, {0,      0,  0}}, 1}, // NOP
+		{&CPU::OP_NOP        ,                         0, 0xFEEF, {{0,      0,  0}, {0,      0,  0}}, 1}, // NOP
 
 	};
 
