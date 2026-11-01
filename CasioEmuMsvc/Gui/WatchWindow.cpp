@@ -53,7 +53,7 @@ void WatchWindow::ShowRX() {
 	}
 	else {
 		uint64_t *cycles = &m_emu->chipset.cpu.cycles;
-		if (ImGui::Button(m_emu->chipset.cpu.cycle_pause ? "Paused" : "Resume")) {
+		if (ImGui::Button(m_emu->chipset.cpu.cycle_pause ? "Resume" : "Pause")) {
 			m_emu->chipset.cpu.cycle_pause = !m_emu->chipset.cpu.cycle_pause;
 		}
 		ImGui::SameLine();

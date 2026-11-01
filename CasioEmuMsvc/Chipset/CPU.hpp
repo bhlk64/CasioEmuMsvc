@@ -11,8 +11,8 @@ namespace casioemu {
 		Emulator& emulator;
 
 	public:
-		bool cycle_pause = false;
-		uint64_t cycles;
+		bool cycle_pause = true;
+		uint64_t cycles = 0;
 		struct RegisterStub {
 			size_t type_size;
 			std::string name;
