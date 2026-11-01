@@ -14,7 +14,7 @@
 
 namespace casioemu {
 	// clang-format off
-	CPU::OpcodeSource CPU::opcode_sources[] = {|
+	CPU::OpcodeSource CPU::opcode_sources[] = {
 		//           function,                     hints, main mask, operand {size, mask, shift} x2, cycle:number?{{operand1},{operand2},apply_dsr=T/F}
 		// * Arithmetic Instructions
 		{&CPU::OP_ADD        , H_WB                     , 0x8001, {{1, 0x000F,  8}, {1, 0x000F,  4}}, 1},
@@ -391,7 +391,7 @@ namespace casioemu {
 			(this->*(handler->handler_function))();
 
 			// Cycle implemetation
-			CycleInfo& info = handler->cycle;
+			OpcodeSource::CycleInfo& info = handler->cycle;
 			op_cycle = info.fixed;
 			if (!info.operand1.empty()) {
 				op_cycle += info.operand1.at(impl_operands[0].value);
