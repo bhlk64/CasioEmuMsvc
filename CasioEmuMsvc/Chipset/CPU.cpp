@@ -400,7 +400,7 @@ namespace casioemu {
 				if (!info.operand2.empty()) {
 					op_cycle += info.operand2.at(impl_operands[1].value);
 				}
-			} catch (e) {}
+			} catch (...) {}
 			if (info.apply_dsr) {
 				op_cycle += reg_dsr;
 			}
