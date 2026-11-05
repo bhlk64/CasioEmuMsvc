@@ -74,6 +74,10 @@ public:
 	/// <param name="name">Register's name</param>
 	/// <returns>Pointer to the register</returns>
 	virtual uint16_t* Register(const char* name) = 0;
+	virtual void ClearCycle() = 0;
+	virtual void SetCyclePause(bool pause) = 0;
+	virtual uint64_t GetCycle() = 0;
+	virtual void Reset() = 0;
 };
 
 class IMMU {

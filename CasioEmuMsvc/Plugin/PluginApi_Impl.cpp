@@ -75,13 +75,13 @@ class PluginApi_Impl : public PluginApi {
 		void ClearCycle() override {
 			m_emu->chipset.cpu.cycles = 0;
 		}
-		void SetCyclePause(bool pause) {
+		void SetCyclePause(bool pause) override {
 			m_emu->chipset.cpu.cycle_pause = pause;
 		}
-		uint64_t GetCycle() {
+		uint64_t GetCycle() override {
 			return m_emu->chipset.cpu.cycles;
 		}
-		void Reset() {
+		void Reset() override {
 			m_emu->chipset.cpu.Reset();
 		}
 	} cpu_impl;
