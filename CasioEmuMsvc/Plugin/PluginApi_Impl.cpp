@@ -72,6 +72,18 @@ class PluginApi_Impl : public PluginApi {
 		uint16_t* Register(const char* name) override {
 			return &m_emu->chipset.cpu.register_proxies[name]->raw;
 		}
+		void ClearCycle() override {
+			m_emu->chipset.cpu.cycles = 0;
+		}
+		void SetCyclePause(bool pause) override {
+			m_emu->chipset.cpu.cycle_pause = pause;
+		}
+		uint64_t GetCycle() override {
+			return m_emu->chipset.cpu.cycles;
+		}
+		void Reset() override {
+			m_emu->chipset.cpu.Reset();
+		}
 	} cpu_impl;
 	class IEmulator_Impl : public IEmulator {
 		// 通过 IEmulator 继承
