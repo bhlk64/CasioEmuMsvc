@@ -18,11 +18,8 @@ static jmethodID g_vibrateMethod = nullptr;
 
 static std::mutex g_vibrationMutex;
 
-// Called automatically when this native library is loaded.
-extern "C"
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
+void Vibration_SetJavaVM(JavaVM* vm) {
     g_vm = vm;
-    return JNI_VERSION_1_6;
 }
 
 // Called from Java on a Java-originated thread.

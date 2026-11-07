@@ -48,13 +48,14 @@
 #include <SDL_system.h>
 #include <android/log.h>
 #include <jni.h>
-
+extern void Vibration_SetJavaVM(JavaVM* vm);
 static JavaVM* g_VM = nullptr;
 
 extern "C"
 {
 	JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
 		g_VM = vm;
+		Vibration_SetJavaVM(vm);
 		return JNI_VERSION_1_6;
 	}
 }

@@ -4,6 +4,7 @@
 #pragma once
 
 extern bool setting_DisableVibration;
+extern void Vibration_SetJavaVM(JavaVM* vm);
 
 class Vibration {
 public:
