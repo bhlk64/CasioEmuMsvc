@@ -2,7 +2,7 @@
 // Created by 15874 on 2024/8/9.
 //
 #pragma once
-
+#include <jni.h>
 extern bool setting_DisableVibration;
 extern void Vibration_SetJavaVM(JavaVM* vm);
 
