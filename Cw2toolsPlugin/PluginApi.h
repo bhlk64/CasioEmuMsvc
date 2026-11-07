@@ -1,9 +1,15 @@
-﻿#pragma once
+#pragma once
+#ifdef CASIOEMU_PLUGIN_API
+namespace casioemu {
+	struct ModelInfo;
+}
+#else
 #include "ModelInfo.h"
+#endif
 #include <cstdint>
 #include <functional>
-#include <mutex>
 #include <imgui.h>
+#include <string>
 #ifdef _NO_FUND_API
 #include "Hooks.h"
 #include "Ui.hpp"
@@ -29,6 +35,7 @@ struct InstructionEventArgs {
 	bool should_break{};
 };
 #endif // ! _NO_FUND_API
+
 class Hooks {
 public:
 	virtual void SetupOnInstructionHook(std::function<void(InstructionEventArgs&)> handler) = 0;
@@ -55,6 +62,8 @@ public:
 	virtual std::string GetModelFilePath(std::string relative_path) = 0;
 	virtual void* GetRenderer() = 0;
 	virtual void* GetInterfaceTexture() = 0;
+	virtual const char* GetRunningModelName() = 0;
+	virtual const char* GetRunningRomPath() = 0;
 };
 
 class ICPU {
@@ -65,7 +74,12 @@ public:
 	/// <param name="name">Register's name</param>
 	/// <returns>Pointer to the register</returns>
 	virtual uint16_t* Register(const char* name) = 0;
+	virtual void ClearCycle() = 0;
+	virtual void SetCyclePause(bool pause) = 0;
+	virtual uint64_t GetCycle() = 0;
+	virtual void Reset() = 0;
 };
+
 class IMMU {
 public:
 	virtual uint8_t ReadData(size_t addr) = 0;
@@ -73,12 +87,9 @@ public:
 	virtual uint16_t ReadCode(size_t addr) = 0;
 	virtual void WriteCode(size_t addr, uint8_t dat) = 0;
 };
+
 class IChipset {
 public:
-	/// <summary>
-	/// Raise an interrupt.
-	/// </summary>
-	/// <param name="index"></param>
 	virtual void RaiseInterrupt(int index) = 0;
 	virtual void Tick() = 0;
 	enum struct RunStatus {
@@ -93,13 +104,43 @@ public:
 	virtual void* GetRom() = 0;
 	virtual size_t GetRomSize() = 0;
 };
+
+/// <summary>
+/// Platform Host automation interface.
+/// Obtained via PluginApi::QueryInterface<IPlatformHost>().
+/// </summary>
+class IPlatformHost {
+public:
+	virtual const char* GetInternalStoragePath() = 0;
+	virtual const char* GetExternalStoragePath() = 0;
+	virtual bool ShowFileOpenDialog(const char* title, const char* filters, char* selectedFilePath, size_t pathBufferSize) = 0;
+	virtual void OpenSystemFileDialog(std::function<void(std::string)> callback) = 0;
+	virtual void SaveSystemFileDialog(const char* preferred_name, std::function<void(std::string)> callback) = 0;
+	virtual void ShowMessageBox(const char* title, const char* message, int type) = 0; // 0=Info, 1=Warn, 2=Error
+};
+
+/// <summary>
+/// Keyboard automation interface (Version 2).
+/// Obtained via PluginApi::QueryInterface<IKeyboard>().
+/// </summary>
+class IKeyboard {
+public:
+	/// Press or release the button at the given KI/KO bit position.
+	/// ki: KI line index (0-7), ko: KO line index (0-9), pressed: true=press, false=release
+	virtual void Key(int ki, int ko, bool pressed) = 0;
+	/// Release all non-stuck buttons.
+	virtual void ReleaseAll() = 0;
+	/// Press/release by raw kiko code byte (same encoding as ModelInfo::buttons[].kiko).
+	virtual void PressCode(uint8_t code, bool pressed) = 0;
+};
+
 #ifndef _NO_FUND_API
 class UIWindow {
 public:
 	UIWindow(const char* name) : name(name) {}
 	const char* name{};
 	bool open = true;
-	ImVec2 inital_size{ 800, 800 };
+	ImVec2 inital_size{800, 800};
 	ImGuiWindowFlags flags{};
 	virtual void Render() {
 		if (!open)
@@ -127,7 +168,7 @@ public:
 	/// Add a window to debugger window.
 	/// </summary>
 	/// <param name="wnd">The window, cannot be null.</param>
-	[[nodiscard]] virtual void AddWindow(UIWindow* wnd) = 0;
+	virtual void AddWindow(UIWindow* wnd) = 0;
 	/// <summary>
 	/// When it returns false, a plugin shouldn't be loaded.
 	/// </summary>
@@ -135,7 +176,7 @@ public:
 	/// <param name="id">Id of the plugin</param>
 	/// <param name="version">Version of the plugin</param>
 	/// <returns>Whether the plugin should be loaded</returns>
-	[[nodiscard]] virtual bool RegisterPlugin(const char* id, const char* name, int version) = 0;
+	[[nodiscard]] virtual bool RegisterPlugin(const char* id, const char* name, const char* version, const char* author, const char* desc) = 0;
 	/// <summary>
 	/// Check if the STL is the same.
 	/// </summary>
@@ -145,7 +186,9 @@ public:
 	[[nodiscard]] T* QueryInterface() {
 		return reinterpret_cast<T*>(QueryInterface(typeid(T).name()));
 	}
+	virtual void* GetImGuiContext() = 0;
 };
+
 #define PLUGINASSERTSTL(x) x->AssertFundamentalSTL(sizeof(std::string), sizeof(std::vector<int>), sizeof(std::map<int, int>), sizeof(std::mutex))
 
 /// <summary>

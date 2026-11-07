@@ -92,6 +92,7 @@ public class Game extends SDLActivity {
         setImmersiveMode();
         extractAssets();
         checkAndExtractPluginAssets();
+        initNativeVibration();
         try {
             Os.setenv("TMPDIR", getCacheDir().getAbsolutePath(), true);
         } catch (Exception e) {}
@@ -284,6 +285,8 @@ public class Game extends SDLActivity {
     public static void nativeVibrate(long milliseconds) {
         ((Game) SDLActivity.mSingleton).vibrate(milliseconds);
     }
+    
+    public static native void initNativeVibration();
 
     public static void createModelShortcut(String modelPath, String shortcutName, String iconPath) {
         Activity activity = SDLActivity.mSingleton;

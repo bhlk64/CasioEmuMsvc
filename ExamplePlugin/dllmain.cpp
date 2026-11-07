@@ -2,6 +2,10 @@
 #include "pch.h"
 
 PluginApi* g_api;
+
+
+
+
 class TestWindow :public UIWindow {
 public:
 	TestWindow() : UIWindow("ExamplePlugin") {
@@ -11,6 +15,10 @@ public:
 		ImGui::Text("This is an example!");
 	}
 };
+
+
+
+
 extern "C" _declspec(dllexport) void fPluginLoad(PluginApi* api) {
 	if (api == 0)
 		return;
@@ -19,6 +27,9 @@ extern "C" _declspec(dllexport) void fPluginLoad(PluginApi* api) {
 		return;
 	api->AddWindow(new TestWindow());
 }
+
+
+
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,

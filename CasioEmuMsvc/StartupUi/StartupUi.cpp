@@ -1332,7 +1332,7 @@ namespace casioemu {
 				}
 				else {
 					if (ImGui::MenuItem("StartupUI.Launch"_lc)) {
-#if __ANDROID__
+#ifdef __ANDROID__
 						ThemeManager::Instance().LoadSettings();
 #endif
 						selected_path = model.path;

@@ -18,19 +18,20 @@
 
 */
 #pragma once
-// #include "Config.hpp"
-#include <fstream>
-#include <stdexcept>
-#include <vector>
-#include <map>
-#include <type_traits>
+#include "Config.hpp"
 #include <concepts>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <map>
+#include <stdexcept>
+#include <type_traits>
+#include <vector>
 #pragma warning(push)
 #pragma warning(disable : 4267)
 
 template <class T>
-concept trivial = std::is_trivial<T>::value;
+concept trivial = std::is_trivially_copyable<T>::value;
 template <class T>
 concept trivial_pair = trivial<typename T::first_type> && trivial<typename T::second_type>;
 template <class T>
@@ -40,7 +41,7 @@ concept BinaryClass =
 	requires(T& t, std::ostream& os, std::istream& is) {
 		{ t.Write(os) } -> std::same_as<void>;
 		{ t.Read(is) } -> std::same_as<void>;
-	};
+	} && (!BinaryData<T>);
 template <class T>
 using ContainerChild = std::remove_cvref_t<decltype(*std::declval<T>().cbegin())>;
 template <class T>
@@ -68,7 +69,11 @@ concept BinaryMap =
 		{ m.cbegin() } -> std::convertible_to<typename T::const_iterator>;
 		{ m.cend() } -> std::convertible_to<typename T::const_iterator>;
 	};
-
+template <typename T>
+bool is_mem_equal(const T& a, const T& b) {
+	static_assert(std::is_trivially_copyable_v<T>);
+	return std::memcmp(&a, &b, sizeof(T)) == 0;
+}
 // #define _BIN_DBG
 
 /// <summary>
@@ -84,6 +89,7 @@ public:
 	}
 	static void Read(std::istream& stm, BinaryData auto& dat) {
 		stm.read((char*)&dat, sizeof(dat));
+		// TODO: Throw exception if data is invalid
 	}
 	static void Write(std::ostream& stm, const BinaryClass auto& cls) {
 		cls.Write(stm);
@@ -96,11 +102,11 @@ public:
 		unsigned long long size = 0;
 		Read(stm, size);
 		if (size > 1ULL << 48) {
-			__debugbreak();
+			throw std::runtime_error("Binary data format error: container size is too large.");
 		}
 		vec.reserve(size);
 		for (size_t i = 0; i < size; i++) {
-			if (stm.eof())
+			if (!stm.good())
 				return;
 			ContainerChild data{};
 			Read(stm, data);
@@ -114,18 +120,42 @@ public:
 			Write(stm, data);
 			sz--;
 		}
-		if (sz != 0)
+		if (sz != 0) {
+#if defined(_MSC_VER)
 			__debugbreak();
+#elif defined(__GNUC__) || defined(__clang__)
+			__builtin_trap();
+#else
+			*(volatile int*)0 = 0;
+#endif
+		}
+	}
+	template <class T, size_t N>
+		requires BinaryData<T> || BinaryClass<T> || std::is_array_v<T>
+	static void Write(std::ostream& stm, const T (&arr)[N]) {
+		for (size_t i = 0; i < N; i++) {
+			Write(stm, arr[i]);
+		}
+	}
+
+	template <class T, size_t N>
+		requires BinaryData<T> || BinaryClass<T> || std::is_array_v<T>
+	static void Read(std::istream& stm, T (&arr)[N]) {
+		for (size_t i = 0; i < N; i++) {
+			if (!stm.good())
+				return;
+			Read(stm, arr[i]);
+		}
 	}
 	static void Read(std::istream& stm, BinaryMap auto& map) {
 		using ContainerChild = ::ContainerChild<decltype(map)>;
 		unsigned long long size = 0;
 		Read(stm, size);
 		if (size > 1ULL << 48) {
-			__debugbreak();
+			throw std::runtime_error("Binary data format error: container size is too large.");
 		}
 		for (size_t i = 0; i < size; i++) {
-			if (stm.eof())
+			if (!stm.good())
 				return;
 			std::remove_cvref_t<typename ContainerChild::first_type> key{};
 			Read(stm, key);
@@ -142,8 +172,51 @@ public:
 			Write(stm, kv.second);
 			sz--;
 		}
-		if (sz != 0)
+		if (sz != 0) {
+#if defined(_MSC_VER)
 			__debugbreak();
+#elif defined(__GNUC__) || defined(__clang__)
+			__builtin_trap();
+#else
+			*(volatile int*)0 = 0;
+#endif
+		}
+	}
+	template <class T>
+	static T Load(const char* path) {
+		std::ifstream f(path, std::ios::binary);
+		if (!f.good())
+			throw std::runtime_error("Failed to open file for reading: " + std::string(path));
+		T dat;
+		Binary::Read(f, dat);
+		return dat;
+	}
+	template <class T>
+	static T LoadOrDefault(const char* path, const T& v) {
+		std::ifstream f(path, std::ios::binary);
+		if (!f.good())
+			return v;
+		T dat;
+		Binary::Read(f, dat);
+		return dat;
+	}
+	template <class T>
+	static T LoadOrInit(const char* path, const T& v) {
+		std::ifstream f(path, std::ios::binary);
+		if (!f.good()) {
+			Save(path, v);
+			return v;
+		}
+		T dat;
+		Binary::Read(f, dat);
+		return dat;
+	}
+	template <class T>
+	static void Save(const char* path, const T& dat) {
+		std::ofstream f(path, std::ios::binary);
+		if (!f.good())
+			throw std::runtime_error("Failed to open file for writing: " + std::string(path));
+		Binary::Write(f, dat);
 	}
 };
 #pragma warning(pop)
