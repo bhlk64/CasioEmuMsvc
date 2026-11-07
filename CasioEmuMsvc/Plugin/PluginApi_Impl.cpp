@@ -150,6 +150,9 @@ class PluginApi_Impl : public PluginApi {
 		size_t GetRomSize() override {
 			return m_emu->chipset.rom_data.size();
 		}
+		void Reset() override {
+			m_emu->chipset.Reset()
+		}
 	} chipset_impl;
 	class IKeyboard_Impl : public IKeyboard {
 		// Delegates to the keyboard peripheral's IKeyboardAutomation

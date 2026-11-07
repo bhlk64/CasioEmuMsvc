@@ -103,6 +103,7 @@ public:
 	// Version 1
 	virtual void* GetRom() = 0;
 	virtual size_t GetRomSize() = 0;
+	virtual void Reset() = 0;
 };
 
 /// <summary>
