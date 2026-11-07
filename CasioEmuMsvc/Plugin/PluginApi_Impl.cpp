@@ -151,7 +151,7 @@ class PluginApi_Impl : public PluginApi {
 			return m_emu->chipset.rom_data.size();
 		}
 		void Reset() override {
-			m_emu->chipset.Reset()
+			m_emu->chipset.Reset();
 		}
 	} chipset_impl;
 	class IKeyboard_Impl : public IKeyboard {
